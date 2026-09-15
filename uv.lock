@@ -557,6 +557,7 @@ version = "0.1.0"
 source = { editable = "." }
 dependencies = [
     { name = "inspect-ai" },
+    { name = "pydantic" },
     { name = "pyyaml" },
 ]
 
@@ -568,7 +569,8 @@ dev = [
 
 [package.metadata]
 requires-dist = [
-    { name = "inspect-ai", specifier = ">=0.3" },
+    { name = "inspect-ai", specifier = ">=0.3.263" },
+    { name = "pydantic", specifier = ">=2" },
     { name = "pyyaml", specifier = ">=6" },
 ]
 

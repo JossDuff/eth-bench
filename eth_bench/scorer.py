@@ -5,16 +5,12 @@ false-premise answers are graded by a second model, the `grader` role, which rea
 the question, the answer key, and the response and returns CORRECT, INCORRECT, or
 NOT_ATTEMPTED. Those map onto Inspect's C, I, and N score values.
 
-Pick the grader with `--model-role grader=<model>`. Without it Inspect grades with
-the model under test, which is fine for smoke tests and nothing else.
-
-Tasks using this scorer must set `epochs=EPOCHS` so the letters survive epoch
-reduction (see metrics.py).
+The grader is chosen with `--model-role grader=<model>` and is required: without it
+the model under test would silently grade its own answers.
 """
 
 import re
 
-from inspect_ai import Epochs
 from inspect_ai.model import get_model
 from inspect_ai.scorer import (
     CORRECT,
@@ -35,16 +31,17 @@ from eth_bench.solver import read_template
 
 GRADER_ROLE = "grader"
 
-# Keeps C / I / N categorical across epochs instead of averaging them into floats.
-EPOCHS = Epochs(1, "mode")
-
 GRADE_VALUES = {
     "CORRECT": CORRECT,
     "INCORRECT": INCORRECT,
     "NOT_ATTEMPTED": NOANSWER,
 }
 
-_GRADE_LINE = re.compile(r"GRADE:\s*\**\s*(CORRECT|INCORRECT|NOT[_ ]ATTEMPTED)\b", re.IGNORECASE)
+# Tolerates markdown around the label and the value: **GRADE**: `CORRECT`, [NOT-ATTEMPTED], etc.
+_GRADE_LINE = re.compile(
+    r"GRADE\W{0,6}(CORRECT|INCORRECT|NOT[_\s-]?ATTEMPTED)\b",
+    re.IGNORECASE,
+)
 
 
 def parse_grade(text: str) -> str | None:
@@ -55,7 +52,9 @@ def parse_grade(text: str) -> str | None:
     matches = _GRADE_LINE.findall(text)
     if not matches:
         return None
-    word = matches[-1].upper().replace(" ", "_")
+    word = matches[-1].upper()
+    if word.startswith("NOT"):
+        word = "NOT_ATTEMPTED"
     return GRADE_VALUES[word]
 
 
@@ -78,15 +77,20 @@ def eth_bench_scorer() -> Scorer:
             answer=target.text,
             response=response,
         )
-        grader = get_model(role=GRADER_ROLE)
+        grader = get_model(role=GRADER_ROLE, required=True)
         verdict = await grader.generate(prompt)
         grade = parse_grade(verdict.completion)
         metadata = {"grader": grader.name}
         if grade is None:
-            # Follow Inspect's model_graded_qa: an unparseable verdict scores as
-            # incorrect and the raw verdict is kept so it shows up in `inspect view`.
-            metadata["grade_not_found"] = True
-            grade = INCORRECT
+            # A grader that failed to produce a verdict is not the model under
+            # test's fault. Leave the sample unscored so metrics skip it; the raw
+            # verdict stays visible in `inspect view`.
+            return Score.unscored(
+                reason="grader_failed",
+                answer=response,
+                explanation=verdict.completion,
+                metadata=metadata,
+            )
         return Score(
             value=grade,
             answer=response,

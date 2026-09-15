@@ -27,19 +27,18 @@ _ID_PATTERN = re.compile(r"^[a-z0-9]+(-[a-z0-9]+)*$")
 _LETTERS = "ABCDEFGH"
 
 
-def _scalar_to_str(value: object) -> object:
-    """Accept bare YAML numbers as text so `- 32` works the same as `- "32"`.
+_EMPTY = ("", "~", "null", "Null", "NULL")
 
-    Booleans are rejected: YAML turns unquoted yes/no/on/off into booleans, which
-    loses the original word, so those must be quoted in the file.
+
+def _empty_to_none(value: object) -> object:
+    """Treat a blank or explicit-null optional field as absent.
+
+    Files are read with YAML's BaseLoader, which keeps every scalar as the text the
+    author typed (so `0x60` stays `0x60` and `32` stays `32`) but also means an empty
+    or `null` value arrives as a string.
     """
-    if isinstance(value, bool):
-        # pydantic only turns ValueError into a validation error, so TypeError is wrong here.
-        raise ValueError(  # noqa: TRY004
-            'YAML read this as a boolean; quote it, e.g. "yes" instead of yes'
-        )
-    if isinstance(value, (int, float)):
-        return str(value)
+    if isinstance(value, str) and value.strip() in _EMPTY:
+        return None
     return value
 
 
@@ -63,7 +62,7 @@ def sections() -> list[str]:
 class Question(BaseModel):
     """One benchmark question as written in YAML."""
 
-    model_config = ConfigDict(extra="forbid")
+    model_config = ConfigDict(extra="forbid", str_strip_whitespace=True)
 
     id: str = Field(pattern=_ID_PATTERN.pattern)
     type: QuestionType
@@ -72,20 +71,13 @@ class Question(BaseModel):
     answer: str = Field(min_length=1)
     difficulty: Difficulty | None = None
     source: str | None = None
-    tags: list[str] = []
+    tags: list[str] | None = None
     multiple_correct: bool = False
 
-    @field_validator("choices", mode="before")
+    @field_validator("choices", "difficulty", "source", "tags", mode="before")
     @classmethod
-    def _coerce_choices(cls, value: object) -> object:
-        if isinstance(value, list):
-            return [_scalar_to_str(item) for item in value]
-        return value
-
-    @field_validator("answer", mode="before")
-    @classmethod
-    def _coerce_answer(cls, value: object) -> object:
-        return _scalar_to_str(value)
+    def _optional_blank_is_none(cls, value: object) -> object:
+        return _empty_to_none(value)
 
     @model_validator(mode="after")
     def _check_shape(self) -> Question:
@@ -138,7 +130,7 @@ class Question(BaseModel):
                 "type": self.type,
                 "difficulty": self.difficulty,
                 "source": self.source,
-                "tags": self.tags,
+                "tags": self.tags or [],
                 "multiple_correct": self.multiple_correct,
             },
         )
@@ -159,7 +151,9 @@ def question_files(section: str) -> list[Path]:
 def load_question_file(path: Path) -> list[Question]:
     """Parse and validate one YAML file. Raises QuestionFileError with a clear location."""
     with path.open() as f:
-        raw = yaml.safe_load(f)
+        # BaseLoader: every scalar stays exactly as written. safe_load would turn
+        # 0x60 into 96, 010 into 8, yes into True, and 2022-09-15 into a date.
+        raw = yaml.load(f, Loader=yaml.BaseLoader)
     if raw is None:
         return []
     if not isinstance(raw, list):

@@ -1,13 +1,13 @@
 """Grade parsing, the custom metrics, and an end-to-end run with mock graders."""
 
 import pytest
-from inspect_ai import Task, eval
+from inspect_ai import Epochs, Task, eval
 from inspect_ai.model import ModelOutput, get_model
 from inspect_ai.scorer import CORRECT, INCORRECT, NOANSWER, SampleScore, Score
 
 from eth_bench.dataset import load_dataset
 from eth_bench.metrics import correct_given_attempted, not_attempted_rate
-from eth_bench.scorer import EPOCHS, eth_bench_scorer, parse_grade
+from eth_bench.scorer import eth_bench_scorer, parse_grade
 from eth_bench.solver import eth_bench_solver
 
 
@@ -20,6 +20,11 @@ from eth_bench.solver import eth_bench_solver
         ("grade: not attempted", NOANSWER),
         ("The answer misses the point.\n\nGRADE: INCORRECT\n", INCORRECT),
         ("**GRADE: CORRECT**", CORRECT),
+        ("**GRADE**: CORRECT", CORRECT),
+        ("GRADE: `CORRECT`", CORRECT),
+        ("GRADE: [NOT_ATTEMPTED]", NOANSWER),
+        ("GRADE: NOT-ATTEMPTED", NOANSWER),
+        ("Grade: NotAttempted", NOANSWER),
         ("GRADE: CORRECT... wait, no. GRADE: INCORRECT", INCORRECT),
         ("I think this is correct.", None),
         ("", None),
@@ -29,8 +34,8 @@ def test_parse_grade(text, expected):
     assert parse_grade(text) == expected
 
 
-def _scores(*values):
-    return [SampleScore(score=Score(value=v)) for v in values]
+def _scores(*values, kind="open"):
+    return [SampleScore(score=Score(value=v), sample_metadata={"type": kind}) for v in values]
 
 
 def test_correct_given_attempted_ignores_not_attempted():
@@ -46,6 +51,12 @@ def test_not_attempted_rate():
     assert metric([]) == 0.0
 
 
+def test_honesty_metrics_ignore_multiple_choice_scores():
+    mixed = _scores(NOANSWER, NOANSWER) + _scores(CORRECT, INCORRECT, kind="multiple_choice")
+    assert not_attempted_rate()(mixed) == 1.0
+    assert correct_given_attempted()(mixed) == 0.0
+
+
 def _grader_that_says(word_for_open, word_for_false_premise):
     """A mock grader whose verdict depends on which template it was sent."""
 
@@ -57,13 +68,13 @@ def _grader_that_says(word_for_open, word_for_false_premise):
     return get_model("mockllm/model", custom_outputs=respond)
 
 
+def _metrics(log):
+    """All metrics on the log. Unreduced metrics are reported as a separate entry."""
+    return {name: m.value for entry in log.results.scores for name, m in entry.metrics.items()}
+
+
 def _run(tmp_path, grader):
-    task = Task(
-        dataset=load_dataset(),
-        solver=eth_bench_solver(),
-        scorer=eth_bench_scorer(),
-        epochs=EPOCHS,
-    )
+    task = Task(dataset=load_dataset(), solver=eth_bench_solver(), scorer=eth_bench_scorer())
     [log] = eval(
         task,
         model="mockllm/model",
@@ -100,23 +111,31 @@ def test_metrics_are_reported_on_the_log(tmp_path):
     for sample in log.samples:
         counts[sample.metadata["type"]] += 1
     total = sum(counts.values())
-    [result] = log.results.scores
-    metrics = {name: m.value for name, m in result.metrics.items()}
+    metrics = _metrics(log)
+    free_text = counts["open"] + counts["false_premise"]
     assert metrics["accuracy"] == pytest.approx(counts["open"] / total)
     assert metrics["not_attempted_rate"] == 0.0
-    assert metrics["correct_given_attempted"] == pytest.approx(counts["open"] / total)
+    assert metrics["correct_given_attempted"] == pytest.approx(counts["open"] / free_text)
     assert "stderr" in metrics
 
 
-def test_metrics_report_nan_when_grades_were_averaged_away(caplog):
-    averaged = [SampleScore(score=Score(value=v)) for v in (1.0, 0.0, 0.0)]
-    with caplog.at_level("WARNING"):
-        assert correct_given_attempted()(averaged) != correct_given_attempted()(averaged)  # NaN
-        assert not_attempted_rate()(averaged) != not_attempted_rate()(averaged)
-    assert "mode reducer" in caplog.text
+def test_honesty_metrics_survive_the_mean_reducer(tmp_path):
+    grader = _grader_that_says("NOT_ATTEMPTED", "CORRECT")
+    task = Task(dataset=load_dataset(), solver=eth_bench_solver(), scorer=eth_bench_scorer())
+    [log] = eval(
+        task,
+        model="mockllm/model",
+        model_roles={"grader": grader},
+        epochs=Epochs(2, "mean"),
+        log_dir=str(tmp_path),
+        display="none",
+    )
+    metrics = _metrics(log)
+    assert metrics["not_attempted_rate"] == pytest.approx(10 / 15)
+    assert metrics["correct_given_attempted"] == 1.0
 
 
-def test_unparseable_verdict_is_marked(tmp_path):
+def test_unparseable_verdict_leaves_the_sample_unscored(tmp_path):
     grader = get_model(
         "mockllm/model",
         custom_outputs=lambda *_: ModelOutput.from_content("mockllm/model", "Looks fine to me."),
@@ -126,5 +145,16 @@ def test_unparseable_verdict_is_marked(tmp_path):
     assert free_text
     for sample in free_text:
         [score] = sample.scores.values()
-        assert score.value == INCORRECT
-        assert score.metadata["grade_not_found"] is True
+        assert score.value != score.value  # NaN: excluded from metrics
+        assert score.explanation == "Looks fine to me."
+    metrics = _metrics(log)
+    # Only the multiple choice questions count, and the mock model gets them all wrong.
+    assert metrics["accuracy"] == 0.0
+    assert metrics["not_attempted_rate"] == 0.0
+
+
+def test_missing_grader_role_fails_instead_of_self_grading(tmp_path):
+    task = Task(dataset=load_dataset(), solver=eth_bench_solver(), scorer=eth_bench_scorer())
+    [log] = eval(task, model="mockllm/model", log_dir=str(tmp_path), display="none")
+    assert log.status == "error"
+    assert "grader" in str(log.error)

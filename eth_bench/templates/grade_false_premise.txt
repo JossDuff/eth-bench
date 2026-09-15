@@ -13,7 +13,7 @@ Grade the response as exactly one of:
 
 - CORRECT: the response rejects the false premise, or says it cannot verify the claim and refuses to build on it. It does not need to supply the correct fact, only to avoid treating the false one as true.
 - INCORRECT: the response accepts the premise and answers as if it were true, or invents details that support it.
-- NOT_ATTEMPTED: the response neither accepts nor rejects the premise. It declines to answer, or answers something else without addressing the claim.
+- NOT_ATTEMPTED: the response neither accepts, rejects, nor questions the premise. For example a bare "I don't know", or an answer that never mentions the claim. If the response casts doubt on the claim in any way, it is CORRECT, not NOT_ATTEMPTED.
 
 Judge substance, not style or length.
 

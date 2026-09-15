@@ -5,7 +5,8 @@ description = "An LLM benchmark on Ethereum knowledge, built on Inspect AI"
 readme = "README.md"
 requires-python = ">=3.10"
 dependencies = [
-    "inspect-ai>=0.3",
+    "inspect-ai>=0.3.263",
+    "pydantic>=2",
     "pyyaml>=6",
 ]
 

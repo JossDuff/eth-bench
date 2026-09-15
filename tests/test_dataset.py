@@ -34,11 +34,35 @@ def test_multiple_correct_target_is_a_list():
     assert q.to_sample("demo").target == ["A", "C"]
 
 
-def test_numeric_choices_and_answers_become_strings():
-    q = Question.model_validate({**MC, "choices": [16, 32, 64, 128]})
-    assert q.choices == ["16", "32", "64", "128"]
-    q = Question.model_validate({**OPEN, "answer": 42})
-    assert q.answer == "42"
+def test_scalars_are_kept_exactly_as_written(tmp_path):
+    path = tmp_path / "scalars.yaml"
+    path.write_text(
+        "- id: opcode-bytes\n"
+        "  type: multiple_choice\n"
+        "  question: Which byte is PUSH1?\n"
+        "  choices: [0x60, 010, 1.10, yes]\n"
+        "  answer: A\n"
+        "  multiple_correct: false\n"
+        "  source:\n"
+        "  difficulty: null\n"
+        "- id: merge-date\n"
+        "  type: open\n"
+        "  question: When was the Merge?\n"
+        "  answer: 2022-09-15\n"
+    )
+    mc, merge = load_question_file(path)
+    assert mc.choices == ["0x60", "010", "1.10", "yes"]
+    assert mc.multiple_correct is False
+    assert mc.source is None
+    assert mc.difficulty is None
+    assert merge.answer == "2022-09-15"
+
+
+def test_whitespace_only_text_is_rejected():
+    with pytest.raises(ValidationError):
+        Question.model_validate({**OPEN, "answer": "   "})
+    with pytest.raises(ValidationError):
+        Question.model_validate({**OPEN, "question": " \n "})
 
 
 @pytest.mark.parametrize(
@@ -55,7 +79,6 @@ def test_numeric_choices_and_answers_become_strings():
         {**OPEN, "difficulty": "hard"},  # unknown difficulty
         {**OPEN, "id": "Has Spaces"},  # bad id
         {**OPEN, "fork": "london"},  # unknown field
-        {**MC, "choices": ["yes", True, "b"]},  # unquoted YAML boolean
     ],
     ids=lambda d: str(sorted(d.items()))[:60],
 )
@@ -78,6 +101,12 @@ def test_top_level_must_be_a_list(tmp_path):
         load_question_file(path)
 
 
+def _chosen_texts(sample):
+    """The choice texts a sample's target letter(s) point at."""
+    letters = sample.target if isinstance(sample.target, list) else [sample.target]
+    return {sample.choices["ABCDEFGH".index(letter)] for letter in letters}
+
+
 def test_shuffle_is_deterministic_and_keeps_the_right_answer():
     unshuffled = {s.id: s for s in load_dataset(shuffle_seed=None)}
     first = {s.id: s for s in load_dataset(shuffle_seed=7)}
@@ -87,9 +116,8 @@ def test_shuffle_is_deterministic_and_keeps_the_right_answer():
             continue
         assert first[sample_id].choices == second[sample_id].choices
         assert first[sample_id].target == second[sample_id].target
-        original_answer = original.choices["ABCDEFGH".index(original.target)]
         shuffled = first[sample_id]
-        assert shuffled.choices["ABCDEFGH".index(shuffled.target)] == original_answer
+        assert _chosen_texts(shuffled) == _chosen_texts(original)
     assert any(
         first[i].choices != unshuffled[i].choices for i in unshuffled if unshuffled[i].choices
     )
