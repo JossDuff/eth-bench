@@ -133,6 +133,7 @@ leaving it out.
 | `history`        | Network upgrades from Frontier onward, the DAO fork, the Merge. |
 | `crops`          | The Ethereum Foundation's mandate: Censorship Resistance, Open source and free, Privacy, Security. |
 | `hallucination`  | False-premise questions only. |
+| `misc`           | Anything that does not fit a section yet: layer 2, MEV and PBS, roadmap, networking. |
 
 To add a section, create a new directory under `questions/`. Nothing else needs
 to change.

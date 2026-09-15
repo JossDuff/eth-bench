@@ -1,0 +1,174 @@
+- id: l2-native-rollups-benefit
+  type: open
+  question: |
+    What benefit would native rollups bring to Ethereum?
+  answer: |
+    A native rollup verifies its EVM state transitions using an L1 precompile
+    (the proposed EXECUTE precompile) instead of its own fraud-proof or
+    validity-proof system. That gives it Ethereum's own security with no security
+    council or bespoke prover to trust, lets it upgrade automatically in step with
+    L1 EVM changes with no governance, and removes most of the complexity of
+    building a rollup VM. A complete answer must say native rollups reuse L1
+    execution verification (a precompile) so they inherit L1 security and stay
+    in sync with EVM upgrades without their own governance.
+  difficulty: understanding
+  source: https://ethresear.ch/t/native-rollups-superpowers-from-l1-execution/21517
+
+- id: l2-types-and-tradeoffs
+  type: open
+  question: |
+    What are the main types of Ethereum layer 2 designs, and what are their
+    tradeoffs?
+  answer: |
+    Optimistic rollups post data to L1 and assume validity, relying on fraud
+    proofs during a challenge window, so they are cheap and EVM-compatible but
+    have long withdrawal delays. ZK (validity) rollups post data plus a validity
+    proof, giving fast finality and stronger security at the cost of proving
+    complexity and cost. Validiums and plasma keep data off-chain, cutting costs
+    further but weakening data availability guarantees. Based rollups let L1
+    proposers sequence L2 blocks, gaining L1 liveness and censorship resistance
+    but giving up fast soft confirmations and sequencer revenue. Sidechains have
+    their own consensus and do not inherit Ethereum security at all. A complete
+    answer must describe at least optimistic and ZK rollups with their core
+    tradeoff (fraud proofs and delay versus validity proofs and proving cost) and
+    mention at least one other category.
+  difficulty: reasoning
+  source: https://vitalik.eth.limo/general/2021/01/05/rollup.html
+
+- id: l2-rollup-stages
+  type: open
+  question: |
+    What do "Stage 0", "Stage 1", and "Stage 2" mean when describing a rollup?
+  answer: |
+    They are the decentralisation stages from L2BEAT's framework. Stage 0 is
+    "full training wheels": the rollup posts data to L1 but users depend on the
+    operators, with no working proof system or with a security council that can
+    override everything. Stage 1 has a functioning fraud or validity proof system
+    so the L1 enforces state transitions, with a security council limited to
+    fixing bugs (typically requiring a large supermajority) and users able to exit
+    without operator cooperation. Stage 2 removes the training wheels: the proof
+    system is fully in charge, the security council can only act on provable
+    on-chain bugs, and upgrades have a delay long enough for users to exit. A
+    complete answer must describe the progression from operator trust to a proof
+    system enforced by L1 with limited or no override powers.
+  difficulty: understanding
+  source: https://vitalik.eth.limo/general/2025/05/06/stages.html
+
+- id: pbs-what-it-is
+  type: open
+  question: |
+    What is proposer-builder separation (PBS)?
+  answer: |
+    PBS splits the role of producing a block into two: builders, who assemble
+    block contents (including capturing MEV) and bid for the right to have their
+    block proposed, and proposers (validators), who choose the highest bid and
+    sign the block without seeing or constructing its contents. The aim is to
+    keep validating simple and decentralised while allowing block building, which
+    rewards sophistication and scale, to specialise. Today it exists out of
+    protocol via MEV-Boost and relays. A complete answer must describe the split
+    between builders who construct blocks and proposers who select and sign them,
+    and mention the goal of keeping validators decentralised despite MEV.
+  difficulty: understanding
+  source: https://ethresear.ch/t/why-enshrine-proposer-builder-separation-a-viable-path-to-epbs/15710
+
+- id: pbs-why-enshrine
+  type: open
+  question: |
+    Why enshrine proposer-builder separation in the protocol (ePBS) rather than
+    keep relying on MEV-Boost?
+  answer: |
+    MEV-Boost depends on relays, which are trusted third parties: proposers trust
+    them to deliver the block after signing, builders trust them not to steal the
+    block, and a handful of relays are a centralisation and censorship point. ePBS
+    (EIP-7732) makes the builder commitment and payment part of consensus, so the
+    exchange is trustless and enforced by the protocol, removes relays from the
+    critical path, and gives the protocol control over the timing of the slot.
+    A complete answer must say MEV-Boost relies on trusted relays and that ePBS
+    removes that trust by enforcing the proposer-builder exchange in-protocol.
+  difficulty: understanding
+  source: https://ethresear.ch/t/why-enshrine-proposer-builder-separation-a-viable-path-to-epbs/15710
+
+- id: engine-getblobs-partial
+  type: open
+  question: |
+    If a consensus client asks an execution client for blobs via the Engine API
+    and the execution client only has some of them, what does it get back?
+  answer: |
+    It depends on the method version. engine_getBlobsV1 returns null for the
+    entire request if any requested blob is missing. engine_getBlobsV2 returns an
+    array of the same length and order as the request, with null in the positions
+    of blobs the client does not have and the blob (with proofs) elsewhere. Both
+    versions reject requests above the size limit with a "Too large request"
+    error. A complete answer must say V1 returns null for the whole response when
+    anything is missing, and V2 returns per-position results with null for
+    missing blobs.
+  difficulty: reasoning
+  source: https://github.com/ethereum/execution-apis/blob/main/src/engine/osaka.md
+
+- id: engine-newpayload-missing-parent
+  type: open
+  question: |
+    What should an execution client return from engine_newPayload when it does
+    not yet have the payload's parent block?
+  answer: |
+    A payload status of SYNCING, with latestValidHash null and validationError
+    null. The client cannot validate the payload without its parent, so it
+    signals that it is still syncing rather than claiming the payload is valid or
+    invalid. A complete answer must give the SYNCING status.
+  difficulty: recall
+  source: https://github.com/ethereum/execution-apis/blob/main/src/engine/paris.md
+
+- id: roadmap-lean-ethereum-pillars
+  type: open
+  question: |
+    What is "lean Ethereum" and what are its main pillars?
+  answer: |
+    Lean Ethereum is the Ethereum Foundation's long-term vision for a simpler,
+    hardened, post-quantum protocol built on hash-based cryptography. Its three
+    pillars are lean consensus (a beacon chain 2.0 hardened for security and
+    decentralisation with finality in seconds), lean data (blobs 2.0 with
+    post-quantum commitments and finer-grained blob sizing), and lean execution
+    (a minimal, SNARK-friendly instruction set, possibly RISC-V based). A
+    complete answer must name the three pillars of consensus, data, and execution
+    and mention post-quantum or hash-based cryptography as a theme.
+  difficulty: recall
+  source: https://blog.ethereum.org/en/2025/07/31/lean-ethereum
+
+- id: roadmap-extremely-lean-chain-privacy
+  type: open
+  question: |
+    What does "The Extremely Lean Chain" proposal suggest, and how does it give
+    validators privacy?
+  answer: |
+    It proposes shrinking consensus state to almost nothing by having validators,
+    not the protocol, track their own balances: validators periodically submit
+    zero-knowledge proofs of their participation and rewards instead of the chain
+    computing them. Validator privacy comes from re-anonymisation: each validator
+    registers with a fresh public key each period and proves in zero knowledge
+    that it is a legitimate validator with a certain balance, without revealing
+    which past identity it corresponds to, so the chain never tracks a persistent
+    validator identity and proposer selection becomes approximately a secret
+    leader election. A complete answer must mention validators proving their own
+    state with ZK proofs and periodic fresh keys that break the link between a
+    validator's identities over time.
+  difficulty: reasoning
+  source: https://ethresear.ch/t/the-extremely-lean-chain/25369
+
+- id: roadmap-new-commitment-scheme-tradeoffs
+  type: open
+  question: |
+    What are the tradeoffs of adding a new commitment scheme or erasure coding
+    algorithm to Ethereum?
+  answer: |
+    Benefits can include faster propagation, post-quantum security, or cheaper
+    proving. The costs are significant: every client team must implement and
+    audit new cryptography, which is complex and error-prone; a second scheme
+    alongside KZG means two code paths and two sets of security assumptions
+    (including any trusted setup); rollups and tooling built on the existing
+    commitments must adapt; and the protocol surface grows permanently. Vitalik
+    Buterin has argued that introducing a whole new commitment scheme is "a lot of
+    needless complexity" unless the gain is large. A complete answer must weigh a
+    concrete benefit against implementation complexity, security review burden,
+    and the cost of maintaining multiple schemes.
+  difficulty: reasoning
+  source: https://ethresear.ch/t/faster-block-blob-propagation-in-ethereum/21370/27
