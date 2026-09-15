@@ -1,0 +1,124 @@
+- id: erc-165-interface-id
+  type: open
+  question: |
+    How is an interface identifier computed under ERC-165?
+  answer: |
+    The interface id is the XOR of the four-byte function selectors of every
+    function in the interface. A complete answer must mention XOR of the function
+    selectors.
+  difficulty: recall
+  source: https://eips.ethereum.org/EIPS/eip-165
+
+- id: erc-4626-standardizes
+  type: multiple_choice
+  question: |
+    What does ERC-4626 standardize?
+  choices:
+    - Tokenized yield-bearing vaults
+    - Non-fungible token metadata
+    - Multi-signature wallets
+    - Token bridges between rollups
+  answer: A
+  difficulty: recall
+  source: https://eips.ethereum.org/EIPS/eip-4626
+
+- id: erc-20-approve-function
+  type: multiple_choice
+  question: |
+    In ERC-20, which function does a token holder call to let another address
+    spend tokens on their behalf?
+  choices:
+    - transfer
+    - approve
+    - transferFrom
+    - allowance
+  answer: B
+  difficulty: recall
+  source: https://eips.ethereum.org/EIPS/eip-20
+
+- id: erc-2612-permit-purpose
+  type: open
+  question: |
+    What problem does ERC-2612 (permit) solve for ERC-20 tokens?
+  answer: |
+    ERC-20 approvals normally require the token holder to send their own
+    on-chain approve transaction before a contract can move their tokens, which
+    costs gas and requires the holder to hold ETH. ERC-2612 adds a permit
+    function that accepts a signed message (EIP-712 typed data) authorizing an
+    allowance, so approval can be submitted by anyone, including bundled into the
+    same transaction that spends the tokens. A complete answer must mention that
+    approvals become signature-based (gasless for the holder) instead of requiring
+    a separate approve transaction.
+  difficulty: understanding
+  source: https://eips.ethereum.org/EIPS/eip-2612
+
+- id: erc-account-abstraction-landscape
+  type: open
+  question: |
+    What are the main mechanisms for account abstraction on Ethereum today, and
+    how do they relate to each other?
+  answer: |
+    ERC-4337 provides account abstraction without protocol changes: users submit
+    UserOperations to a separate mempool, bundlers package them into transactions,
+    and a singleton EntryPoint contract validates and executes them against smart
+    contract accounts, with optional paymasters covering gas. EIP-7702 (live since
+    Pectra) lets an ordinary EOA set a delegation to contract code, so existing
+    EOAs can behave like smart accounts and use the 4337 flow without migrating to
+    a new address. Native protocol-level account abstraction remains a proposal,
+    for example EIP-8141 (frame transactions). A complete answer must describe
+    ERC-4337 (UserOperations, bundlers, EntryPoint) and EIP-7702 (EOAs delegating
+    to code) and how 7702 complements 4337.
+  difficulty: understanding
+  source: https://eips.ethereum.org/EIPS/eip-4337
+
+- id: erc-1271-contract-signatures
+  type: open
+  question: |
+    How does a smart contract wallet prove it approved a message, given that it
+    has no private key of its own?
+  answer: |
+    Through ERC-1271. The contract implements isValidSignature(bytes32 hash,
+    bytes signature) and returns the magic value 0x1626ba7e when it considers the
+    signature valid for that hash, using whatever logic it likes (for example
+    checking an owner's ECDSA signature or a multisig threshold). Verifiers call
+    this function instead of ecrecover when the signer is a contract. A complete
+    answer must name ERC-1271 or isValidSignature and say the contract returns a
+    magic value to indicate validity.
+  difficulty: understanding
+  source: https://eips.ethereum.org/EIPS/eip-1271
+
+- id: erc-4626-rounding
+  type: open
+  question: |
+    Which way must an ERC-4626 vault round when converting between assets and
+    shares, and why does the standard have to say so?
+  answer: |
+    Rounding must never favour the user over the vault. convertToShares and
+    convertToAssets must round down toward zero. For the operations, previewMint
+    and previewWithdraw (where the vault decides how much the user pays) round up,
+    while previewDeposit and previewRedeem (what the user receives) round down.
+    The standard fixes this because integer division makes the result ambiguous
+    and inconsistent rounding across implementations would let users extract
+    value a wei at a time or break integrations that expect the same behaviour
+    from every vault. A complete answer must state that convertToShares and
+    convertToAssets round down and that rounding is specified in the vault's
+    favour to prevent value extraction or inconsistency.
+  difficulty: reasoning
+  source: https://eips.ethereum.org/EIPS/eip-4626
+
+- id: erc-2612-replay-protection
+  type: open
+  question: |
+    ERC-2612 lets someone approve an ERC-20 spend with a signature instead of a
+    transaction. What stops that signature from being replayed on another chain
+    or reused on the same contract?
+  answer: |
+    The permit signature is EIP-712 typed data whose domain separator commits to
+    the token's name, version, the chain ID, and the verifying contract address,
+    so a signature is only valid for one token contract on one chain. Each owner
+    also has a nonce that is included in the signed message and incremented when
+    a permit is used, so the same signature cannot be replayed on the same
+    contract. A complete answer must mention the EIP-712 domain separator with
+    chain ID and contract address, and the per-owner nonce.
+  difficulty: understanding
+  source: https://eips.ethereum.org/EIPS/eip-2612

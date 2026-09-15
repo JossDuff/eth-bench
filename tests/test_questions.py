@@ -3,11 +3,20 @@
 This is the check contributors run after adding a question.
 """
 
+from pathlib import Path
+
 import pytest
 
-from eth_bench.dataset import load_dataset, load_question_file, question_files, sections
+from eth_bench.dataset import (
+    load_dataset,
+    load_question_file,
+    question_files,
+    questions_dir,
+    sections,
+)
 
 ALL_FILES = [path for section in sections() for path in question_files(section)]
+DEFERRED_FILES = sorted((questions_dir().parent / "deferred").glob("*.yaml"))
 
 
 def test_every_section_has_questions():
@@ -19,6 +28,11 @@ def test_every_section_has_questions():
 def test_question_file_is_valid(path):
     questions = load_question_file(path)
     assert questions, f"{path} contains no questions"
+
+
+@pytest.mark.parametrize("path", DEFERRED_FILES, ids=lambda p: f"deferred/{p.name}")
+def test_deferred_question_file_is_valid(path: Path):
+    assert load_question_file(path)
 
 
 def test_question_ids_are_globally_unique():

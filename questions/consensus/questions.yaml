@@ -1,0 +1,128 @@
+- id: consensus-slots-per-epoch
+  type: multiple_choice
+  question: |
+    How many slots are in one beacon chain epoch on Ethereum mainnet?
+  choices:
+    - 16
+    - 32
+    - 64
+    - 128
+  answer: B
+  difficulty: recall
+  source: https://github.com/ethereum/consensus-specs/blob/dev/specs/phase0/beacon-chain.md
+
+- id: consensus-fork-choice-head
+  type: multiple_choice
+  question: |
+    Which fork choice rule does the Ethereum beacon chain use to select the head
+    of the chain?
+  choices:
+    - Casper FFG
+    - LMD-GHOST
+    - Longest chain (Nakamoto consensus)
+    - GRANDPA
+  answer: B
+  difficulty: recall
+  source: https://github.com/ethereum/consensus-specs/blob/dev/specs/phase0/fork-choice.md
+
+- id: consensus-justified-vs-finalized
+  type: open
+  question: |
+    What is the difference between a justified checkpoint and a finalized
+    checkpoint in Ethereum's consensus protocol?
+  answer: |
+    A checkpoint is justified when attestations from validators controlling at
+    least two thirds of the total active effective balance use it as their
+    target. A justified checkpoint becomes finalized when the checkpoint in the
+    next epoch is also justified with it as the source (the common case; the spec
+    also allows finalization across two epochs). Finalized means the protocol
+    considers it irreversible without at least one third of stake being slashed.
+    A complete answer must mention the two-thirds supermajority for justification
+    and that finalization requires a subsequent justified checkpoint building on
+    the justified one.
+  difficulty: understanding
+  source: https://github.com/ethereum/consensus-specs/blob/dev/specs/phase0/beacon-chain.md
+
+- id: consensus-inactivity-leak
+  type: open
+  question: |
+    What is the inactivity leak and why does it exist?
+  answer: |
+    When the chain has not finalized for more than four epochs, validators who
+    fail to attest correctly start losing balance at a rate that grows the longer
+    they stay inactive, while active validators are not penalized in the same way.
+    Its purpose is to restore liveness: if a large fraction of validators goes
+    offline, their stake shrinks until the remaining online validators control
+    two thirds of the active balance and can finalize again. A complete answer
+    must mention that it triggers when finality stalls and that it exists to
+    recover finality by reducing the balance of inactive validators.
+  difficulty: understanding
+  source: https://github.com/ethereum/consensus-specs/blob/dev/specs/phase0/beacon-chain.md
+
+- id: consensus-validator-duties
+  type: open
+  question: |
+    What duties does an Ethereum validator perform?
+  answer: |
+    A validator attests once per epoch, casting a vote for the chain head (used by
+    LMD-GHOST fork choice) and for the source and target checkpoints (used by
+    Casper FFG for justification and finality). When selected, it proposes a block
+    for its slot, including an execution payload it either built locally or
+    obtained from a builder. Some validators are chosen to aggregate attestations
+    for their committee, and a small rotating sync committee signs block headers so
+    light clients can follow the chain. A complete answer must mention attesting
+    and proposing blocks; aggregation and sync committee duties are a bonus.
+  difficulty: understanding
+  source: https://github.com/ethereum/consensus-specs/blob/dev/specs/phase0/validator.md
+
+- id: consensus-compounding-max-effective-balance
+  type: multiple_choice
+  question: |
+    What is the maximum effective balance of a validator with compounding (0x02)
+    withdrawal credentials?
+  choices:
+    - 32 ETH
+    - 64 ETH
+    - 2048 ETH
+    - 4096 ETH
+  answer: C
+  difficulty: recall
+  source: https://github.com/ethereum/consensus-specs/blob/master/specs/electra/beacon-chain.md
+
+- id: consensus-electra-deposit-processing
+  type: open
+  question: |
+    How did the Electra upgrade change the way deposits are processed on the
+    beacon chain?
+  answer: |
+    Two changes. First, with EIP-6110 deposits are delivered in-protocol as
+    execution layer requests carried in the execution payload, replacing the old
+    Eth1 data voting mechanism and its long follow-distance delay. Second, with
+    EIP-7251 deposits are no longer applied immediately: they are appended to a
+    pending deposits queue in the beacon state and processed each epoch subject
+    to a churn limit, which is what allows balance top-ups and new validators to
+    be rate-limited consistently. A complete answer must mention that deposits
+    now come from the execution layer directly (EIP-6110) and go through a
+    pending deposit queue rather than being applied at once.
+  difficulty: reasoning
+  source: https://github.com/ethereum/consensus-specs/blob/master/specs/electra/beacon-chain.md
+
+- id: consensus-weak-subjectivity-period
+  type: open
+  question: |
+    What is the weak subjectivity period, and what determines its length?
+  answer: |
+    It is the window of recent epochs within which a node syncing from a trusted
+    finalized checkpoint is safe. If the checkpoint is older than this, an
+    attacker who controlled enough stake in the past could have exited and then
+    finalized a conflicting chain without being slashable, because the exited
+    validators are no longer accountable. Its length is computed from the active
+    validator count, average validator balance, the validator churn limit, and a
+    safety decay parameter (how much of the one-third safety margin may erode),
+    with MIN_VALIDATOR_WITHDRAWABILITY_DELAY as a floor. It works out to a few
+    days to a couple of weeks on mainnet. A complete answer must explain it as
+    how old a trusted checkpoint may be before exited validators could have
+    finalized a conflicting chain unslashably, and mention that churn and validator
+    set size drive its length.
+  difficulty: reasoning
+  source: https://github.com/ethereum/consensus-specs/blob/master/specs/phase0/weak-subjectivity.md

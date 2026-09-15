@@ -1,0 +1,172 @@
+- id: eip-1559-base-fee-max-change
+  type: multiple_choice
+  question: |
+    Under EIP-1559, by what maximum fraction can the base fee change between
+    consecutive blocks?
+  choices:
+    - 1/4
+    - 1/8
+    - 1/16
+    - 1/32
+  answer: B
+  difficulty: recall
+  source: https://eips.ethereum.org/EIPS/eip-1559
+
+- id: eip-1559-why-burn
+  type: open
+  question: |
+    Why does EIP-1559 burn the base fee rather than paying it to the block
+    producer? Explain the incentive problem this avoids.
+  answer: |
+    If the base fee went to the block producer, producers would have an incentive
+    to manipulate it: for example by stuffing blocks with their own transactions
+    to push the base fee up, or by accepting off-chain side payments to include
+    transactions that do not pay the base fee. Burning the base fee removes the
+    producer's incentive to game the fee mechanism. A complete answer must mention
+    producer manipulation of the base fee or off-chain side payments.
+  difficulty: understanding
+  source: https://eips.ethereum.org/EIPS/eip-1559#rationale
+
+- id: eip-4844-transaction-type
+  type: multiple_choice
+  question: |
+    EIP-4844 introduced a new transaction type that carries blobs. What is its
+    transaction type number?
+  choices:
+    - Type 1
+    - Type 2
+    - Type 3
+    - Type 4
+  answer: C
+  difficulty: recall
+  source: https://eips.ethereum.org/EIPS/eip-4844
+
+- id: eip-4844-evm-blob-access
+  type: open
+  question: |
+    Under EIP-4844, can a smart contract read the contents of a blob attached to
+    the transaction that called it? Explain what the EVM can and cannot access.
+  answer: |
+    No. Blob data is not accessible to the EVM. The only thing available to
+    contracts is the versioned hash of each blob, exposed through the BLOBHASH
+    opcode, which lets a contract verify a commitment (for example with the
+    point evaluation precompile) without seeing the data itself. A complete answer
+    must say the blob contents are not readable by the EVM and mention that only
+    the versioned hash (via BLOBHASH) is available.
+  difficulty: understanding
+  source: https://eips.ethereum.org/EIPS/eip-4844
+
+- id: eip-7702-what-it-does
+  type: multiple_choice
+  question: |
+    What does EIP-7702 allow an externally owned account (EOA) to do?
+  choices:
+    - Set code on itself that delegates execution to a contract address
+    - Recover its private key through a social recovery contract
+    - Pay gas fees in ERC-20 tokens natively
+    - Submit transactions without a nonce
+  answer: A
+  difficulty: recall
+  source: https://eips.ethereum.org/EIPS/eip-7702
+
+- id: eip-4844-what-it-is
+  type: open
+  question: |
+    What is EIP-4844 and what did it introduce?
+  answer: |
+    EIP-4844 ("proto-danksharding") introduced blob-carrying transactions (type
+    3). Each blob is about 128 KiB of data committed to with a KZG commitment,
+    carried by the consensus layer alongside the block, priced by its own blob gas
+    fee market, pruned after roughly 18 days, and not readable by the EVM (only
+    the versioned hash is available via BLOBHASH). It is the data availability
+    layer rollups use to post their data cheaply. A complete answer must mention
+    blobs as a new transaction type carrying data that is priced separately from
+    execution and is intended for rollup data.
+  difficulty: recall
+  source: https://eips.ethereum.org/EIPS/eip-4844
+
+- id: eip-4844-why-blobs
+  type: open
+  question: |
+    Why does Ethereum have blobs?
+  answer: |
+    Rollups need to post large amounts of data to Ethereum for data availability,
+    and before blobs they used calldata, which is expensive, competes with
+    ordinary transactions for gas, and is stored forever. Blobs give rollups a
+    dedicated, cheaper data channel: they have their own fee market so rollup
+    demand does not bid up execution gas, they are only retained for about 18
+    days since they only need to be available long enough to be verified, and
+    they are a stepping stone toward full danksharding. A complete answer must
+    say blobs exist to give rollups cheap data availability separate from
+    execution gas.
+  difficulty: understanding
+  source: https://eips.ethereum.org/EIPS/eip-4844#motivation
+
+- id: eip-7594-peerdas-scaling
+  type: open
+  question: |
+    How does PeerDAS (EIP-7594) scale blob throughput beyond what EIP-4844 alone
+    allowed?
+  answer: |
+    Under EIP-4844 every consensus node downloaded every blob in full, so blob
+    capacity was bounded by the bandwidth of a single node. PeerDAS erasure-codes
+    the blob data and arranges it into columns; each node custodies and serves
+    only a subset of columns chosen from its node ID, and verifies availability by
+    sampling a small number of columns from peers. Because the data is
+    erasure-coded, anyone holding at least half of the columns can reconstruct
+    everything. Each node therefore downloads only a fraction of the data (on the
+    order of 1/8) while the network as a whole still guarantees availability, so
+    the blob count can rise without raising per-node bandwidth. A complete answer
+    must mention erasure coding and that nodes download and sample only a subset
+    of the data rather than every blob.
+  difficulty: understanding
+  source: https://eips.ethereum.org/EIPS/eip-7594
+
+- id: eip-7892-bpo-forks
+  type: open
+  question: |
+    What is a blob-parameter-only (BPO) fork, and why were they introduced?
+  answer: |
+    A BPO fork (EIP-7892) is a network upgrade that changes only the blob target
+    and maximum per block and nothing else. Because raising blob limits needs no
+    new client features, BPO forks let blob capacity be increased in small steps
+    between full upgrades, following PeerDAS, without the coordination cost of a
+    complete hard fork. A complete answer must say a BPO fork changes only blob
+    target/max values and exists so blob capacity can be raised incrementally
+    without a full upgrade.
+  difficulty: understanding
+  source: https://eips.ethereum.org/EIPS/eip-7892
+
+- id: eip-encrypted-mempool-proposals
+  type: open
+  question: |
+    Which EIPs propose an encrypted mempool for Ethereum, and what problem are
+    they trying to solve?
+  answer: |
+    EIP-8105 (Universal Enshrined Encrypted Mempool) and EIP-8184 (LUCID) are
+    both draft proposals for carrying transactions through the inclusion pipeline
+    with their contents encrypted until after their inclusion has been decided,
+    with decryption keys released afterwards. The goal is to stop builders and
+    searchers from reading pending transactions, which prevents front-running and
+    sandwiching and makes content-based censorship harder. A complete answer must
+    name at least one of EIP-8105 or EIP-8184 and say the aim is to hide
+    transaction contents until inclusion is fixed, preventing front-running or
+    censorship.
+  difficulty: recall
+  source: https://eips.ethereum.org/EIPS/eip-8105
+
+- id: eip-7251-why-raise-staking-cap
+  type: open
+  question: |
+    Why did Ethereum raise the maximum effective balance for validators?
+  answer: |
+    Before EIP-7251 every validator was capped at 32 ETH of effective balance, so
+    large stakers had to run many separate validators. That inflated the validator
+    set, which means more attestations and signatures to process each epoch,
+    larger beacon state, and an obstacle to roadmap items like single slot
+    finality. Raising the cap to 2048 ETH lets operators consolidate into fewer
+    validators, shrinking the set, and also lets rewards compound within a
+    validator instead of sitting idle above 32 ETH. A complete answer must give
+    reducing the number of validators (validator set bloat) as the main reason.
+  difficulty: understanding
+  source: https://eips.ethereum.org/EIPS/eip-7251

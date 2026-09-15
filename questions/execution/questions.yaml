@@ -1,0 +1,88 @@
+- id: evm-word-size
+  type: multiple_choice
+  question: |
+    How wide is a single stack item (a word) in the EVM?
+  choices:
+    - 64 bits
+    - 128 bits
+    - 256 bits
+    - 512 bits
+  answer: C
+  difficulty: recall
+  source: https://ethereum.github.io/yellowpaper/paper.pdf
+
+- id: evm-max-stack-depth
+  type: multiple_choice
+  question: |
+    What is the maximum depth of the EVM stack?
+  choices:
+    - 256
+    - 512
+    - 1024
+    - 2048
+  answer: C
+  difficulty: recall
+  source: https://ethereum.github.io/yellowpaper/paper.pdf
+
+- id: evm-call-vs-delegatecall
+  type: open
+  question: |
+    What is the difference between CALL and DELEGATECALL?
+  answer: |
+    CALL executes the target contract's code in the target's own context: the
+    target's storage is used, msg.sender becomes the calling contract, and any
+    value sent is transferred to the target. DELEGATECALL executes the target's
+    code in the caller's context: the caller's storage is read and written,
+    msg.sender and msg.value are preserved from the original call, and no value
+    is transferred. A complete answer must state that DELEGATECALL runs the
+    callee's code against the caller's storage and preserves msg.sender.
+  difficulty: understanding
+  source: https://eips.ethereum.org/EIPS/eip-7
+
+- id: evm-effective-gas-price
+  type: multiple_choice
+  question: |
+    For an EIP-1559 (type 2) transaction, what price per gas does the sender
+    actually pay?
+  choices:
+    - maxFeePerGas
+    - baseFee + maxPriorityFeePerGas
+    - min(maxFeePerGas, baseFee + maxPriorityFeePerGas)
+    - maxFeePerGas - baseFee
+  answer: C
+  difficulty: understanding
+  source: https://eips.ethereum.org/EIPS/eip-1559
+
+- id: execution-selfdestruct-after-cancun
+  type: open
+  question: |
+    If a contract calls SELFDESTRUCT after the Cancun upgrade, is its storage
+    actually deleted?
+  answer: |
+    Only if the contract was created in the same transaction. Since EIP-6780
+    (Cancun), SELFDESTRUCT always transfers the contract's entire ETH balance to
+    the named beneficiary, but code and storage are deleted only when the
+    contract is in the set of accounts created during the current transaction.
+    Otherwise the contract remains with its code and storage intact and only its
+    balance moves. A complete answer must say storage is deleted only when the
+    contract was created in the same transaction, and that otherwise only the
+    balance is transferred.
+  difficulty: understanding
+  source: https://eips.ethereum.org/EIPS/eip-6780
+
+- id: execution-blob-gas-price-formula
+  type: open
+  question: |
+    How does the execution layer turn excess blob gas into a blob base fee?
+  answer: |
+    The blob base fee is an exponential function of excess blob gas: roughly
+    MIN_BLOB_BASE_FEE multiplied by e raised to (excess_blob_gas /
+    BLOB_BASE_FEE_UPDATE_FRACTION). Because the protocol cannot use floating
+    point, the spec evaluates this with an integer Taylor series approximation
+    (called fake_exponential or taylor_exponential in the specs). Excess blob gas
+    itself accumulates the difference between blob gas used and the target across
+    blocks, so sustained demand above target raises the fee exponentially and
+    demand below target lowers it. A complete answer must say the price is
+    exponential in excess blob gas and computed with integer arithmetic.
+  difficulty: reasoning
+  source: https://eips.ethereum.org/EIPS/eip-4844

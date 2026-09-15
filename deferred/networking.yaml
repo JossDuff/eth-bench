@@ -1,0 +1,29 @@
+- id: engine-getblobs-partial
+  type: open
+  question: |
+    If a consensus client asks an execution client for blobs via the Engine API
+    and the execution client only has some of them, what does it get back?
+  answer: |
+    It depends on the method version. engine_getBlobsV1 returns null for the
+    entire request if any requested blob is missing. engine_getBlobsV2 returns an
+    array of the same length and order as the request, with null in the positions
+    of blobs the client does not have and the blob (with proofs) elsewhere. Both
+    versions reject requests above the size limit with a "Too large request"
+    error. A complete answer must say V1 returns null for the whole response when
+    anything is missing, and V2 returns per-position results with null for
+    missing blobs.
+  difficulty: reasoning
+  source: https://github.com/ethereum/execution-apis/blob/main/src/engine/osaka.md
+
+- id: engine-newpayload-missing-parent
+  type: open
+  question: |
+    What should an execution client return from engine_newPayload when it does
+    not yet have the payload's parent block?
+  answer: |
+    A payload status of SYNCING, with latestValidHash null and validationError
+    null. The client cannot validate the payload without its parent, so it
+    signals that it is still syncing rather than claiming the payload is valid or
+    invalid. A complete answer must give the SYNCING status.
+  difficulty: recall
+  source: https://github.com/ethereum/execution-apis/blob/main/src/engine/paris.md

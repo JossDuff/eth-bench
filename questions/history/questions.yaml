@@ -1,0 +1,102 @@
+- id: history-holesky-pectra-failure
+  type: open
+  question: |
+    What went wrong when the Pectra upgrade was activated on the Holesky testnet
+    in February 2025?
+  answer: |
+    Several execution clients (Geth, Nethermind, and Besu) had the wrong deposit
+    contract address configured for Holesky, so they accepted a block that clients
+    with the correct address (Reth, Erigon) rejected. The network split and could
+    not finalize, and the resulting inactivity leak drained validator balances and
+    produced a huge exit queue. Recovery required coordinated manual intervention,
+    and Holesky never fully returned to a healthy state for validator testing. A
+    complete answer must mention a client misconfiguration of the deposit
+    contract address leading to a chain split and loss of finality.
+  difficulty: understanding
+  source: https://github.com/ethereum/pm/blob/master/Network-Upgrade-Archive/Pectra/holesky-postmortem.md
+
+- id: history-holesky-shutdown-hoodi
+  type: open
+  question: |
+    Why was the Holesky testnet shut down, and what replaced it?
+  answer: |
+    After the failed Pectra activation, Holesky suffered a long inactivity leak
+    and an enormous exit queue, which made it useless for testing validator
+    lifecycles. The Hoodi testnet was launched in March 2025 as the replacement
+    for staking and validator testing, while Sepolia remained the testnet for
+    application developers. Holesky was kept alive long enough to test Fusaka
+    and was shut down in September 2025. A complete answer must connect the
+    shutdown to the Pectra incident's aftermath (inactivity leak or exit queue)
+    and name Hoodi as the replacement.
+  difficulty: recall
+  source: https://blog.ethereum.org/en/2025/09/01/holesky-shutdown-announcement
+
+- id: history-next-upgrade-mid-2026
+  type: open
+  question: |
+    As of mid-2026, what is the next planned Ethereum network upgrade after
+    Fusaka, and what are its headline changes?
+  answer: |
+    Glamsterdam (meta EIP-7773). Its headline changes are enshrined
+    proposer-builder separation (EIP-7732) on the consensus layer and block-level
+    access lists (EIP-7928) on the execution layer, with a further set of smaller
+    EIPs scheduled alongside them. A complete answer must name Glamsterdam and at
+    least one of ePBS (EIP-7732) or block-level access lists (EIP-7928).
+  difficulty: recall
+  source: https://eips.ethereum.org/EIPS/eip-7773
+
+- id: history-eip-1559-upgrade
+  type: multiple_choice
+  question: |
+    Which network upgrade activated EIP-1559 on Ethereum mainnet?
+  choices:
+    - Berlin
+    - London
+    - Istanbul
+    - Shanghai
+  answer: B
+  difficulty: recall
+  source: https://ethereum.org/en/history/
+
+- id: history-merge-date
+  type: multiple_choice
+  question: |
+    In which month and year did the Merge (the switch from proof of work to proof
+    of stake) happen on Ethereum mainnet?
+  choices:
+    - December 2020
+    - September 2022
+    - April 2023
+    - March 2024
+  answer: B
+  difficulty: recall
+  source: https://ethereum.org/en/history/
+
+- id: history-withdrawals-upgrade
+  type: multiple_choice
+  question: |
+    Which upgrade enabled staking withdrawals from the beacon chain?
+  choices:
+    - Altair
+    - Bellatrix
+    - Shanghai/Capella
+    - Cancun/Deneb
+  answer: C
+  difficulty: recall
+  source: https://ethereum.org/en/history/
+
+- id: history-dao-fork
+  type: open
+  question: |
+    What did the 2016 DAO fork do, and why was it controversial?
+  answer: |
+    After an attacker drained roughly 3.6 million ETH from The DAO contract, the
+    community adopted a hard fork that made an irregular state change moving the
+    DAO's funds to a recovery contract so original holders could withdraw. It was
+    controversial because it overrode the results of contract execution, which
+    critics saw as violating immutability and "code is law". Those who rejected
+    the fork continued the original chain as Ethereum Classic. A complete answer
+    must mention the irregular state change returning DAO funds and the
+    immutability objection or the Ethereum Classic split.
+  difficulty: understanding
+  source: https://blog.ethereum.org/2016/07/20/hard-fork-completed

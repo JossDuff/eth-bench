@@ -1,0 +1,33 @@
+- id: pbs-what-it-is
+  type: open
+  question: |
+    What is proposer-builder separation (PBS)?
+  answer: |
+    PBS splits the role of producing a block into two: builders, who assemble
+    block contents (including capturing MEV) and bid for the right to have their
+    block proposed, and proposers (validators), who choose the highest bid and
+    sign the block without seeing or constructing its contents. The aim is to
+    keep validating simple and decentralised while allowing block building, which
+    rewards sophistication and scale, to specialise. Today it exists out of
+    protocol via MEV-Boost and relays. A complete answer must describe the split
+    between builders who construct blocks and proposers who select and sign them,
+    and mention the goal of keeping validators decentralised despite MEV.
+  difficulty: understanding
+  source: https://ethresear.ch/t/why-enshrine-proposer-builder-separation-a-viable-path-to-epbs/15710
+
+- id: pbs-why-enshrine
+  type: open
+  question: |
+    Why enshrine proposer-builder separation in the protocol (ePBS) rather than
+    keep relying on MEV-Boost?
+  answer: |
+    MEV-Boost depends on relays, which are trusted third parties: proposers trust
+    them to deliver the block after signing, builders trust them not to steal the
+    block, and a handful of relays are a centralisation and censorship point. ePBS
+    (EIP-7732) makes the builder commitment and payment part of consensus, so the
+    exchange is trustless and enforced by the protocol, removes relays from the
+    critical path, and gives the protocol control over the timing of the slot.
+    A complete answer must say MEV-Boost relies on trusted relays and that ePBS
+    removes that trust by enforcing the proposer-builder exchange in-protocol.
+  difficulty: understanding
+  source: https://ethresear.ch/t/why-enshrine-proposer-builder-separation-a-viable-path-to-epbs/15710

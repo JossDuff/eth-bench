@@ -58,3 +58,38 @@
   answer: C
   difficulty: recall
   source: https://github.com/ethereum/go-ethereum#license
+
+- id: crops-focil-problem
+  type: open
+  question: |
+    What problem does FOCIL solve?
+  answer: |
+    Under proposer-builder separation, block contents are chosen by a small number
+    of builders, and a proposer using MEV-Boost accepts a whole block from one of
+    them. A builder or relay can therefore leave out transactions it wants to
+    censor, and the proposer has no way to add them. FOCIL (fork-choice enforced
+    inclusion lists, EIP-7805) has a committee of validators each publish a list
+    of transactions that the next block must include, and the fork choice rule
+    rejects blocks that ignore them, so no single builder or proposer can keep a
+    valid transaction out. A complete answer must say it addresses censorship of
+    transactions by builders or proposers, using inclusion lists that blocks are
+    forced to honour.
+  difficulty: understanding
+  source: https://eips.ethereum.org/EIPS/eip-7805
+
+- id: crops-l1-privacy-proposals
+  type: open
+  question: |
+    What are some proposals for improving privacy at the Ethereum base layer?
+  answer: |
+    Examples include: EIP-8182, a protocol-managed shielded pool for private ETH
+    and ERC-20 transfers using a note commitment tree and SNARK proofs; EIP-7503
+    (zero-knowledge wormholes), which lets users burn ETH to an unspendable
+    address and later re-mint it privately; encrypted mempool proposals such as
+    EIP-8105 and EIP-8184, which hide transaction contents until inclusion is
+    fixed; and stealth addresses (ERC-5564) for unlinkable receiving addresses.
+    A complete answer must name at least two distinct proposals or mechanisms from
+    this space (shielded pool, ZK wormholes, encrypted mempool, stealth
+    addresses, or comparable named proposals).
+  difficulty: recall
+  source: https://eips.ethereum.org/EIPS/eip-8182
