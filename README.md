@@ -21,8 +21,9 @@ uv sync
 uv run inspect eval eth_bench --model <your-model> --model-role grader=anthropic/claude-fable-5-1
 ```
 
-The grader is a second model that marks the free-text answers. It needs
-`ANTHROPIC_API_KEY` set in your environment.
+The grader is a second model that marks the free-text answers. The run refuses to
+start without one, so the model under test can never grade itself. Using Claude as
+the grader needs `ANTHROPIC_API_KEY` set in your environment.
 
 `<your-model>` is an Inspect model string. Some common ones:
 
@@ -39,19 +40,43 @@ Full list: [Inspect model providers](https://inspect.aisi.org.uk/providers.html)
 
 ## Read the results
 
-The terminal prints the overall score and a score for each section, each with a
-standard error. To see every question, the model's answer, and why it was marked
-right or wrong:
+The terminal prints a table when the run finishes:
+
+| Row                              | Meaning |
+|----------------------------------|---------|
+| `all`                            | The overall score: the mean of the section scores, weighting every section equally. |
+| `eips`, `consensus`, ...         | Accuracy for that section. |
+| `all_stderr`, `eips_stderr`, ... | Standard error for the row above. Two models whose scores differ by less than this are not distinguishable. |
+| `type_open`, `type_multiple_choice`, `type_false_premise` | Accuracy by question format. |
+| `difficulty_recall`, ...         | Accuracy by difficulty tier. |
+| `..._correct_given_attempted`    | Of the free-text answers the model committed to, how many were right. High means it guesses well or knows when to stay quiet. |
+| `..._not_attempted`              | How often the model declined to answer a free-text question instead of guessing. |
+
+To see every question, the model's answer, and the grader's reasoning:
 
 ```sh
 uv run inspect view
 ```
 
-## Run one section
+## Run part of it
 
 ```sh
+# One section, or several
 uv run inspect eval eth_bench -T sections=eips --model <your-model> --model-role grader=...
+uv run inspect eval eth_bench -T sections=eips,consensus --model <your-model> --model-role grader=...
+
+# Only multiple choice, no grader needed
+uv run inspect eval eth_bench -T types=multiple_choice --model <your-model>
+
+# Let the model think before answering multiple choice questions
+uv run inspect eval eth_bench -T cot=true --model <your-model> --model-role grader=...
+
+# A quick smoke test on five questions
+uv run inspect eval eth_bench --limit 5 --model <your-model> --model-role grader=...
 ```
+
+Sections: `eips`, `ercs`, `consensus`, `execution`, `history`, `crops`,
+`hallucination`.
 
 ## Add a question
 
