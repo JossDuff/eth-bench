@@ -15,7 +15,7 @@ Inspect can talk to.
 Install [uv](https://docs.astral.sh/uv/), then:
 
 ```sh
-git clone https://github.com/ethereum/eth-bench
+git clone https://github.com/JossDuff/eth-bench
 cd eth-bench
 uv sync
 uv run inspect eval eth_bench --model <your-model> --model-role grader=anthropic/claude-fable-5-1
