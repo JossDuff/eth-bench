@@ -128,7 +128,7 @@ class Question(BaseModel):
             metadata={
                 "section": section,
                 "type": self.type,
-                "difficulty": self.difficulty,
+                "difficulty": self.difficulty or "unrated",
                 "source": self.source,
                 "tags": self.tags or [],
                 "multiple_correct": self.multiple_correct,

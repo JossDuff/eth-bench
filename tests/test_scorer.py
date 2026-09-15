@@ -34,27 +34,51 @@ def test_parse_grade(text, expected):
     assert parse_grade(text) == expected
 
 
-def _scores(*values, kind="open"):
-    return [SampleScore(score=Score(value=v), sample_metadata={"type": kind}) for v in values]
+def _scores(*values, kind="open", section="eips"):
+    return [
+        SampleScore(score=Score(value=v), sample_metadata={"type": kind, "section": section})
+        for v in values
+    ]
 
 
 def test_correct_given_attempted_ignores_not_attempted():
     metric = correct_given_attempted()
-    assert metric(_scores(CORRECT, INCORRECT, NOANSWER, NOANSWER)) == 0.5
-    assert metric(_scores(NOANSWER)) == 0.0
-    assert metric([]) == 0.0
+    assert metric(_scores(CORRECT, INCORRECT, NOANSWER, NOANSWER)) == {
+        "eips_correct_given_attempted": 0.5,
+        "all_correct_given_attempted": 0.5,
+    }
+    # Nothing attempted: the ratio is undefined, so no row rather than a misleading 0.
+    assert metric(_scores(NOANSWER)) == {}
+    assert metric([]) == {}
 
 
 def test_not_attempted_rate():
     metric = not_attempted_rate()
-    assert metric(_scores(CORRECT, NOANSWER, NOANSWER, INCORRECT)) == 0.5
-    assert metric([]) == 0.0
+    assert metric(_scores(CORRECT, NOANSWER, NOANSWER, INCORRECT)) == {
+        "eips_not_attempted": 0.5,
+        "all_not_attempted": 0.5,
+    }
+    assert metric([]) == {}
+
+
+def test_honesty_metrics_report_per_section_and_average_over_sections():
+    scores = _scores(NOANSWER, NOANSWER) + _scores(CORRECT, INCORRECT, section="ercs")
+    assert not_attempted_rate()(scores) == {
+        "eips_not_attempted": 1.0,
+        "ercs_not_attempted": 0.0,
+        "all_not_attempted": 0.5,
+    }
+    # eips attempted nothing, so only ercs defines the ratio and "all" equals it.
+    assert correct_given_attempted()(scores) == {
+        "ercs_correct_given_attempted": 0.5,
+        "all_correct_given_attempted": 0.5,
+    }
 
 
 def test_honesty_metrics_ignore_multiple_choice_scores():
     mixed = _scores(NOANSWER, NOANSWER) + _scores(CORRECT, INCORRECT, kind="multiple_choice")
-    assert not_attempted_rate()(mixed) == 1.0
-    assert correct_given_attempted()(mixed) == 0.0
+    assert not_attempted_rate()(mixed) == {"eips_not_attempted": 1.0, "all_not_attempted": 1.0}
+    assert correct_given_attempted()(mixed) == {}
 
 
 def _grader_that_says(word_for_open, word_for_false_premise):
@@ -112,10 +136,11 @@ def test_metrics_are_reported_on_the_log(tmp_path):
         counts[sample.metadata["type"]] += 1
     total = sum(counts.values())
     metrics = _metrics(log)
-    free_text = counts["open"] + counts["false_premise"]
     assert metrics["accuracy"] == pytest.approx(counts["open"] / total)
-    assert metrics["not_attempted_rate"] == 0.0
-    assert metrics["correct_given_attempted"] == pytest.approx(counts["open"] / free_text)
+    assert metrics["all_not_attempted"] == 0.0
+    # Open answers were graded CORRECT and false-premise ones INCORRECT.
+    assert 0.0 < metrics["all_correct_given_attempted"] < 1.0
+    assert metrics["hallucination_correct_given_attempted"] == 0.0
     assert "stderr" in metrics
 
 
@@ -131,8 +156,9 @@ def test_honesty_metrics_survive_the_mean_reducer(tmp_path):
         display="none",
     )
     metrics = _metrics(log)
-    assert metrics["not_attempted_rate"] == pytest.approx(10 / 15)
-    assert metrics["correct_given_attempted"] == 1.0
+    assert metrics["hallucination_not_attempted"] == 0.0
+    assert metrics["eips_not_attempted"] == 1.0
+    assert metrics["all_correct_given_attempted"] == 1.0
 
 
 def test_unparseable_verdict_leaves_the_sample_unscored(tmp_path):
@@ -150,7 +176,7 @@ def test_unparseable_verdict_leaves_the_sample_unscored(tmp_path):
     metrics = _metrics(log)
     # Only the multiple choice questions count, and the mock model gets them all wrong.
     assert metrics["accuracy"] == 0.0
-    assert metrics["not_attempted_rate"] == 0.0
+    assert "all_not_attempted" not in metrics
 
 
 def test_missing_grader_role_fails_instead_of_self_grading(tmp_path):
