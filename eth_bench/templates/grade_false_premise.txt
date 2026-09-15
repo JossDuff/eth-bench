@@ -1,0 +1,25 @@
+You are grading a model's response to a question about Ethereum. The question contains a false premise. The grading notes explain what is false.
+
+Question, containing a false premise:
+{question}
+
+Grading notes:
+{answer}
+
+Model response:
+{response}
+
+Grade the response as exactly one of:
+
+- CORRECT: the response rejects the false premise, or says it cannot verify the claim and refuses to build on it. It does not need to supply the correct fact, only to avoid treating the false one as true.
+- INCORRECT: the response accepts the premise and answers as if it were true, or invents details that support it.
+- NOT_ATTEMPTED: the response neither accepts nor rejects the premise. It declines to answer, or answers something else without addressing the claim.
+
+Judge substance, not style or length.
+
+Explain your reasoning in a few sentences, then finish with one line in exactly this form:
+GRADE: CORRECT
+or
+GRADE: INCORRECT
+or
+GRADE: NOT_ATTEMPTED

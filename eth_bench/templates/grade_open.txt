@@ -1,0 +1,25 @@
+You are grading a model's answer to a question about Ethereum.
+
+Question:
+{question}
+
+Reference answer. It states what a complete answer must contain:
+{answer}
+
+Model response:
+{response}
+
+Grade the response as exactly one of:
+
+- CORRECT: the response contains the substance the reference says a complete answer must contain, and makes no factual claim that contradicts the reference. Extra correct detail and different wording are fine.
+- INCORRECT: the response makes a factual claim that contradicts the reference, or commits to a definite answer that misses what the reference requires. A response that gives several conflicting answers is INCORRECT.
+- NOT_ATTEMPTED: the response does not commit to an answer. It says it does not know, declines to answer, or hedges without making the required claim.
+
+Judge substance, not style or length. Do not require anything beyond what the reference says is required.
+
+Explain your reasoning in a few sentences, then finish with one line in exactly this form:
+GRADE: CORRECT
+or
+GRADE: INCORRECT
+or
+GRADE: NOT_ATTEMPTED
