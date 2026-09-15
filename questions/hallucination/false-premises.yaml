@@ -1,0 +1,52 @@
+- id: fake-push0-byzantium
+  type: false_premise
+  question: |
+    The Byzantium upgrade introduced the PUSH0 opcode. Which EIP specified it?
+  answer: |
+    The premise is false. PUSH0 was introduced by EIP-3855 in the Shanghai
+    upgrade (2023), not Byzantium (2017). A correct response points out that
+    Byzantium did not introduce PUSH0.
+  difficulty: recall
+
+- id: fake-64-slots-per-epoch
+  type: false_premise
+  question: |
+    Ethereum's beacon chain has 64 slots per epoch. How many minutes long is an
+    epoch?
+  answer: |
+    The premise is false. An epoch has 32 slots of 12 seconds each, so an epoch
+    is 6.4 minutes. A correct response corrects the slot count rather than
+    computing from 64 slots.
+  difficulty: recall
+
+- id: fake-nethermind-rust
+  type: false_premise
+  question: |
+    The Nethermind execution client is written in Rust. Which Rust async runtime
+    does it use?
+  answer: |
+    The premise is false. Nethermind is written in C# on .NET. Reth is the
+    execution client written in Rust. A correct response says Nethermind is not
+    written in Rust.
+  difficulty: recall
+
+- id: fake-1559-burn-removed
+  type: false_premise
+  question: |
+    The Dencun upgrade changed EIP-1559 so that the base fee is paid to
+    validators instead of burned. Why was this change made?
+  answer: |
+    The premise is false. The base fee is still burned; Dencun did not change
+    this. A correct response says no such change was made.
+  difficulty: recall
+
+- id: fake-erc20-burnfrom
+  type: false_premise
+  question: |
+    ERC-20 requires tokens to implement a burnFrom function. What are its
+    parameters?
+  answer: |
+    The premise is false. ERC-20 defines no burn functions; burnFrom is a common
+    extension (for example in OpenZeppelin's ERC20Burnable) but not part of the
+    standard. A correct response says burnFrom is not required by ERC-20.
+  difficulty: recall

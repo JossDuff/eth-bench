@@ -1,0 +1,55 @@
+- id: history-eip-1559-upgrade
+  type: multiple_choice
+  question: |
+    Which network upgrade activated EIP-1559 on Ethereum mainnet?
+  choices:
+    - Berlin
+    - London
+    - Istanbul
+    - Shanghai
+  answer: B
+  difficulty: recall
+  source: https://ethereum.org/en/history/
+
+- id: history-merge-date
+  type: multiple_choice
+  question: |
+    In which month and year did the Merge (the switch from proof of work to proof
+    of stake) happen on Ethereum mainnet?
+  choices:
+    - December 2020
+    - September 2022
+    - April 2023
+    - March 2024
+  answer: B
+  difficulty: recall
+  source: https://ethereum.org/en/history/
+
+- id: history-withdrawals-upgrade
+  type: multiple_choice
+  question: |
+    Which upgrade enabled staking withdrawals from the beacon chain?
+  choices:
+    - Altair
+    - Bellatrix
+    - Shanghai/Capella
+    - Cancun/Deneb
+  answer: C
+  difficulty: recall
+  source: https://ethereum.org/en/history/
+
+- id: history-dao-fork
+  type: open
+  question: |
+    What did the 2016 DAO fork do, and why was it controversial?
+  answer: |
+    After an attacker drained roughly 3.6 million ETH from The DAO contract, the
+    community adopted a hard fork that made an irregular state change moving the
+    DAO's funds to a recovery contract so original holders could withdraw. It was
+    controversial because it overrode the results of contract execution, which
+    critics saw as violating immutability and "code is law". Those who rejected
+    the fork continued the original chain as Ethereum Classic. A complete answer
+    must mention the irregular state change returning DAO funds and the
+    immutability objection or the Ethereum Classic split.
+  difficulty: understanding
+  source: https://blog.ethereum.org/2016/07/20/hard-fork-completed

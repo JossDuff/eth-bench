@@ -1,0 +1,28 @@
+- id: eip-1559-base-fee-max-change
+  type: multiple_choice
+  question: |
+    Under EIP-1559, by what maximum fraction can the base fee change between
+    consecutive blocks?
+  choices:
+    - 1/4
+    - 1/8
+    - 1/16
+    - 1/32
+  answer: B
+  difficulty: recall
+  source: https://eips.ethereum.org/EIPS/eip-1559
+
+- id: eip-1559-why-burn
+  type: open
+  question: |
+    Why does EIP-1559 burn the base fee rather than paying it to the block
+    producer? Explain the incentive problem this avoids.
+  answer: |
+    If the base fee went to the block producer, producers would have an incentive
+    to manipulate it: for example by stuffing blocks with their own transactions
+    to push the base fee up, or by accepting off-chain side payments to include
+    transactions that do not pay the base fee. Burning the base fee removes the
+    producer's incentive to game the fee mechanism. A complete answer must mention
+    producer manipulation of the base fee or off-chain side payments.
+  difficulty: understanding
+  source: https://eips.ethereum.org/EIPS/eip-1559#rationale

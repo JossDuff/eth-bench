@@ -1,0 +1,60 @@
+- id: crops-focil-inclusion-lists
+  type: multiple_choice
+  question: |
+    Which proposal introduces fork-choice enforced inclusion lists so that a
+    committee of validators can force transactions into blocks, improving
+    censorship resistance?
+  choices:
+    - FOCIL (EIP-7805)
+    - PeerDAS (EIP-7594)
+    - Verkle trees
+    - Single slot finality
+  answer: A
+  difficulty: recall
+  source: https://eips.ethereum.org/EIPS/eip-7805
+
+- id: crops-client-diversity
+  type: open
+  question: |
+    Why does client diversity matter for Ethereum's security?
+  answer: |
+    If a single consensus or execution client is run by more than two thirds of
+    validators, a bug in that client could cause it to finalize an invalid chain,
+    and validators running it would be slashed or unable to recover without
+    social intervention. If a client has more than one third but less than two
+    thirds, a bug can stall finality but not finalize invalid blocks. Keeping
+    every client below one third of stake means no single bug can break finality
+    or finalize an invalid chain. A complete answer must connect client share to
+    the one-third and two-thirds thresholds or to a supermajority client bug
+    finalizing an invalid chain.
+  difficulty: understanding
+  source: https://ethereum.org/en/developers/docs/nodes-and-clients/client-diversity/
+
+- id: crops-stealth-addresses
+  type: open
+  question: |
+    What are stealth addresses, as specified in ERC-5564, and what privacy
+    problem do they address?
+  answer: |
+    A stealth address is a one-time address that a sender derives from the
+    recipient's published stealth meta-address using a fresh ephemeral key. Only
+    the recipient can compute the private key for it. This lets someone receive
+    payments at a public identity without the payments being linkable on-chain to
+    that identity or to each other. A complete answer must mention that the sender
+    derives a fresh address from the recipient's public meta-address and that it
+    prevents linking payments to the recipient.
+  difficulty: understanding
+  source: https://eips.ethereum.org/EIPS/eip-5564
+
+- id: crops-geth-license
+  type: multiple_choice
+  question: |
+    Under which license is the go-ethereum (geth) library code released?
+  choices:
+    - MIT
+    - Apache 2.0
+    - LGPL-3.0
+    - BSD-3-Clause
+  answer: C
+  difficulty: recall
+  source: https://github.com/ethereum/go-ethereum#license
