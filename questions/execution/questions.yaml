@@ -86,3 +86,398 @@
     exponential in excess blob gas and computed with integer arithmetic.
   difficulty: reasoning
   source: https://eips.ethereum.org/EIPS/eip-4844
+
+- id: execution-create2-address-inputs
+  type: multiple_choice
+  question: |
+    Which inputs determine the address of a contract deployed with CREATE2?
+  choices:
+    - The deployer's address and its nonce
+    - 0xff, the deployer's address, the salt, and the raw initcode bytes
+    - 0xff, the deployer's address, the salt, and keccak256 of the initcode
+    - The deployer's address, the salt, and keccak256 of the runtime code
+  answer: C
+  difficulty: recall
+  source: https://eips.ethereum.org/EIPS/eip-1014
+
+- id: execution-63-64-gas-forwarding
+  type: multiple_choice
+  question: |
+    A contract executes CALL requesting that all available gas be forwarded.
+    After the CALL's own cost is deducted, 1,000,000 gas remains in the calling
+    frame. What is the most gas the callee can receive?
+  choices:
+    - 1,000,000
+    - 984,375
+    - 968,750
+    - 992,188
+  answer: B
+  difficulty: understanding
+  source: https://eips.ethereum.org/EIPS/eip-150
+
+- id: execution-max-fee-balance-requirement
+  type: open
+  question: |
+    A type-2 transaction sets max_fee_per_gas to 100 gwei, max_priority_fee_per_gas
+    to 1 gwei, gas_limit to 1,000,000, and value to 0. The current base fee is
+    10 gwei. The sender's balance is 0.05 ETH. Is the transaction valid, and
+    why?
+  answer: |
+    It is invalid. Validity requires the sender's balance to cover gas_limit
+    times max_fee_per_gas plus value, which is 1,000,000 * 100 gwei = 0.1 ETH,
+    regardless of the fact that the effective price would only be 11 gwei
+    (base fee plus tip) and the transaction would actually cost at most 0.011
+    ETH. The protocol checks against the maximum the sender has agreed to pay,
+    not the price it will actually pay. A complete answer must say the balance
+    is checked against gas_limit times max_fee_per_gas (0.1 ETH here), so the
+    transaction is rejected.
+  difficulty: reasoning
+  source: https://eips.ethereum.org/EIPS/eip-1559
+
+- id: execution-new-contract-nonce
+  type: multiple_choice
+  question: |
+    On mainnet today, what is the nonce of a contract account immediately after
+    it is created?
+  choices:
+    - 0
+    - 1
+    - 2
+    - The same as the creator's nonce at the time of creation
+  answer: B
+  difficulty: recall
+  source: https://eips.ethereum.org/EIPS/eip-161
+
+- id: execution-header-field-cancun
+  type: multiple_choice
+  question: |
+    Which block header field was added by the Cancun upgrade?
+  choices:
+    - withdrawalsRoot
+    - baseFeePerGas
+    - requestsHash
+    - parentBeaconBlockRoot
+  answer: D
+  difficulty: recall
+  source: https://eips.ethereum.org/EIPS/eip-4788
+
+- id: execution-memory-expansion-cost
+  type: multiple_choice
+  question: |
+    A call frame that has touched no memory yet performs an MSTORE that expands
+    memory to exactly 1,024 bytes. Ignoring the 3 gas for MSTORE itself, how
+    much gas does the memory expansion cost?
+  choices:
+    - 96
+    - 98
+    - 102
+    - 128
+  answer: B
+  difficulty: reasoning
+  source: https://ethereum.github.io/yellowpaper/paper.pdf
+
+- id: execution-sstore-cold-then-dirty
+  type: open
+  question: |
+    Within one transaction, a contract first writes a non-zero value to a
+    storage slot whose value is zero and which has not been accessed yet in
+    this transaction. Later in the same transaction it writes a different
+    non-zero value to the same slot. How much gas does each SSTORE cost?
+  answer: |
+    The first SSTORE costs 22,100 gas: 2,100 for the cold storage access
+    (EIP-2929) plus 20,000 for setting a zero slot to a non-zero value. The
+    second costs 100 gas: the slot is now warm and already "dirty" (its current
+    value differs from its original value at the start of the transaction), so
+    under EIP-2200 net gas metering the write is charged only the warm access
+    cost (WARM_STORAGE_READ_COST). A complete answer must give 22,100 for the
+    first write and 100 for the second, or explain the cold-plus-set and
+    dirty-slot pricing that produce them.
+  difficulty: understanding
+  source: https://eips.ethereum.org/EIPS/eip-2929
+
+- id: execution-point-evaluation-precompile-address
+  type: multiple_choice
+  question: |
+    At which address is the KZG point evaluation precompile introduced by
+    EIP-4844?
+  choices:
+    - 0x09
+    - 0x0a
+    - 0x0b
+    - 0x14
+  answer: B
+  difficulty: recall
+  source: https://eips.ethereum.org/EIPS/eip-4844
+
+- id: execution-blob-schedule-bpo2
+  type: multiple_choice
+  question: |
+    After the BPO2 blob-parameter-only fork activated on mainnet in January
+    2026, what are the target and maximum number of blobs per block?
+  choices:
+    - Target 3, max 6
+    - Target 6, max 9
+    - Target 10, max 15
+    - Target 14, max 21
+  answer: D
+  difficulty: recall
+  source: https://eips.ethereum.org/EIPS/eip-7607
+
+- id: execution-revert-vs-exceptional-halt
+  type: open
+  question: |
+    A callee stops either by executing REVERT or by hitting an exceptional halt
+    such as the INVALID opcode or running out of gas. Both undo the callee's
+    state changes. How do they differ from the caller's point of view?
+  answer: |
+    REVERT (EIP-140) refunds the callee's unused gas to the caller and returns
+    the revert data (accessible via RETURNDATASIZE and RETURNDATACOPY), so the
+    caller learns why it failed and keeps the remaining gas. An exceptional halt
+    consumes all gas that was forwarded to the callee frame and returns no data;
+    the caller only sees the CALL push 0 for failure. In both cases the callee's
+    state changes, logs, and value transfer are rolled back, but only REVERT
+    preserves gas and returns a reason. A complete answer must say REVERT
+    refunds remaining gas and returns data while an exceptional halt burns all
+    forwarded gas.
+  difficulty: understanding
+  source: https://eips.ethereum.org/EIPS/eip-140
+
+- id: execution-calldata-byte-costs
+  type: multiple_choice
+  question: |
+    Since the Istanbul upgrade (EIP-2028), how much intrinsic gas does each
+    byte of transaction calldata cost?
+  choices:
+    - 4 gas for a zero byte and 16 gas for a non-zero byte
+    - 4 gas for a zero byte and 68 gas for a non-zero byte
+    - 8 gas for a zero byte and 16 gas for a non-zero byte
+    - 16 gas for every byte regardless of value
+  answer: A
+  difficulty: recall
+  source: https://eips.ethereum.org/EIPS/eip-2028
+
+- id: execution-extcodehash-nonexistent-vs-empty-code
+  type: open
+  question: |
+    A contract calls EXTCODEHASH on two addresses: one that has never been
+    touched (no balance, no nonce, no code) and one that is an ordinary EOA
+    holding 1 ETH. What does it get for each, and why do they differ?
+  answer: |
+    For the untouched address EXTCODEHASH returns 0, because the account does
+    not exist in the state. For the EOA holding ETH it returns
+    keccak256 of the empty byte string,
+    0xc5d2460186f7233c927e7db2dcc703c0e500b653ca82273b7bfad8045d85a470,
+    because the account exists (it has a balance) but its code is empty.
+    EIP-1052 specifies this distinction so that contracts can tell "no account"
+    from "an account with no code". A complete answer must give 0 for the
+    non-existent account and the hash of empty code for the existing EOA.
+  difficulty: reasoning
+  source: https://eips.ethereum.org/EIPS/eip-1052
+
+- id: execution-gas-limit-adjustment-bound
+  type: multiple_choice
+  question: |
+    By how much may a block's gas limit differ from its parent's gas limit?
+  choices:
+    - Up to 1/1024 of the parent's gas limit in either direction
+    - Up to 1/8 of the parent's gas limit in either direction
+    - Up to 1/64 of the parent's gas limit in either direction
+    - It cannot change; the gas limit is a fixed protocol constant
+  answer: A
+  difficulty: recall
+  source: https://ethereum.github.io/yellowpaper/paper.pdf
+
+- id: execution-warm-at-transaction-start
+  type: multiple_choice
+  question: |
+    Under EIP-2929 (as amended by later upgrades), certain addresses are already
+    "warm" when a transaction starts executing, so the first access to them
+    costs 100 rather than 2600 gas. Which address below is NOT automatically
+    warm at the start of a transaction on mainnet today?
+  choices:
+    - The transaction sender
+    - The transaction recipient (the to address)
+    - The block's COINBASE address
+    - The address that the transaction's first CALL targets
+  answer: D
+  difficulty: understanding
+  source: https://eips.ethereum.org/EIPS/eip-2929
+
+- id: execution-jumpdest-analysis
+  type: open
+  question: |
+    A contract's bytecode contains the instruction PUSH2 0x5b5b. Can a JUMP
+    target either of those two 0x5b bytes? Explain the rule the EVM applies.
+  answer: |
+    No. Although 0x5b is the JUMPDEST opcode, bytes that are the immediate data
+    of a PUSH instruction are not instructions, and the EVM performs JUMPDEST
+    analysis that only marks 0x5b bytes at genuine instruction boundaries as
+    valid jump destinations. A JUMP or JUMPI whose target is not a valid
+    JUMPDEST (including one inside PUSH data) causes an exceptional halt that
+    consumes all remaining gas. A complete answer must say the jump is invalid
+    because bytes inside PUSH immediates are not valid JUMPDESTs, and that the
+    result is an exceptional halt.
+  difficulty: understanding
+  source: https://ethereum.github.io/yellowpaper/paper.pdf
+
+- id: execution-eip155-v-value
+  type: multiple_choice
+  question: |
+    A legacy (type 0) transaction on Ethereum mainnet (chain ID 1) is signed
+    with EIP-155 replay protection. Which values can its signature's v field
+    take?
+  choices:
+    - 27 or 28
+    - 0 or 1
+    - 37 or 38
+    - 35 or 36
+  answer: C
+  difficulty: reasoning
+  source: https://eips.ethereum.org/EIPS/eip-155
+
+- id: execution-blob-base-fee-max-increase-cancun
+  type: multiple_choice
+  question: |
+    Under the Cancun blob parameters (target 3, max 6, update fraction
+    3338477), by roughly what percentage can the blob base fee rise from one
+    block to the next when a block is completely full of blobs?
+  choices:
+    - About 12.5%
+    - About 8.2%
+    - About 25%
+    - About 100%
+  answer: A
+  difficulty: reasoning
+  source: https://eips.ethereum.org/EIPS/eip-4844
+
+- id: execution-blob-fee-destination
+  type: open
+  question: |
+    A type-3 (blob) transaction pays both execution gas and blob gas. Where does
+    the blob fee go, and can a sender pay a priority fee on blob gas?
+  answer: |
+    The blob fee (blob gas used times the blob base fee) is burned in full, just
+    like the EIP-1559 execution base fee. There is no priority fee for blob gas:
+    the transaction specifies only max_fee_per_blob_gas, which must be at least
+    the current blob base fee for the transaction to be valid, and the sender
+    pays exactly the blob base fee, with nothing going to the proposer or
+    builder for blobs. Any tip to the block producer comes only through the
+    execution gas priority fee. A complete answer must say the blob fee is
+    burned and that there is no blob priority fee.
+  difficulty: understanding
+  source: https://eips.ethereum.org/EIPS/eip-4844
+
+- id: execution-eip3607-sender-with-code
+  type: open
+  question: |
+    What does EIP-3607 (London) forbid, why was it introduced, and how did
+    EIP-7702 have to modify it?
+  answer: |
+    EIP-3607 makes a transaction invalid if the sender address has deployed
+    code. It was introduced because a contract address collision (for example
+    through a CREATE2 address someone also holds a private key for, or a future
+    break of the 160-bit address space) would otherwise let the key holder move
+    funds out of a contract by sending transactions from its address; rejecting
+    such transactions closes the loophole. EIP-7702 had to carve out an
+    exception: an EOA whose code is exactly a delegation indicator
+    (0xef0100 followed by an address) is still allowed to originate
+    transactions, otherwise delegated EOAs could never send transactions
+    again. A complete answer must say senders with code cannot send
+    transactions (to protect against address collisions) and that 7702 exempts
+    delegation-indicator code.
+  difficulty: understanding
+  source: https://eips.ethereum.org/EIPS/eip-3607
+
+- id: execution-receipt-status-field
+  type: multiple_choice
+  question: |
+    Since the Byzantium upgrade, what does a transaction receipt contain in the
+    field that previously held the post-transaction intermediate state root?
+  choices:
+    - A status code, 1 for success and 0 for failure
+    - The gas refund amount
+    - The hash of the transaction's return data
+    - The address of the block's coinbase
+  answer: A
+  difficulty: recall
+  source: https://eips.ethereum.org/EIPS/eip-658
+
+- id: execution-creation-intrinsic-gas
+  type: multiple_choice
+  question: |
+    A contract creation transaction on mainnet today carries 1,000 bytes of
+    initcode, all non-zero, and no access list. What is its intrinsic gas
+    (the gas charged before any EVM execution)?
+  choices:
+    - 53,000
+    - 69,000
+    - 69,064
+    - 37,064
+  answer: C
+  difficulty: reasoning
+  source: https://eips.ethereum.org/EIPS/eip-3860
+
+- id: execution-post-merge-header-fields
+  type: multiple_choice
+  question: |
+    After the Merge (EIP-3675), which of the following is true of every
+    execution block header?
+  choices:
+    - difficulty is 0, nonce is 0x0000000000000000, and ommersHash is the hash of an empty list
+    - difficulty is 0 and mixHash is 0x00...00
+    - difficulty equals the terminal total difficulty and nonce is 0
+    - The ommers list may still contain up to two ommer headers
+  answer: A
+  difficulty: recall
+  source: https://eips.ethereum.org/EIPS/eip-3675
+
+- id: execution-staticcall-restrictions
+  type: open
+  question: |
+    A contract is invoked via STATICCALL. Which operations will cause its
+    execution to fail, and how does the EVM treat a CALL with zero value made
+    from within that static context?
+  answer: |
+    In a static context any state-modifying operation causes an exceptional
+    halt: SSTORE, TSTORE, LOG0 to LOG4, CREATE and CREATE2, SELFDESTRUCT, and
+    CALL with a non-zero value. Nested calls (CALL with zero value,
+    DELEGATECALL, STATICCALL) are allowed, but the static flag is inherited, so
+    every frame beneath the STATICCALL is also read-only. Reads such as SLOAD,
+    BALANCE, and returning data are fine. A complete answer must name the
+    state-changing operations that fail (at least SSTORE and LOG or CREATE or
+    value-transferring CALL) and say the restriction propagates to nested calls.
+  difficulty: understanding
+  source: https://eips.ethereum.org/EIPS/eip-214
+
+- id: execution-blob-versioned-hash-format
+  type: multiple_choice
+  question: |
+    How is the versioned hash of an EIP-4844 blob constructed?
+  choices:
+    - The byte 0x01 followed by the last 31 bytes of sha256(KZG commitment)
+    - keccak256 of the KZG commitment
+    - The byte 0x01 followed by the last 31 bytes of keccak256(blob data)
+    - sha256 of the 128 KiB blob contents
+  answer: A
+  difficulty: recall
+  source: https://eips.ethereum.org/EIPS/eip-4844
+
+- id: execution-withdrawals-processing
+  type: open
+  question: |
+    How are beacon chain withdrawals applied on the execution layer since
+    Shanghai (EIP-4895)? Are they transactions, and what happens if the
+    recipient is a contract?
+  answer: |
+    Withdrawals are not transactions. Each block carries a list of withdrawal
+    objects (index, validator index, address, amount in gwei) committed to by
+    the header's withdrawalsRoot, and the execution layer applies them as
+    unconditional balance increases after the block's transactions, with no gas
+    charged and no EVM execution. Because no code runs, a contract recipient
+    cannot reject or react to the withdrawal; its balance simply increases even
+    if it has no payable function, and there is no way for the withdrawal to
+    fail or be reverted. A complete answer must say withdrawals are
+    system-level balance credits rather than transactions, and that no code
+    executes on the recipient.
+  difficulty: understanding
+  source: https://eips.ethereum.org/EIPS/eip-4895

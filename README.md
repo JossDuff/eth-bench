@@ -10,6 +10,23 @@ instead of inventing an answer.
 Built on [Inspect AI](https://inspect.aisi.org.uk/), so it works with any model
 Inspect can talk to.
 
+## Results
+
+Overall score on the 245-question set as of 16 September 2026. Every run was
+graded by `anthropic/claude-fable-5-1`. The score is the mean of the section
+scores.
+
+| Model               | Overall |
+|---------------------|---------|
+| GPT-6 Astra         | 0.961   |
+| GPT-5.6 Sol         | 0.951   |
+| Claude Opus 5       | 0.930   |
+| Claude Fable 5.1    | 0.926   |
+| GPT-5.6 Terra       | 0.891   |
+| Claude Sonnet 5     | 0.875   |
+| Gemma 4 26B-A4B-it  | 0.496   |
+| Qwen3.8-27b         | 0.447   |
+
 ## Run it
 
 Install [uv](https://docs.astral.sh/uv/), then:

@@ -170,3 +170,342 @@
     reducing the number of validators (validator set bloat) as the main reason.
   difficulty: understanding
   source: https://eips.ethereum.org/EIPS/eip-7251
+
+- id: eip-7702-chain-id-zero
+  type: multiple_choice
+  question: |
+    An EIP-7702 authorization tuple is [chain_id, address, nonce, y_parity, r, s].
+    Which chain_id value makes the authorization valid on every chain rather than
+    one specific chain?
+  choices:
+    - 0
+    - 1
+    - 2**256 - 1
+    - There is no such value; the chain_id must always match the current chain
+  answer: A
+  difficulty: recall
+  source: https://eips.ethereum.org/EIPS/eip-7702
+
+- id: eip-7702-extcodesize-delegated
+  type: multiple_choice
+  question: |
+    An EOA has delegated via EIP-7702 to a contract whose code is 2,000 bytes
+    long. Another contract calls EXTCODESIZE on the EOA's address. What does it
+    return?
+  choices:
+    - 0
+    - 23
+    - 2000
+    - 2023
+  answer: B
+  difficulty: understanding
+  source: https://eips.ethereum.org/EIPS/eip-7702
+
+- id: eip-7702-delegation-survives-revert
+  type: open
+  question: |
+    A type-4 (EIP-7702) transaction carries one valid authorization tuple. The
+    transaction's execution reverts. After the block is processed, does the
+    authority's account have the delegation indicator set, and what happened to
+    the authority's nonce?
+  answer: |
+    Yes, the delegation is set. The authorization list is processed before the
+    execution portion of the transaction begins, and the spec states that
+    processed delegation indicators are not rolled back if execution fails. The
+    authority's nonce was also incremented by one as part of processing the
+    tuple, and that increment stands too. The sender still pays for the
+    authorization regardless of validity. A complete answer must say the
+    delegation persists despite the revert and that the authority's nonce was
+    incremented.
+  difficulty: reasoning
+  source: https://eips.ethereum.org/EIPS/eip-7702
+
+- id: eip-7623-calldata-floor-cost
+  type: multiple_choice
+  question: |
+    After Pectra (EIP-7623), a transaction carries 100,000 bytes of calldata,
+    all non-zero, to a contract whose execution uses a negligible amount of gas.
+    Ignoring the negligible execution gas, how much gas does the transaction
+    use?
+  choices:
+    - 1,621,000
+    - 4,021,000
+    - 1,600,000
+    - 4,000,000
+  answer: B
+  difficulty: reasoning
+  source: https://eips.ethereum.org/EIPS/eip-7623
+
+- id: eip-7825-transaction-gas-cap
+  type: multiple_choice
+  question: |
+    Since Fusaka (EIP-7825), what is the maximum gas limit a single transaction
+    may specify?
+  choices:
+    - 30,000,000
+    - 16,777,216
+    - 8,388,608
+    - 33,554,432
+  answer: B
+  difficulty: recall
+  source: https://eips.ethereum.org/EIPS/eip-7825
+
+- id: eip-7918-blob-reserve-price
+  type: open
+  question: |
+    What problem did EIP-7918 (Fusaka) fix in the blob fee market, and how does
+    it fix it?
+  answer: |
+    When execution gas costs dominated the total cost of posting a blob, the
+    blob base fee stopped being a meaningful price signal: demand did not
+    respond to it, so the EIP-4844 update rule kept lowering it until it sat at
+    1 wei, and recovering to a market-clearing price after a demand spike took
+    an hour or more of full blocks. EIP-7918 adds a reserve price tied to
+    execution cost: BLOB_BASE_COST (2**13) multiplied by the execution base fee.
+    When a blob's price (GAS_PER_BLOB times the blob base fee) is below that
+    reserve, calc_excess_blob_gas no longer subtracts the target from the excess,
+    so the blob base fee cannot keep falling below roughly the execution cost of
+    a blob. A complete answer must say the blob base fee was collapsing to a
+    floor because execution cost dominated, and that the fix bounds the blob
+    base fee from below by a value proportional to the execution base fee.
+  difficulty: understanding
+  source: https://eips.ethereum.org/EIPS/eip-7918
+
+- id: eip-7951-p256verify-address
+  type: multiple_choice
+  question: |
+    EIP-7951 (Fusaka) added a precompile for secp256r1 (P-256) signature
+    verification. At which address does it live?
+  choices:
+    - 0x0a
+    - 0x0b
+    - 0x100
+    - 0x12
+  answer: C
+  difficulty: recall
+  source: https://eips.ethereum.org/EIPS/eip-7951
+
+- id: eip-7685-execution-requests
+  type: open
+  question: |
+    What does EIP-7685 add to the execution block, and which request types used
+    it when Pectra shipped?
+  answer: |
+    EIP-7685 defines a general framework for execution layer triggered requests
+    to the consensus layer. Each request is a type byte followed by opaque
+    request data, and the header gains a requests_hash field: the sha256 of the
+    sha256 hashes of each non-empty requests object, ordered by type. Pectra used
+    three types: 0x00 deposit requests (EIP-6110), 0x01 withdrawal requests
+    (EIP-7002), and 0x02 consolidation requests (EIP-7251). A complete answer
+    must mention a requests commitment in the block header and name at least
+    two of deposits, withdrawals, and consolidations as the request types.
+  difficulty: understanding
+  source: https://eips.ethereum.org/EIPS/eip-7685
+
+- id: eip-2935-history-window
+  type: multiple_choice
+  question: |
+    Since Pectra, EIP-2935 stores recent block hashes in a system contract so
+    they can be read from state. How many of the most recent block hashes does
+    that contract hold?
+  choices:
+    - 256
+    - 8191
+    - 8192
+    - 65536
+  answer: B
+  difficulty: recall
+  source: https://eips.ethereum.org/EIPS/eip-2935
+
+- id: eip-1153-transient-storage-lifetime
+  type: open
+  question: |
+    Contract A writes a value with TSTORE during one call. Later in the same
+    transaction, a different contract calls A again and A executes TLOAD on the
+    same key. What does the TLOAD return, and what is the state of that
+    transient slot at the start of the next transaction?
+  answer: |
+    The TLOAD returns the value written earlier. Transient storage (EIP-1153) is
+    scoped to the transaction, not to a single call frame, so it persists across
+    separate calls into the same contract within one transaction; it is only
+    undone if the frame that wrote it reverts. At the end of the transaction all
+    transient storage is discarded, so at the start of the next transaction the
+    slot reads as zero. TLOAD and TSTORE each cost 100 gas. A complete answer
+    must say the value is still readable in the later call within the same
+    transaction and that transient storage is cleared between transactions.
+  difficulty: reasoning
+  source: https://eips.ethereum.org/EIPS/eip-1153
+
+- id: eip-3529-refund-reduction
+  type: open
+  question: |
+    What did EIP-3529 (London) change about gas refunds, and what behaviour
+    was it trying to eliminate?
+  answer: |
+    EIP-3529 removed the 24,000 gas refund for SELFDESTRUCT, cut the refund for
+    clearing a storage slot (SSTORE to zero) from 15,000 to 4,800, and capped
+    total refunds at one fifth of the gas used by the transaction (previously
+    one half). The target was gas tokens: contracts such as GST2 and CHI that
+    filled storage or created contracts when gas was cheap and then cleared or
+    self-destructed them when gas was expensive to collect refunds, which
+    inflated state, made block gas usage swing wildly (a block could use far
+    more than the limit's worth of work), and undermined EIP-1559's base fee
+    signal. A complete answer must mention the reduced or removed refunds and
+    the lower refund cap, and connect them to gas tokens or refund-driven state
+    bloat and block size variance.
+  difficulty: understanding
+  source: https://eips.ethereum.org/EIPS/eip-3529
+
+- id: eip-2930-access-list-savings
+  type: multiple_choice
+  question: |
+    A transaction includes an EIP-2930 access list naming one contract address
+    and two of its storage slots, all of which the transaction then actually
+    touches. Compared with the same transaction without the access list, how
+    does the total gas change?
+  choices:
+    - It saves 600 gas (200 per listed item)
+    - It saves 2,100 gas (one cold storage access)
+    - It costs 6,200 more gas (the list is charged on top of cold access)
+    - It is unchanged; the list only affects what is included in the receipt
+  answer: A
+  difficulty: reasoning
+  source: https://eips.ethereum.org/EIPS/eip-2930
+
+- id: eip-4788-beacon-root-contract
+  type: open
+  question: |
+    What does EIP-4788 expose to the EVM, how long is each value available, and
+    who uses it?
+  answer: |
+    EIP-4788 (Cancun) makes the parent beacon block root available in the EVM.
+    Each block header carries parentBeaconBlockRoot, and a system contract at
+    0x000F3df6D732807Ef1319fB7B8bB8522d0Beac02 stores the roots in a ring
+    buffer of HISTORY_BUFFER_LENGTH = 8191 slots (about 27 hours), keyed by
+    timestamp; a contract calls it with a timestamp to get the root. Because a
+    beacon block root commits to the whole beacon state, contracts can verify
+    Merkle proofs about validators, balances, and withdrawals without an
+    oracle: liquid staking protocols, restaking, and bridges or light clients
+    use it. A complete answer must say the parent beacon block root is exposed
+    via a system contract, that roughly a day of roots is kept (8191), and
+    give one use such as trustless proofs about validator state.
+  difficulty: understanding
+  source: https://eips.ethereum.org/EIPS/eip-4788
+
+- id: eip-7002-execution-triggered-exits
+  type: open
+  question: |
+    What does EIP-7002 allow, and why was it needed even though validators
+    could already exit voluntarily?
+  answer: |
+    EIP-7002 (Pectra) lets the owner of a validator's 0x01 or 0x02 withdrawal
+    credentials trigger a full exit or a partial withdrawal from the execution
+    layer, by calling a system contract that queues withdrawal requests (paying
+    a dynamically priced fee) which are delivered to the beacon chain via
+    EIP-7685 requests, up to 16 per block with a target of 2. Before it, only
+    the validator's active (signing) key could sign a voluntary exit. That
+    meant a staker who delegated operation to a node operator could not
+    reclaim their stake if the operator disappeared or refused, so staking
+    pools needed trusted pre-signed exits or legal agreements. Letting the
+    withdrawal credential holder exit removes that trust and lets smart
+    contracts manage exits programmatically. A complete answer must say the
+    withdrawal address can trigger exits through a system contract, and give
+    the reason that previously only the signing key could exit, leaving stakers
+    dependent on operators.
+  difficulty: understanding
+  source: https://eips.ethereum.org/EIPS/eip-7002
+
+- id: eip-7549-committee-index
+  type: open
+  question: |
+    What did EIP-7549 change about attestations, and what did it make possible?
+  answer: |
+    EIP-7549 (Pectra/Electra) moved the committee index out of the signed
+    AttestationData (the index field is fixed to zero) and into the outer
+    Attestation container as committee_bits. Because the signed message no
+    longer differs between committees voting for the same head, source, and
+    target, attestations from every committee in a slot can be aggregated into
+    one signature, so far fewer pairings are needed to verify consensus
+    (important for ZK provers and light clients), and a block can carry up to 8
+    slots' worth of aggregated votes instead of about 2, reducing
+    MAX_ATTESTATIONS to 8. A complete answer must say the committee index was
+    moved outside the signed data so identical votes across committees can be
+    aggregated together.
+  difficulty: understanding
+  source: https://eips.ethereum.org/EIPS/eip-7549
+
+- id: eip-2537-bls-precompile-count
+  type: multiple_choice
+  question: |
+    EIP-2537 (Pectra) added precompiles for BLS12-381 operations. How many
+    precompiles did it add, and at which addresses?
+  choices:
+    - Seven, at 0x0b through 0x11
+    - Four, at 0x0b through 0x0e
+    - Nine, at 0x0a through 0x12
+    - One, at 0x0b, dispatching on an operation selector
+  answer: A
+  difficulty: recall
+  source: https://eips.ethereum.org/EIPS/eip-2537
+
+- id: eip-3855-push0-cost
+  type: multiple_choice
+  question: |
+    EIP-3855 introduced PUSH0. What is its opcode and gas cost, and what did
+    contracts commonly do before it to get a zero on the stack cheaply?
+  choices:
+    - 0x5f, 2 gas; before it, PUSH1 0 cost 3 gas and two bytes, so contracts abused context opcodes like RETURNDATASIZE or CALLVALUE
+    - 0x5f, 3 gas; before it, DUP1 was the only alternative
+    - 0x60, 2 gas; before it, PUSH1 0 cost 3 gas
+    - 0x5b, 1 gas; before it, contracts used MSIZE
+  answer: A
+  difficulty: recall
+  source: https://eips.ethereum.org/EIPS/eip-3855
+
+- id: eip-3651-warm-coinbase-rationale
+  type: open
+  question: |
+    Why did Shanghai make the COINBASE address warm at the start of every
+    transaction (EIP-3651)?
+  answer: |
+    After the Merge, searchers and users increasingly pay block builders
+    directly by transferring ETH to the COINBASE address inside the
+    transaction, because such payments are conditional: if the transaction
+    reverts the payment does not happen, unlike a priority fee. Under EIP-2929
+    the coinbase was a cold address, so the first such transfer cost an extra
+    2,600 gas even though clients already have that account loaded. The
+    overpricing pushed builders toward alternative payment routes such as ERC-20
+    transfers, when ETH should be the primary means of paying for inclusion.
+    Warming COINBASE removes the mispricing. A complete answer must connect the
+    change to direct ETH payments to the block producer (MEV or conditional
+    payments) being overpriced by the cold access cost.
+  difficulty: understanding
+  source: https://eips.ethereum.org/EIPS/eip-3651
+
+- id: eip-7939-clz-semantics
+  type: multiple_choice
+  question: |
+    EIP-7939 (Fusaka) added the CLZ opcode. What does CLZ push when its input is
+    zero, and what does it cost?
+  choices:
+    - 256, for 5 gas
+    - 0, for 3 gas
+    - 255, for 5 gas
+    - It reverts on zero input
+  answer: A
+  difficulty: recall
+  source: https://eips.ethereum.org/EIPS/eip-7939
+
+- id: eip-7934-rlp-block-size-limit
+  type: multiple_choice
+  question: |
+    EIP-7934 (Fusaka) caps the RLP-encoded size of an execution block. What is
+    the effective limit a block must stay under?
+  choices:
+    - 8 MiB (a 10 MiB cap minus a 2 MiB safety margin for the beacon block)
+    - 10 MiB exactly
+    - 2 MiB
+    - 16 MiB
+  answer: A
+  difficulty: recall
+  source: https://eips.ethereum.org/EIPS/eip-7934

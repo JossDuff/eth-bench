@@ -122,3 +122,344 @@
     chain ID and contract address, and the per-owner nonce.
   difficulty: understanding
   source: https://eips.ethereum.org/EIPS/eip-2612
+
+- id: erc-721-onreceived-magic-value
+  type: multiple_choice
+  question: |
+    When an ERC-721 token is moved with safeTransferFrom to a contract, the
+    recipient's onERC721Received must return a specific bytes4 value or the
+    transfer reverts. Which value?
+  choices:
+    - 0x150b7a02
+    - 0xf23a6e61
+    - 0x1626ba7e
+    - 0x80ac58cd
+  answer: A
+  difficulty: recall
+  source: https://eips.ethereum.org/EIPS/eip-721
+
+- id: erc-1967-slot-minus-one
+  type: open
+  question: |
+    ERC-1967 puts a proxy's implementation address at storage slot
+    keccak256("eip1967.proxy.implementation") minus 1 instead of at the plain
+    hash. Why subtract one?
+  answer: |
+    Solidity places mapping and dynamic array data at slots computed as
+    keccak256 of known inputs (for example keccak256(key . slot)). A slot equal
+    to a plain keccak256 output therefore has a known preimage, and an attacker
+    or an unlucky layout could produce a collision with a mapping entry.
+    Subtracting one yields a slot with no known keccak256 preimage, so no
+    compiler-generated storage location can collide with it. The resulting slot
+    is 0x360894a13ba1a3210667c828492db98dca3e2076cc3735a920a3ca505d382bbc. A
+    complete answer must say the subtraction removes the known hash preimage so
+    the slot cannot collide with Solidity-computed mapping or array slots.
+  difficulty: understanding
+  source: https://eips.ethereum.org/EIPS/eip-1967
+
+- id: erc-712-encoding-prefix
+  type: multiple_choice
+  question: |
+    Under EIP-712, the digest that is signed is keccak256 of a two-byte prefix
+    followed by the domain separator and hashStruct(message). What is the
+    prefix?
+  choices:
+    - 0x1900
+    - 0x1901
+    - 0x1945
+    - The bytes of "\x19Ethereum Signed Message:\n"
+  answer: B
+  difficulty: recall
+  source: https://eips.ethereum.org/EIPS/eip-712
+
+- id: erc-3009-vs-2612
+  type: open
+  question: |
+    ERC-3009 (transferWithAuthorization) and ERC-2612 (permit) both let a token
+    holder authorize a token movement with an EIP-712 signature. How do they
+    differ?
+  answer: |
+    ERC-2612 signs an approval: it sets an allowance that is later spent through
+    transferFrom, and it uses sequential per-owner nonces. ERC-3009 signs the
+    transfer itself, moving tokens directly without touching the allowance
+    mechanism, and it uses random 32-byte nonces so a user can have many
+    authorizations outstanding at once without ordering failures. ERC-3009
+    authorizations also carry a validity window (validAfter, validBefore), and
+    receiveWithAuthorization requires the caller to be the payee to prevent
+    front-running. USDC implements it. A complete answer must mention that
+    3009 authorizes a direct transfer rather than an allowance and that it uses
+    random rather than sequential nonces.
+  difficulty: understanding
+  source: https://eips.ethereum.org/EIPS/eip-3009
+
+- id: erc-4626-inflation-attack
+  type: open
+  question: |
+    Describe the "inflation" (first depositor) attack on an ERC-4626 vault and
+    at least one way an implementation defends against it.
+  answer: |
+    When a vault is empty, an attacker deposits a tiny amount (for example 1
+    wei) to mint 1 share, then donates a large amount of the underlying asset
+    directly to the vault so one share is now worth a large sum. A victim's
+    subsequent deposit smaller than the donation rounds down to zero shares (or
+    far fewer than fair), and the attacker redeems their share for the victim's
+    assets. Defences include virtual shares and assets (a decimals offset, as in
+    OpenZeppelin's implementation) so the exchange rate cannot be manipulated
+    cheaply, seeding the vault with an initial deposit whose shares are burned
+    or locked, or reverting on deposits that would mint zero shares. A complete
+    answer must describe the donation inflating the share price so a victim's
+    deposit rounds to (near) zero shares, and name at least one mitigation.
+  difficulty: reasoning
+  source: https://eips.ethereum.org/EIPS/eip-4626
+
+- id: erc-4337-validation-data
+  type: multiple_choice
+  question: |
+    In ERC-4337, an account's validateUserOp returns a uint256 called
+    validationData. What does it pack?
+  choices:
+    - An authorizer address (or 0 for success, 1 for signature failure), a validUntil timestamp, and a validAfter timestamp
+    - The gas actually used by validation and the account's next nonce
+    - A boolean success flag and the paymaster address that will sponsor the operation
+    - The keccak256 hash of the signature that was verified
+  answer: A
+  difficulty: understanding
+  source: https://eips.ethereum.org/EIPS/eip-4337
+
+- id: erc-4337-banned-validation-opcodes
+  type: open
+  question: |
+    ERC-4337's mempool rules (ERC-7562) forbid an account from using opcodes
+    like TIMESTAMP, NUMBER, and BALANCE of other addresses during validation.
+    Why?
+  answer: |
+    Bundlers simulate validateUserOp off-chain before including a UserOperation
+    and are only paid if the operation succeeds on-chain. If validation depends
+    on environment values that can change between simulation and inclusion
+    (block time, block number, another account's balance, another contract's
+    storage), an attacker can craft operations that pass simulation and then
+    fail on-chain, making bundlers waste gas and enabling denial of service on
+    the shared mempool. Restricting validation to deterministic inputs (the
+    account's own storage, the signature, its own nonce) makes simulation
+    results reliable so operations can be safely propagated without trust.
+    A complete answer must connect the restriction to keeping off-chain
+    simulation results valid at inclusion time so bundlers are not griefed.
+  difficulty: reasoning
+  source: https://eips.ethereum.org/EIPS/eip-7562
+
+- id: erc-2981-enforcement
+  type: multiple_choice
+  question: |
+    A collection implements ERC-2981 with a 5% royalty. What does the standard
+    actually enforce on-chain?
+  choices:
+    - Nothing; royaltyInfo only reports a receiver and amount, and paying it is up to the marketplace
+    - transferFrom reverts unless 5% of the sale price has been paid to the receiver
+    - The token contract deducts 5% of any value sent with a transfer and forwards it to the receiver
+    - Marketplaces must escrow the royalty in the token contract before the transfer completes
+  answer: A
+  difficulty: understanding
+  source: https://eips.ethereum.org/EIPS/eip-2981
+
+- id: erc-8004-registries
+  type: multiple_choice
+  question: |
+    ERC-8004 (trustless agents) defines three on-chain registries. Which of the
+    following is NOT one of them?
+  choices:
+    - Identity Registry
+    - Reputation Registry
+    - Validation Registry
+    - Payment Registry
+  answer: D
+  difficulty: recall
+  source: https://eips.ethereum.org/EIPS/eip-8004
+
+- id: erc-20-approve-race
+  type: open
+  question: |
+    What is the ERC-20 approve front-running problem, and how do wallets and
+    token contracts work around it?
+  answer: |
+    approve overwrites the allowance. If a holder has approved a spender for N
+    and sends a transaction changing it to M, the spender can watch the mempool,
+    spend N before the change lands, and then spend M as well, extracting N + M
+    instead of M. Workarounds include first setting the allowance to zero and
+    checking it was not spent before setting the new value, using
+    increaseAllowance and decreaseAllowance helpers that adjust relatively, or
+    avoiding standing allowances entirely with signature-based mechanisms such
+    as ERC-2612 permit or ERC-3009. A complete answer must describe the spender
+    using the old allowance before the new one takes effect and name at least
+    one mitigation.
+  difficulty: understanding
+  source: https://eips.ethereum.org/EIPS/eip-20
+
+- id: erc-1155-batch-receiver-magic-value
+  type: multiple_choice
+  question: |
+    An ERC-1155 safeBatchTransferFrom sends tokens to a contract. Which bytes4
+    value must the recipient's onERC1155BatchReceived return for the transfer
+    to succeed?
+  choices:
+    - 0xbc197c81
+    - 0xf23a6e61
+    - 0x150b7a02
+    - 0xd9b67a26
+  answer: A
+  difficulty: recall
+  source: https://eips.ethereum.org/EIPS/eip-1155
+
+- id: erc-1155-uri-id-substitution
+  type: open
+  question: |
+    An ERC-1155 contract's uri(id) returns "https://example.com/{id}.json" for
+    every token. How must a client turn that into the URL for token ID 314592?
+  answer: |
+    The client replaces the literal substring {id} with the token ID rendered
+    as hexadecimal, lowercase [0-9a-f], with no 0x prefix, left-padded with
+    zeros to exactly 64 hex characters. For 314592 (0x4cce0) the URL is
+    https://example.com/000000000000000000000000000000000000000000000000000000000004cce0.json.
+    This lets one URI template serve all token types. A complete answer must
+    state hex encoding, lowercase, no 0x prefix, and zero padding to 64
+    characters (or produce the correct padded URL).
+  difficulty: understanding
+  source: https://eips.ethereum.org/EIPS/eip-1155
+
+- id: erc-1167-minimal-proxy
+  type: multiple_choice
+  question: |
+    What does an ERC-1167 minimal proxy ("clone") do, and how is it
+    implemented?
+  choices:
+    - It forwards every call and all gas to a fixed implementation address via DELEGATECALL and relays the return or revert data, using a 45-byte runtime bytecode with the address embedded in it
+    - It forwards calls to an implementation via CALL so the implementation's storage is used
+    - It stores the implementation address in an ERC-1967 storage slot and lets an admin upgrade it
+    - It copies the implementation's runtime code into the clone at deployment time
+  answer: A
+  difficulty: understanding
+  source: https://eips.ethereum.org/EIPS/eip-1167
+
+- id: erc-4337-paymaster-flow
+  type: open
+  question: |
+    In ERC-4337, how does a paymaster sponsor a UserOperation, and how does the
+    EntryPoint make sure the paymaster actually pays?
+  answer: |
+    A UserOperation names a paymaster in paymasterAndData. During validation the
+    EntryPoint calls the paymaster's validatePaymasterUserOp, which checks
+    whatever policy it likes (an off-chain signature, an ERC-20 balance to
+    charge) and returns context plus validity data. The EntryPoint pays the
+    bundler for gas out of a deposit the paymaster has previously placed in the
+    EntryPoint, so the paymaster must prefund its deposit (and stake to use the
+    shared mempool with less restricted validation). After execution the
+    EntryPoint calls the paymaster's postOp with the actual gas cost so it can,
+    for example, pull ERC-20 tokens from the user. A complete answer must say
+    the paymaster is validated by the EntryPoint and pays from a deposit held
+    in the EntryPoint, and mention postOp or the ability to charge the user in
+    another token.
+  difficulty: understanding
+  source: https://eips.ethereum.org/EIPS/eip-4337
+
+- id: erc-4337-initcode-deployment
+  type: open
+  question: |
+    How does ERC-4337 let a user send their first UserOperation from a smart
+    account that does not exist yet?
+  answer: |
+    The UserOperation carries a non-empty initCode field whose first 20 bytes
+    are a factory contract address and whose remaining bytes are calldata for
+    that factory. The EntryPoint calls the factory (through a SenderCreator
+    helper) before validation, and the factory must deploy the account,
+    typically with CREATE2 so its address is deterministic, and return an
+    address equal to the UserOperation's sender or the operation fails. This
+    counterfactual address can therefore receive funds before it is deployed,
+    and the deployment gas is covered by the same operation (via
+    verificationGasLimit). A complete answer must say the first 20 bytes of
+    initCode are a factory that deploys the account and that the deployed
+    address must match sender.
+  difficulty: understanding
+  source: https://eips.ethereum.org/EIPS/eip-4337
+
+- id: erc-4337-two-dimensional-nonce
+  type: multiple_choice
+  question: |
+    How is a UserOperation's nonce structured in ERC-4337 (EntryPoint v0.6 and
+    later)?
+  choices:
+    - A 256-bit value split into a 192-bit key and a 64-bit sequence number, managed by the EntryPoint, so an account can have several independent nonce sequences at once
+    - A plain 64-bit counter tracked in the account contract's own storage
+    - A random 32-byte value that is marked used after execution, as in ERC-3009
+    - It reuses the account's protocol-level account nonce
+  answer: A
+  difficulty: understanding
+  source: https://eips.ethereum.org/EIPS/eip-4337
+
+- id: erc-6551-token-bound-accounts
+  type: open
+  question: |
+    What does ERC-6551 provide, and how is the address of a token-bound account
+    determined?
+  answer: |
+    ERC-6551 gives every ERC-721 token its own smart contract account (a
+    token-bound account) that can hold assets and make calls, controlled by
+    whoever owns the NFT, so the NFT can own things and act on chain. A
+    permissionless singleton registry deploys the accounts as ERC-1167-style
+    proxies using CREATE2, so the account address is computed
+    deterministically from the implementation address, a salt, the chain ID,
+    the token contract address, and the token ID. Because it is deterministic,
+    the account exists counterfactually and can receive assets before it is
+    deployed, and ownership follows the NFT when it is transferred. A complete
+    answer must say each NFT gets a smart contract account controlled by the
+    token's owner and that the address is derived deterministically (CREATE2)
+    from the token's identity.
+  difficulty: understanding
+  source: https://eips.ethereum.org/EIPS/eip-6551
+
+- id: erc-777-hooks-reentrancy
+  type: open
+  question: |
+    Why did ERC-777 tokens cause reentrancy exploits in protocols that were
+    safe with ERC-20 tokens? Give the classic example.
+  answer: |
+    ERC-777 adds tokensToSend and tokensReceived hooks: on every transfer the
+    token calls back into the sender's and recipient's registered hook
+    contracts (via the ERC-1820 registry) before and after moving the balance.
+    A protocol written for ERC-20, where transfer is a plain balance update
+    with no callback, may update its own accounting only after calling the
+    token, so the tokensReceived or tokensToSend hook gives an attacker a
+    re-entry point in the middle of the protocol's logic. The classic case is
+    the April 2020 attacks on Uniswap V1 and dForce's Lendf.Me using imBTC, an
+    ERC-777 token, where the hook was used to re-enter and drain funds. A
+    complete answer must explain that ERC-777's transfer hooks call the
+    recipient or sender mid-transfer, creating reentrancy that ERC-20
+    integrations did not guard against, and ideally name imBTC or the Uniswap
+    V1 / Lendf.Me incident.
+  difficulty: reasoning
+  source: https://eips.ethereum.org/EIPS/eip-777
+
+- id: erc-2535-diamonds
+  type: multiple_choice
+  question: |
+    In an ERC-2535 "diamond", how are function calls routed?
+  choices:
+    - The diamond maps each function selector to a facet contract and DELEGATECALLs the matching facet, so one address can expose functions from many contracts sharing one storage
+    - The diamond forwards every call to a single implementation contract whose address can be upgraded
+    - Each facet is deployed as a separate proxy and the diamond CALLs it with its own storage
+    - The diamond stores facet bytecode in its own storage and executes it with CALLCODE
+  answer: A
+  difficulty: understanding
+  source: https://eips.ethereum.org/EIPS/eip-2535
+
+- id: erc-20-zero-value-transfer
+  type: multiple_choice
+  question: |
+    According to the ERC-20 specification, how must a token contract handle a
+    call to transfer with a value of 0?
+  choices:
+    - Treat it as a normal transfer and emit a Transfer event
+    - Revert, since transferring nothing is an error
+    - Return false without emitting an event
+    - Behaviour is unspecified and left to the implementation
+  answer: A
+  difficulty: recall
+  source: https://eips.ethereum.org/EIPS/eip-20

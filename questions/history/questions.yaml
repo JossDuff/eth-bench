@@ -45,6 +45,20 @@
   difficulty: recall
   source: https://eips.ethereum.org/EIPS/eip-7773
 
+- id: history-current-fork-mid-2026
+  type: multiple_choice
+  question: |
+    As of mid-2026, what is the current fork, live on Ethereum mainnet?
+  choices:
+    - Glamsterdam
+    - Fusaka
+    - Pectra
+    - Hegota
+  answer: B
+  difficulty: recall
+  source: https://forkcast.org/upgrades/ 
+
+
 - id: history-eip-1559-upgrade
   type: multiple_choice
   question: |
@@ -100,3 +114,353 @@
     immutability objection or the Ethereum Classic split.
   difficulty: understanding
   source: https://blog.ethereum.org/2016/07/20/hard-fork-completed
+
+- id: history-constantinople-postponement
+  type: open
+  question: |
+    Constantinople was scheduled for mainnet in mid-January 2019 but was
+    postponed at the last minute. Why, and how was the issue resolved?
+  answer: |
+    A security audit (by ChainSecurity) found that EIP-1283, net gas metering
+    for SSTORE, made some storage writes cheap enough to fit within the 2,300
+    gas stipend that accompanies a plain value transfer, which reintroduced a
+    reentrancy risk for contracts that assumed a recipient could not change
+    state during a transfer. Core developers postponed the fork about a day
+    before activation. It was resolved by activating Constantinople together
+    with a second fork, Petersburg (St. Petersburg), at the same block
+    (7,280,000, on 28 February 2019); Petersburg's only purpose was to remove
+    EIP-1283. A complete answer must attribute the delay to EIP-1283 enabling
+    reentrancy via cheaper SSTORE and mention that EIP-1283 was removed (via
+    Petersburg) before Constantinople shipped.
+  difficulty: understanding
+  source: https://blog.ethereum.org/2019/01/15/security-alert-ethereum-constantinople-postponement
+
+- id: history-block-reward-after-constantinople
+  type: multiple_choice
+  question: |
+    What was the proof-of-work block reward on Ethereum mainnet immediately
+    after the Constantinople upgrade?
+  choices:
+    - 5 ETH
+    - 3 ETH
+    - 2 ETH
+    - 1 ETH
+  answer: C
+  difficulty: recall
+  source: https://eips.ethereum.org/EIPS/eip-1234
+
+- id: history-merge-activation-trigger
+  type: multiple_choice
+  question: |
+    What condition triggered the Merge on Ethereum mainnet in September 2022?
+  choices:
+    - The proof-of-work chain reaching a specific block number chosen by core developers
+    - The proof-of-work chain reaching a terminal total difficulty of 58750000000000000000000
+    - The beacon chain reaching a specific slot agreed in the Bellatrix upgrade
+    - A specific Unix timestamp, like later upgrades
+  answer: B
+  difficulty: understanding
+  source: https://eips.ethereum.org/EIPS/eip-3675
+
+- id: history-upgrade-naming-conventions
+  type: open
+  question: |
+    Ethereum's upgrades have names like Shapella, Dencun, Pectra, and Fusaka.
+    Explain the naming conventions that produce these names.
+  answer: |
+    Since the Merge each upgrade has separate execution layer and consensus
+    layer names. Execution layer upgrades are named after cities that hosted
+    Devcon, in order (Berlin, London, Paris, Shanghai, Cancun, Prague, Osaka,
+    Amsterdam). Consensus layer upgrades are named after stars in alphabetical
+    order (Altair, Bellatrix, Capella, Deneb, Electra, Fulu, Gloas). The
+    combined upgrade is a portmanteau: Shanghai + Capella = Shapella, Deneb +
+    Cancun = Dencun, Prague + Electra = Pectra, Fulu + Osaka = Fusaka, Gloas +
+    Amsterdam = Glamsterdam. A complete answer must say execution names are
+    Devcon cities, consensus names are alphabetical stars, and the combined name
+    merges the two.
+  difficulty: recall
+  source: https://eips.ethereum.org/EIPS/eip-7773
+
+- id: history-beacon-genesis-threshold
+  type: multiple_choice
+  question: |
+    For the beacon chain to launch on 1 December 2020, a minimum number of
+    32 ETH deposits had to be in the deposit contract seven days beforehand.
+    What was that minimum?
+  choices:
+    - 8,192 validators
+    - 16,384 validators
+    - 32,768 validators
+    - 65,536 validators
+  answer: B
+  difficulty: recall
+  source: https://blog.ethereum.org/2020/11/27/eth2-quick-update-no-21
+
+- id: history-2016-dos-attack-forks
+  type: open
+  question: |
+    In autumn 2016 Ethereum shipped two unplanned hard forks in quick
+    succession. What prompted them and what did each one change?
+  answer: |
+    Starting during Devcon2 in September 2016, attackers exploited underpriced
+    opcodes (such as EXTCODESIZE and SUICIDE/SELFDESTRUCT) to slow the network
+    and bloat the state with millions of empty accounts. Tangerine Whistle
+    (EIP-150, block 2,463,000, 18 October 2016) repriced IO-heavy opcodes and
+    introduced the 63/64 rule for gas forwarded to calls. Spurious Dragon (block
+    2,675,000, 22 November 2016) added EIP-155 replay protection (chain ID in
+    signatures), EIP-161 state clearing so the empty accounts created by the
+    attack could be removed, and EIP-170's 24,576-byte contract code size
+    limit. A complete answer must connect the forks to the 2016 DoS attacks and
+    give at least one change from each fork (opcode repricing for Tangerine
+    Whistle; replay protection, state clearing, or the code size limit for
+    Spurious Dragon).
+  difficulty: understanding
+  source: https://eips.ethereum.org/EIPS/eip-607
+
+- id: history-may-2023-finality-incidents
+  type: open
+  question: |
+    What happened to Ethereum mainnet on 11 and 12 May 2023?
+  answer: |
+    Mainnet suffered two loss-of-finality incidents, about 25 minutes on 11 May
+    and about an hour on 12 May, with attestation participation dropping as low
+    as roughly 30-40%. The cause was in some consensus clients (notably Prysm
+    and Teku): when they received valid but old attestations whose target was
+    a previous epoch, they replayed beacon states to verify them, which was
+    very expensive with the large post-Capella validator set, and the resulting
+    CPU exhaustion stopped validators performing duties. The chain kept
+    producing blocks, the inactivity leak activated on mainnet for the first
+    time, and client patches fixed the issue. A complete answer must say
+    finality was lost temporarily and attribute it to client resource
+    exhaustion from processing old attestations (or a client bug), not a
+    protocol fault or an attack.
+  difficulty: recall
+  source: https://ethresear.ch/t/cascading-network-effects-on-ethereums-finality/15871
+
+- id: history-november-2020-geth-split
+  type: open
+  question: |
+    On 11 November 2020 part of the Ethereum network followed a different chain
+    for a time, taking Infura and several exchanges offline. What caused it?
+  answer: |
+    A consensus bug in Geth (a shallow-copy bug affecting versions 1.9.7 to
+    1.9.16) had been reported privately in July 2020 and fixed quietly in Geth
+    1.9.17 without public disclosure. On 11 November a transaction triggered the
+    bug at block 11,234,873, so nodes still running old Geth versions, including
+    Infura's infrastructure and some exchanges, diverged onto a minority chain
+    while upgraded nodes and other clients continued on the canonical chain. The
+    episode caused a widely felt Infura outage and prompted debate about
+    silently fixing consensus bugs versus disclosing them. A complete answer must
+    say an unpatched Geth consensus bug caused nodes on old versions to split
+    from the main chain.
+  difficulty: recall
+  source: https://blog.ethereum.org/2020/11/12/geth-security-release
+
+- id: history-difficulty-bomb-purpose
+  type: multiple_choice
+  question: |
+    Proof-of-work Ethereum had a "difficulty bomb" that was repeatedly delayed by
+    the Muir Glacier, Arrow Glacier, and Gray Glacier forks. What was the
+    bomb's purpose?
+  choices:
+    - To reduce ETH issuance over time on a fixed schedule
+    - To make ASIC mining unprofitable by periodically changing the hashing algorithm
+    - To make block times grow exponentially so the network would have to hard fork, discouraging staying on an old chain and pushing toward proof of stake
+    - To raise the cost of a 51% attack as the hash rate grew
+  answer: C
+  difficulty: understanding
+  source: https://eips.ethereum.org/EIPS/eip-5133
+
+- id: history-block-1150000
+  type: multiple_choice
+  question: |
+    Which upgrade activated at block 1,150,000 in March 2016?
+  choices:
+    - Frontier Thawing
+    - Homestead
+    - The DAO fork
+    - Tangerine Whistle
+  answer: B
+  difficulty: recall
+  source: https://eips.ethereum.org/EIPS/eip-606
+
+- id: history-halt-rollback
+  type: open
+  question: |
+    Has Ethereum ever halted or had a rollback?
+  answer: |
+    No.  Ethereum has never halted and has never had a rollback.
+    The DAO bug was a single invalid state transition, not a rollback.
+
+    A "Yes" answer to either clause is incorrect.  A correct answer reports 
+    that Ethereum has never halted and has never had a rollback.
+  difficulty: recall
+
+- id: history-frontier-thawing
+  type: multiple_choice
+  question: |
+    What did the "Frontier Thawing" change at block 200,000 in September 2015
+    do?
+  choices:
+    - Lifted the 5,000 gas per block limit that had kept the Frontier network in a deliberately frozen state, allowing real transactions
+    - Enabled the difficulty bomb for the first time
+    - Removed the canary contracts that could halt the network
+    - Introduced the DELEGATECALL opcode
+  answer: A
+  difficulty: recall
+  source: https://blog.ethereum.org/2015/08/04/the-thawing-frontier
+
+- id: history-byzantium-opcode
+  type: multiple_choice
+  question: |
+    Which opcode was introduced by the Byzantium upgrade (October 2017)?
+  choices:
+    - REVERT
+    - CREATE2
+    - SHL
+    - CHAINID
+  answer: A
+  difficulty: recall
+  source: https://eips.ethereum.org/EIPS/eip-609
+
+- id: history-istanbul-eip-1884-repricing
+  type: open
+  question: |
+    Istanbul (December 2019) included EIP-1884, which raised the gas cost of
+    several opcodes. What was repriced, why, and what did the change break?
+  answer: |
+    EIP-1884 raised SLOAD from 200 to 800 gas, BALANCE from 400 to 700, and
+    EXTCODEHASH from 400 to 700, and added SELFBALANCE (5 gas) so contracts
+    could read their own balance cheaply. The rationale was that state had
+    grown so much that these trie-reading operations took far longer than
+    their gas price reflected, making them a denial-of-service vector. The
+    repricing broke contracts whose fallback functions relied on fitting inside
+    the 2,300 gas stipend of a plain ETH transfer, for example Aragon and
+    Kyber contracts that did an SLOAD in their fallback, so sending ETH to them
+    started failing. A complete answer must mention SLOAD (or BALANCE or
+    EXTCODEHASH) becoming more expensive because of state growth, and that
+    contracts relying on the 2,300 gas stipend broke.
+  difficulty: understanding
+  source: https://eips.ethereum.org/EIPS/eip-1884
+
+- id: history-berlin-contents
+  type: multiple_choice
+  question: |
+    Which of the following was introduced by the Berlin upgrade (April 2021)?
+  choices:
+    - Typed transaction envelopes (EIP-2718) and optional access lists (EIP-2930)
+    - The base fee and fee burning (EIP-1559)
+    - PUSH0 and warm COINBASE
+    - Blob transactions and transient storage
+  answer: A
+  difficulty: recall
+  source: https://eips.ethereum.org/EIPS/eip-2070
+
+- id: history-bellatrix-then-paris
+  type: open
+  question: |
+    The Merge in September 2022 was delivered as two separate upgrades,
+    Bellatrix and Paris, about nine days apart. What did each do and why were
+    two steps needed?
+  answer: |
+    Bellatrix was the consensus layer upgrade, activated on the beacon chain at
+    epoch 144,896 on 6 September 2022. It prepared the beacon chain to accept
+    execution payloads and made validators start watching the proof-of-work
+    chain for the terminal block. Paris was the execution layer change,
+    triggered when the proof-of-work chain reached the terminal total
+    difficulty (58750000000000000000000) on 15 September 2022: from the next
+    block, execution blocks were produced only as payloads inside beacon blocks
+    and proof-of-work mining ended. Two steps were needed because the beacon
+    chain had to be upgraded and stable ahead of time at a known epoch, whereas
+    the exact moment the difficulty threshold would be reached depended on hash
+    rate and could not be scheduled by epoch. A complete answer must say
+    Bellatrix upgraded the consensus layer at a fixed epoch first and Paris
+    switched execution over when the terminal total difficulty was hit.
+  difficulty: understanding
+  source: https://eips.ethereum.org/EIPS/eip-3675
+
+- id: history-dencun-churn-cap
+  type: multiple_choice
+  question: |
+    Besides blobs, the Dencun upgrade (March 2024) included EIP-7514 to slow
+    growth of the validator set. What did it do?
+  choices:
+    - Capped the activation churn at 8 validators per epoch regardless of validator set size
+    - Raised the minimum stake from 32 ETH to 64 ETH
+    - Introduced the 2048 ETH maximum effective balance
+    - Paused new deposits until Pectra
+  answer: A
+  difficulty: recall
+  source: https://eips.ethereum.org/EIPS/eip-7514
+
+- id: history-first-testnet-merge
+  type: multiple_choice
+  question: |
+    Which long-standing public testnet was the first to run through the Merge,
+    in June 2022?
+  choices:
+    - Ropsten
+    - Goerli
+    - Sepolia
+    - Kiln
+  answer: A
+  difficulty: recall
+  source: https://blog.ethereum.org/2022/05/30/ropsten-merge-announcement
+
+- id: history-medalla-incident
+  type: open
+  question: |
+    What happened on the Medalla beacon chain testnet in August 2020, and what
+    lesson did it teach about client diversity?
+  answer: |
+    On 14 August 2020 the Prysm client, which the large majority of Medalla
+    validators ran, received bad time data from the Cloudflare Roughtime
+    servers it used for clock sync and jumped its clock about four hours into
+    the future. Prysm nodes started producing blocks and attestations for
+    future slots, other clients rejected them, and when the clocks were fixed
+    those validators had already committed to conflicting messages, so many
+    were slashed. With more than a third of validators effectively offline the
+    testnet lost finality for days, the inactivity leak drained balances, and
+    the network fragmented; client teams shipped sync and peering fixes over
+    the following days. The lesson was that a single dominant client turns one
+    bug into a network-wide failure, which fed the push for client diversity
+    before mainnet genesis. A complete answer must describe a clock or time
+    bug in the dominant Prysm client causing loss of finality, and connect it to
+    the danger of one client having a supermajority.
+  difficulty: recall
+  source: https://blog.ethereum.org/2020/09/01/eth2-quick-update-no-15
+
+- id: history-parity-multisig-freeze
+  type: open
+  question: |
+    In November 2017 roughly 513,000 ETH became permanently inaccessible. What
+    happened, and how did the community respond to the proposal to recover it?
+  answer: |
+    Parity's multisig wallet contracts were thin proxies delegating to a shared
+    library contract. After a July 2017 hack, the library was redeployed but
+    left uninitialised; on 6 November 2017 a user called initWallet on the
+    library, became its owner, and then invoked kill, self-destructing the
+    library. Every wallet depending on it lost its logic, freezing about
+    513,774 ETH across 587 wallets, including Polkadot's fundraising funds.
+    EIP-999 proposed restoring the library's code through a hard fork; the
+    community rejected it, including in a CarbonVote poll, because it would
+    have been an irregular state change to rescue one party's funds, unlike
+    the network-threatening DAO situation, so the ETH remains frozen. A complete
+    answer must describe the destruction of the shared Parity library contract
+    freezing the wallets and say the recovery proposal (EIP-999) was rejected.
+  difficulty: recall
+  source: https://eips.ethereum.org/EIPS/eip-999
+
+- id: history-crowdsale-amount
+  type: multiple_choice
+  question: |
+    Roughly how much ETH was sold to the public in the 2014 ether presale that
+    funded Ethereum's development?
+  choices:
+    - About 60 million ETH
+    - About 12 million ETH
+    - About 21 million ETH
+    - About 100 million ETH
+  answer: A
+  difficulty: recall
+  source: https://blog.ethereum.org/2014/08/08/ether-sale-a-statistical-overview

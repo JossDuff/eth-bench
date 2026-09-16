@@ -50,3 +50,263 @@
     extension (for example in OpenZeppelin's ERC20Burnable) but not part of the
     standard. A correct response says burnFrom is not required by ERC-20.
   difficulty: recall
+
+- id: fake-verkle-tree
+  type: false_premise
+  question: |
+    When did Ethereum add verkle trees to the chain?
+  answer: |
+    Verkle trees, as of September 2026, have not been added to Ethereum.  They 
+    were a research topic for awhile, and have been put aside for other state 
+    structures.  A correct response says verkle trees are not live on 
+    Ethereum.
+  difficulty: recall
+
+- id: fake-lighthouse-go
+  type: false_premise
+  question: |
+    The Lighthouse consensus client is written in Go. Which Go version does its
+    current release require?
+  answer: |
+    The premise is false. Lighthouse (by Sigma Prime) is written in Rust.
+    Prysm is the Go consensus client. A correct response says Lighthouse is not
+    written in Go.
+  difficulty: recall
+
+- id: fake-merge-block-number
+  type: false_premise
+  question: |
+    Core developers scheduled the Merge by choosing a fixed block number for it
+    to activate at. What block number did they pick?
+  answer: |
+    The premise is false. The Merge was not scheduled by block number. It was
+    triggered by the proof-of-work chain reaching a terminal total difficulty
+    (58750000000000000000000), precisely so that the activation could not be
+    manipulated by miners adjusting the block schedule. The block it happened at
+    (15,537,394) was a consequence, not a choice. A correct response points out
+    that the Merge used a terminal total difficulty rather than a block number.
+  difficulty: understanding
+
+- id: fake-blobs-stored-forever
+  type: false_premise
+  question: |
+    Since EIP-4844, every full node stores all blob data permanently. Roughly
+    how much does blob storage add to a node's disk each year?
+  answer: |
+    The premise is false. Blobs are not stored permanently. Consensus nodes must
+    serve blob sidecars only for MIN_EPOCHS_FOR_BLOB_SIDECARS_REQUESTS (4,096
+    epochs, about 18 days) and prune them afterwards; only the KZG commitments
+    remain on chain. A correct response says blobs are pruned after roughly 18
+    days rather than stored forever.
+  difficulty: recall
+
+- id: fake-pectra-six-second-slots
+  type: false_premise
+  question: |
+    The Pectra upgrade halved the slot time from 12 seconds to 6 seconds. How
+    many slots are in an epoch now?
+  answer: |
+    The premise is false. Pectra did not change the slot time; mainnet slots are
+    still 12 seconds and an epoch is still 32 slots. Shorter slots (EIP-7782)
+    have been proposed for a future upgrade but had not shipped as of Pectra or
+    Fusaka. A correct response says Pectra did not change the slot time.
+  difficulty: recall
+
+- id: fake-yellow-paper-author
+  type: false_premise
+  question: |
+    Vitalik Buterin wrote the Ethereum Yellow Paper, the formal specification
+    of the EVM. In which year did he publish it?
+  answer: |
+    The premise is false. The Yellow Paper was written by Gavin Wood (first
+    published in 2014). Vitalik Buterin wrote the Ethereum white paper. A correct
+    response says the Yellow Paper's author is Gavin Wood, not Vitalik Buterin.
+  difficulty: recall
+
+- id: fake-state-trie-sha256
+  type: false_premise
+  question: |
+    Ethereum hashes the nodes of its Merkle Patricia state trie with SHA-256.
+    Why was SHA-256 chosen over Keccak for this purpose?
+  answer: |
+    The premise is false. Ethereum uses Keccak-256 for the state trie and
+    virtually all other hashing in the execution layer (addresses, storage
+    keys, transaction hashes). SHA-256 is available as a precompile and is used
+    in some consensus layer contexts (SSZ hash_tree_root), but not for the state
+    trie. A correct response says the trie uses Keccak-256, not SHA-256.
+  difficulty: recall
+
+- id: fake-erc1271-returns-bool
+  type: false_premise
+  question: |
+    ERC-1271's isValidSignature returns a bool. Why did the authors choose a
+    bool over a bytes4 magic value?
+  answer: |
+    The premise is false. ERC-1271's isValidSignature(bytes32, bytes) returns a
+    bytes4 magic value, 0x1626ba7e (the function selector), when the signature
+    is valid, precisely to avoid the ambiguity of a bool being returned by an
+    unrelated fallback function. A correct response says it returns a bytes4
+    magic value, not a bool.
+  difficulty: recall
+
+- id: fake-4337-protocol-upgrade
+  type: false_premise
+  question: |
+    ERC-4337 account abstraction was activated as a consensus change in the
+    Cancun upgrade. Which client teams implemented the new transaction type for
+    UserOperations?
+  answer: |
+    The premise is false. ERC-4337 deliberately requires no protocol or
+    consensus changes: it works entirely at the application layer through a
+    singleton EntryPoint contract, bundlers, and an alternative mempool.
+    UserOperations are not a transaction type and no upgrade activated them.
+    EIP-7702 (Pectra) is the protocol change related to account abstraction. A
+    correct response says ERC-4337 was not part of Cancun or any hard fork.
+  difficulty: understanding
+
+- id: fake-sepolia-shutdown
+  type: false_premise
+  question: |
+    After the Sepolia testnet was shut down in 2025, Hoodi became the main
+    testnet for application developers. What chain ID does Hoodi use?
+  answer: |
+    The premise is false. Sepolia was not shut down; it remains the recommended
+    testnet for application developers. Holesky was the testnet that was retired
+    in September 2025 after its failed Pectra activation, and Hoodi replaced
+    Holesky for staking and validator testing. A correct response says Sepolia
+    is still running and that Holesky was the testnet shut down.
+  difficulty: recall
+
+- id: fake-peerdas-pectra
+  type: false_premise
+  question: |
+    PeerDAS shipped in the Pectra upgrade in May 2025. How many custody groups
+    did Pectra require each node to sample?
+  answer: |
+    The premise is false. PeerDAS (EIP-7594) shipped in Fusaka (December 2025),
+    not Pectra. Pectra's blob change was EIP-7691, which raised the blob target
+    and maximum to 6 and 9 without any sampling. A correct response says PeerDAS
+    was not part of Pectra.
+  difficulty: recall
+
+- id: fake-reth-ethereum-foundation
+  type: false_premise
+  question: |
+    Reth is the execution client developed by the Ethereum Foundation as the
+    successor to Geth. When did the Foundation announce that Geth would be
+    deprecated in its favour?
+  answer: |
+    The premise is false. Reth is developed by Paradigm, not the Ethereum
+    Foundation, and Geth (which the Foundation does maintain) has not been
+    deprecated; Ethereum deliberately runs multiple independent execution
+    clients. A correct response says Reth is Paradigm's client and that no
+    deprecation of Geth has been announced.
+  difficulty: recall
+
+- id: fake-mainnet-chain-id
+  type: false_premise
+  question: |
+    Ethereum mainnet's chain ID is 137. Which EIP introduced the chain ID into
+    transaction signatures?
+  answer: |
+    The premise is false. Ethereum mainnet's chain ID is 1; 137 is Polygon PoS.
+    EIP-155 introduced chain IDs into transaction signatures, but a correct
+    response must first correct the chain ID rather than accept 137.
+  difficulty: recall
+
+- id: fake-beacon-chain-2019
+  type: false_premise
+  question: |
+    The beacon chain went live on 1 December 2019. How many validators were
+    active at genesis?
+  answer: |
+    The premise is false. The beacon chain launched on 1 December 2020, not
+    2019, after the deposit threshold of 16,384 validators was met in late
+    November 2020. A correct response corrects the year.
+  difficulty: recall
+
+- id: fake-pectra-16-eth-minimum
+  type: false_premise
+  question: |
+    Pectra lowered the minimum stake to run a validator from 32 ETH to 16 ETH.
+    How does the smaller minimum interact with the new 2048 ETH maximum?
+  answer: |
+    The premise is false. Pectra (EIP-7251) raised the maximum effective
+    balance to 2048 ETH for compounding validators but left the minimum
+    activation balance at 32 ETH. A correct response says the minimum was not
+    lowered.
+  difficulty: recall
+
+- id: fake-selfdestruct-removed-dencun
+  type: false_premise
+  question: |
+    The Dencun upgrade removed the SELFDESTRUCT opcode from the EVM entirely.
+    What do contracts that used it for upgrades do now?
+  answer: |
+    The premise is false. Dencun's EIP-6780 did not remove SELFDESTRUCT; it
+    restricted it so that code and storage are deleted only when the contract
+    was created in the same transaction, while in all other cases the opcode
+    still transfers the balance and leaves the contract in place. A correct
+    response says SELFDESTRUCT still exists with changed semantics.
+  difficulty: understanding
+
+- id: fake-optimism-24-hour-window
+  type: false_premise
+  question: |
+    OP Mainnet withdrawals to Ethereum finalize after a 24-hour challenge
+    window. Why did Optimism pick 24 hours instead of Arbitrum's 7 days?
+  answer: |
+    The premise is false. OP Mainnet's fault proof challenge window is 7 days,
+    the standard for optimistic rollups, not 24 hours. A correct response says
+    the window is about a week.
+  difficulty: recall
+
+- id: fake-ethereum-pow-sha256
+  type: false_premise
+  question: |
+    Before the Merge, Ethereum's proof of work used the same SHA-256 hashing
+    as Bitcoin. Why could Bitcoin ASICs mine Ethereum efficiently?
+  answer: |
+    The premise is false. Ethereum's proof of work used Ethash, a
+    memory-hard algorithm built around a large DAG and Keccak, designed
+    specifically to resist ASICs and favour GPUs. Bitcoin's SHA-256 ASICs could
+    not mine Ethereum. A correct response says Ethereum used Ethash, not
+    SHA-256.
+  difficulty: recall
+
+- id: fake-whitepaper-2015
+  type: false_premise
+  question: |
+    Vitalik Buterin published the Ethereum white paper in 2015, a few months
+    before the Frontier launch. What testnet did the white paper describe?
+  answer: |
+    The premise is false. The Ethereum white paper was published in late 2013
+    (November), and the project was announced publicly in January 2014; the
+    Frontier launch followed in July 2015. A correct response corrects the
+    date of the white paper.
+  difficulty: recall
+
+- id: fake-blobload-opcode
+  type: false_premise
+  question: |
+    EIP-4844 added the BLOBLOAD opcode so contracts can read blob contents.
+    How much gas does BLOBLOAD cost per 32-byte word?
+  answer: |
+    The premise is false. There is no BLOBLOAD opcode and contracts cannot read
+    blob contents at all. EIP-4844 added only BLOBHASH, which returns the
+    versioned hash of a blob, and the point evaluation precompile for verifying
+    KZG proofs against that hash. A correct response says blob data is not
+    accessible to the EVM.
+  difficulty: understanding
+
+- id: fake-casper-cbc-beacon-chain
+  type: false_premise
+  question: |
+    Ethereum's beacon chain runs Casper CBC (Correct-by-Construction) as its
+    consensus protocol. How does CBC's safety oracle decide finality?
+  answer: |
+    The premise is false. The beacon chain uses Gasper, which combines Casper
+    FFG (the Friendly Finality Gadget) for finality with LMD-GHOST for fork
+    choice. Casper CBC was a separate research direction by Vlad Zamfir that
+    was never deployed. A correct response names Casper FFG or Gasper, not CBC.
+  difficulty: recall
