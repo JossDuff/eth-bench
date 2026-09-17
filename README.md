@@ -29,7 +29,7 @@ it answered, from [wikipethia](https://github.com/JossDuff/wikipethia) and
 | Qwen3.8-27b + wikipethia  | 0.794   |
 | Qwen3.8-27b + eth-mcp     | 0.655   |
 | Gemma 4 26B-A4B-it        | 0.496   |
-| Qwen3.8-27b               | 0.447   |
+| Qwen3.8-27b               | 0.525   |
 
 ## Run it
 
