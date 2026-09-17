@@ -1,0 +1,13 @@
+# Wikipethia, hosted. An Ethereum research corpus (EIPs, ERCs, consensus and
+# execution specs, ethresear.ch, Ethereum Magicians, EF and Vitalik blogs) with
+# hybrid search and exact spec lookup. The hosted server rate-limits parallel
+# requests; for a full run prefer wikipethia-local.yaml.
+name: wikipethia
+instructions: |
+  You have search and lookup tools over Ethereum's specifications and research.
+  Check exact values and mechanisms with lookup_spec or search_posts before
+  answering, and prefer what the specs say over memory.
+mcp_servers:
+  - name: wikipethia
+    transport: http
+    url: https://mcp.wikipethia.org/mcp

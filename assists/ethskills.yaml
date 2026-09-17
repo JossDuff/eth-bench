@@ -1,0 +1,8 @@
+# ethskills (https://ethskills.com): a skill index for agents building on
+# Ethereum. The index is placed in the system prompt and the model may read the
+# topic files it links to (protocol, standards, crops, l2s, ...).
+name: ethskills
+skills:
+  - name: ethskills
+    source: https://ethskills.com/SKILL.md
+    follow_links: true

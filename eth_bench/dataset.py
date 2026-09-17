@@ -42,16 +42,20 @@ def _empty_to_none(value: object) -> object:
     return value
 
 
-def questions_dir() -> Path:
-    """Locate the questions directory.
+def package_data_dir(name: str) -> Path:
+    """Locate a data directory shipped with the benchmark (`questions`, `assists`).
 
-    Inside an installed wheel the questions are copied into the package. In a
-    development checkout they live at the repository root.
+    Inside an installed wheel it is copied into the package. In a development
+    checkout it lives at the repository root.
     """
-    packaged = Path(__file__).parent / "questions"
+    packaged = Path(__file__).parent / name
     if packaged.is_dir():
         return packaged
-    return Path(__file__).parent.parent / "questions"
+    return Path(__file__).parent.parent / name
+
+
+def questions_dir() -> Path:
+    return package_data_dir("questions")
 
 
 def sections() -> list[str]:

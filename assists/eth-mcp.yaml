@@ -1,0 +1,17 @@
+# b17z/ethereum-mcp (package eth-mcp): RAG search over the consensus specs, EIPs,
+# builder specs and leanEthereum repos, with constant lookup, spec function source,
+# fork and client reference tools. Install with `uv tool install eth-mcp`, then
+# `ethereum-mcp build` to clone and index the sources into ~/.ethereum-mcp.
+name: eth-mcp
+instructions: |
+  You have tools over Ethereum's consensus specifications and EIPs. Before
+  answering, check the facts with them: eth_grep_constant for the value of a
+  named constant, eth_analyze_function for what a spec function does,
+  eth_search_eip for an EIP's contents, eth_search or eth_search_specs for
+  mechanisms, eth_list_forks for upgrade history, and eth_list_clients or
+  eth_get_client for client implementations. Prefer what the specs and EIPs say
+  over memory.
+mcp_servers:
+  - name: eth-mcp
+    transport: stdio
+    command: eth-mcp
