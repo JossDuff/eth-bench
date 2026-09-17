@@ -94,16 +94,19 @@
     If a consensus client asks an execution client for blobs via the Engine API
     and the execution client only has some of them, what does it get back?
   answer: |
-    It depends on the method version. engine_getBlobsV1 returns null for the
-    entire request if any requested blob is missing. engine_getBlobsV2 returns an
-    array of the same length and order as the request, with null in the positions
-    of blobs the client does not have and the blob (with proofs) elsewhere. Both
-    versions reject requests above the size limit with a "Too large request"
-    error. A complete answer must say V1 returns null for the whole response when
-    anything is missing, and V2 returns per-position results with null for
-    missing blobs.
+    It depends on the method version. engine_getBlobsV1 returns an array of the
+    same length and order as the request, with null in the positions of blobs
+    the client does not have and the blob (with proof) elsewhere, so a request
+    for [A, B, C] where B is missing returns [A, null, C]. engine_getBlobsV2 is
+    all-or-nothing: it returns null for the entire response if any requested
+    blob is missing (or only available with an old-style proof).
+    engine_getBlobsV3 restores per-position results with null for missing blobs.
+    All versions reject requests above the size limit with a "Too large request"
+    error. A complete answer must say V1 returns per-position results with null
+    for missing blobs, and V2 returns null for the whole response when anything
+    is missing.
   difficulty: reasoning
-  source: https://github.com/ethereum/execution-apis/blob/main/src/engine/osaka.md
+  source: https://github.com/ethereum/execution-apis/blob/main/src/engine/cancun.md#engine_getblobsv1
 
 - id: engine-newpayload-missing-parent
   type: open
