@@ -26,6 +26,7 @@ scores.
 | Claude Sonnet 5     | 0.875   |
 | Gemma 4 26B-A4B-it  | 0.496   |
 | Qwen3.8-27b         | 0.447   |
+| Nemotrom            | TODO    |
 
 ## Run it
 
