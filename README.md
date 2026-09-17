@@ -12,21 +12,24 @@ Inspect can talk to.
 
 ## Results
 
-Overall score on the 245-question set as of 16 September 2026. Every run was
+Overall score on the 245-question set as of 17 September 2026. Every run was
 graded by `anthropic/claude-fable-5-1`. The score is the mean of the section
-scores.
+scores. The two assisted rows gave Qwen search tools over Ethereum's specs while
+it answered, from [wikipethia](https://github.com/JossDuff/wikipethia) and
+[eth-mcp](https://github.com/b17z/ethereum-mcp); see "Assisted runs" below.
 
-| Model               | Overall |
-|---------------------|---------|
-| GPT-6 Astra         | 0.961   |
-| GPT-5.6 Sol         | 0.951   |
-| Claude Opus 5       | 0.930   |
-| Claude Fable 5.1    | 0.926   |
-| GPT-5.6 Terra       | 0.891   |
-| Claude Sonnet 5     | 0.875   |
-| Gemma 4 26B-A4B-it  | 0.496   |
-| Qwen3.8-27b         | 0.447   |
-| Nemotrom            | TODO    |
+| Model                     | Overall |
+|---------------------------|---------|
+| GPT-6 Astra               | 0.961   |
+| GPT-5.6 Sol               | 0.951   |
+| Claude Opus 5             | 0.930   |
+| Claude Fable 5.1          | 0.926   |
+| GPT-5.6 Terra             | 0.891   |
+| Claude Sonnet 5           | 0.875   |
+| Qwen3.8-27b + wikipethia  | 0.794   |
+| Qwen3.8-27b + eth-mcp     | 0.655   |
+| Gemma 4 26B-A4B-it        | 0.496   |
+| Qwen3.8-27b               | 0.447   |
 
 ## Run it
 
