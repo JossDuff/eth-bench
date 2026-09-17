@@ -56,6 +56,36 @@ the grader needs `ANTHROPIC_API_KEY` set in your environment.
 
 Full list: [Inspect model providers](https://inspect.aisi.org.uk/providers.html).
 
+## Assisted runs
+
+An *assist* gives the model under test tools or documents to use while answering:
+any MCP servers, any skill documents, or both. It is a small YAML file passed as a
+task parameter, and the grader never sees it, so an assisted run scores exactly like
+a bare one and the two can be compared directly.
+
+```sh
+uv run inspect eval eth_bench -T assist=wikipethia --model <your-model> --model-role grader=...
+```
+
+`assist` is the name of a bundled file in `assists/` or a path to your own. Three
+assists ship in `assists/`:
+
+| File                    | Gives the model                                                   |
+|-------------------------|-------------------------------------------------------------------|
+| `wikipethia.yaml`       | Search and spec-lookup tools over the hosted [wikipethia](https://github.com/JossDuff/wikipethia) corpus |
+| `wikipethia-local.yaml` | The same, from a local corpus (`WIKIPETHIA_DB=/path/to/corpus.sqlite`); use this for full runs, the hosted server rate-limits |
+| `ethskills.yaml`        | The [ethskills](https://ethskills.com) index in the system prompt, plus a tool to read the topic files it links to |
+
+To test another MCP server or skill, copy one of these and change the details. The
+format is documented at the top of `eth_bench/assist.py`; `${VAR}` in any value is
+filled from the environment so keys stay out of the file. The model gets up to 10
+rounds of tool calls per question (`-T tool_rounds=N` to change), then must answer
+with tools disabled, and the log is named after the assist (`eth_bench_wikipethia`)
+so runs are easy to tell apart.
+
+The model must support tool calling for MCP assists to have any effect. Expect an
+assisted run to take several times longer than a bare one.
+
 ## Read the results
 
 The terminal prints a table when the run finishes:

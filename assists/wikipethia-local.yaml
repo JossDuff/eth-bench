@@ -1,0 +1,13 @@
+# Wikipethia, run locally over stdio. Install from
+# https://github.com/JossDuff/wikipethia and download a corpus release, then:
+#   WIKIPETHIA_DB=/path/to/corpus.sqlite
+name: wikipethia-local
+instructions: |
+  You have search and lookup tools over Ethereum's specifications and research.
+  Check exact values and mechanisms with lookup_spec or search_posts before
+  answering, and prefer what the specs say over memory.
+mcp_servers:
+  - name: wikipethia
+    transport: stdio
+    command: wikipethia
+    args: [mcp, --db, "${WIKIPETHIA_DB}"]

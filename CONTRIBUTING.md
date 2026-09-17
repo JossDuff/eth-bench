@@ -138,6 +138,16 @@ leaving it out.
 To add a section, create a new directory under `questions/`. Nothing else needs
 to change.
 
+## Assists
+
+An assist file in `assists/` describes tools or documents given to the model under
+test. To add one, copy an existing file and change the name (lowercase, hyphens),
+the MCP servers (`transport: http` with a `url`, or `transport: stdio` with a
+`command` and `args`), and the skills (`source` is a URL or a path relative to the
+file; `follow_links: true` adds a tool that can read documents from the same site or
+directory). Put secrets in the environment and reference them as `${VAR}`. Run
+`uv run pytest`; every file in `assists/` is parsed by the tests.
+
 ## Code changes
 
 ```sh
