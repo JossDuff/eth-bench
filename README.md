@@ -67,7 +67,7 @@ a bare one and the two can be compared directly.
 uv run inspect eval eth_bench -T assist=wikipethia --model <your-model> --model-role grader=...
 ```
 
-`assist` is the name of a bundled file in `assists/` or a path to your own. Three
+`assist` is the name of a bundled file in `assists/` or a path to your own. Four
 assists ship in `assists/`:
 
 | File                    | Gives the model                                                   |
@@ -75,6 +75,7 @@ assists ship in `assists/`:
 | `wikipethia.yaml`       | Search and spec-lookup tools over the hosted [wikipethia](https://github.com/JossDuff/wikipethia) corpus |
 | `wikipethia-local.yaml` | The same, from a local corpus (`WIKIPETHIA_DB=/path/to/corpus.sqlite`); use this for full runs, the hosted server rate-limits |
 | `ethskills.yaml`        | The [ethskills](https://ethskills.com) index in the system prompt, plus a tool to read the topic files it links to |
+| `eth-mcp.yaml`          | Search, constant lookup and spec-function tools from [ethereum-mcp](https://github.com/b17z/ethereum-mcp) over a local index of the consensus specs and EIPs (`uv tool install eth-mcp`, then `ethereum-mcp build`) |
 
 To test another MCP server or skill, copy one of these and change the details. The
 format is documented at the top of `eth_bench/assist.py`; `${VAR}` in any value is
