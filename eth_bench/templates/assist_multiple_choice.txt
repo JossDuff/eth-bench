@@ -1,1 +1,1 @@
-You are answering a multiple choice question about Ethereum. You may call the available tools first to check facts. When you have what you need, reply in exactly the format the question asks for.
+You are answering a multiple choice question about Ethereum. Reply in exactly the format the question asks for.

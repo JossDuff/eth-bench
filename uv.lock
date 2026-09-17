@@ -743,6 +743,7 @@ version = "0.1.0"
 source = { editable = "." }
 dependencies = [
     { name = "anthropic" },
+    { name = "httpx" },
     { name = "inspect-ai" },
     { name = "mcp" },
     { name = "openai" },
@@ -759,8 +760,9 @@ dev = [
 [package.metadata]
 requires-dist = [
     { name = "anthropic", specifier = ">=0.70" },
+    { name = "httpx", specifier = ">=0.27" },
     { name = "inspect-ai", specifier = ">=0.3.263" },
-    { name = "mcp", specifier = ">=1.10,<2" },
+    { name = "mcp", specifier = ">=1.23,<2" },
     { name = "openai", specifier = ">=1.100" },
     { name = "pydantic", specifier = ">=2" },
     { name = "pyyaml", specifier = ">=6" },

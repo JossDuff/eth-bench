@@ -17,7 +17,9 @@ from inspect_ai.model import (
 )
 
 from eth_bench.assist import (
+    MAX_TOOL_OUTPUT_BYTES,
     AssistError,
+    SkillBase,
     load_assist,
     load_assist_config,
     read_document,
@@ -29,7 +31,12 @@ from eth_bench.tasks import eth_bench
 
 FAKE_MCP_SERVER = textwrap.dedent(
     """
+    import os
     from mcp.server.fastmcp import FastMCP
+
+    if os.environ.get("STARTS_LOG"):
+        with open(os.environ["STARTS_LOG"], "a") as f:
+            f.write("started\\n")
 
     server = FastMCP("fake")
 
@@ -170,15 +177,49 @@ async def test_read_document_tool_stays_inside_the_skill_directory(skill_dir):
     assert "read_document" in assist.system_text
     assert "the answer is 42" in await tool(str(skill_dir / "topic.md"))
     assert (await tool(str(skill_dir.parent / "secret.md"))).startswith("Refused")
-    assert (await tool(str(skill_dir / ".." / "secret.md"))).startswith("Refused")
+    assert (await tool("../secret.md")).startswith("Refused")
     assert (await tool("/etc/passwd")).startswith("Refused")
     assert (await tool(str(skill_dir / "missing.md"))).startswith("Could not read")
 
 
 @pytest.mark.anyio
 async def test_read_document_tool_url_scope_is_the_origin():
-    tool = read_document(["https://ethskills.com/"])
+    tool = read_document([SkillBase("https://ethskills.com/SKILL.md")])
     assert (await tool("https://evil.example/SKILL.md")).startswith("Refused")
+    # Malformed locations come back as text, never as an exception that kills the sample.
+    for bad in ("https://ethskills.com:abc/x", "http://[ethskills.com/SKILL.md"):
+        assert (await tool(bad)).startswith(("Refused", "Could not read"))
+
+
+def test_relative_links_resolve_against_the_skill(skill_dir):
+    url_base = SkillBase("https://ethskills.com/SKILL.md")
+    assert url_base.resolve("protocol/SKILL.md") == "https://ethskills.com/protocol/SKILL.md"
+    assert url_base.resolve("/crops/SKILL.md") == "https://ethskills.com/crops/SKILL.md"
+    assert (
+        url_base.resolve("https://ethskills.com/gas/SKILL.md")
+        == "https://ethskills.com/gas/SKILL.md"
+    )
+    assert url_base.resolve("https://evil.example/x") is None
+    local = SkillBase(str(skill_dir / "SKILL.md"))
+    assert local.resolve("topic.md") == str(skill_dir / "topic.md")
+    assert local.resolve("../secret.md") is None
+
+
+@pytest.mark.anyio
+async def test_read_document_follows_relative_links_as_written(skill_dir):
+    assist = load_assist(
+        write(
+            skill_dir / "assist.yaml",
+            "name: r\nskills: [{name: mine, source: SKILL.md, follow_links: true}]\n",
+        )
+    )
+    [tool] = assist.tool_sources
+    assert "the answer is 42" in await tool("topic.md")
+
+
+def test_missing_skill_document_is_an_assist_error(tmp_path):
+    with pytest.raises(AssistError, match="could not read skill document"):
+        load_assist(write(tmp_path / "a.yaml", "name: a\nskills: [{name: s, source: nope.md}]\n"))
 
 
 # --- solver -----------------------------------------------------------------------
@@ -209,6 +250,7 @@ def test_assist_text_reaches_every_question_type(skill_dir, tmp_path):
         assert sample.metadata["assist"] == "s"
         if sample.metadata["type"] == "multiple_choice":
             assert system.text.startswith(read_template("assist_multiple_choice.txt"))
+            assert "tools" not in system.text.lower()  # skill-only assist offers none
             [user] = [m for m in sample.messages if isinstance(m, ChatMessageUser)]
             assert "ANSWER: $LETTER" in user.text
         else:
@@ -225,21 +267,28 @@ def test_without_an_assist_nothing_changes(tmp_path):
             assert not any(isinstance(m, ChatMessageSystem) for m in sample.messages)
 
 
-def test_mcp_server_tools_are_offered_and_called(tmp_path):
+def _fake_mcp_assist(tmp_path, name="fake-mcp"):
     server_py = write(tmp_path / "server.py", FAKE_MCP_SERVER)
+    starts = tmp_path / "starts.log"
     assist = load_assist(
         write(
             tmp_path / "assist.yaml",
             f"""
-            name: fake-mcp
+            name: {name}
             mcp_servers:
               - name: fake
                 transport: stdio
                 command: "{sys.executable}"
                 args: ["{server_py}"]
+                env: {{STARTS_LOG: "{starts}"}}
             """,
         )
     )
+    return assist, starts
+
+
+def test_mcp_server_tools_are_offered_and_called(tmp_path):
+    assist, starts = _fake_mcp_assist(tmp_path)
     dataset = load_dataset().filter(lambda s: s.id == "consensus-slots-per-epoch")
     model = get_model(
         "mockllm/model",
@@ -257,22 +306,20 @@ def test_mcp_server_tools_are_offered_and_called(tmp_path):
     assert sample.output.completion == "ANSWER: B"
     model_events = [e for e in sample.events if e.event == "model"]
     assert all("lookup_spec" in [t.name for t in e.tools] for e in model_events)
+    [system] = [m for m in sample.messages if isinstance(m, ChatMessageSystem)]
+    assert "Call the available tools first" in system.text
+    # One server process for the whole sample: listing tools reused the connection.
+    assert starts.read_text().count("started") == 1
 
 
 def test_tool_rounds_are_bounded_then_the_model_must_answer(tmp_path):
-    server_py = write(tmp_path / "server.py", FAKE_MCP_SERVER)
-    assist = load_assist(
-        write(
-            tmp_path / "assist.yaml",
-            f"""
-            name: chatty
-            mcp_servers: [{{name: fake, transport: stdio, command: "{sys.executable}", args: ["{server_py}"]}}]
-            """,
-        )
-    )
+    assist, _ = _fake_mcp_assist(tmp_path, name="chatty")
 
-    def keeps_searching(_input, _tools, tool_choice, _config):
-        if tool_choice == "none":
+    def keeps_searching(_input, tools, tool_choice, _config):
+        # The final turn must remove the tools, not just set tool_choice: some
+        # providers ignore tool_choice while the model is reasoning.
+        if not tools:
+            assert tool_choice == "none"
             return ModelOutput.from_content("mockllm/model", "ANSWER: B")
         return ModelOutput.for_tool_call("mockllm/model", "lookup_spec", {"name": "X"})
 
@@ -287,6 +334,27 @@ def test_tool_rounds_are_bounded_then_the_model_must_answer(tmp_path):
     assert sample.limit is None
 
 
+def test_message_limit_leaves_room_for_the_final_answer(tmp_path):
+    assist, _ = _fake_mcp_assist(tmp_path, name="capped")
+
+    def keeps_searching(_input, tools, _tool_choice, _config):
+        if not tools:
+            return ModelOutput.from_content("mockllm/model", "ANSWER: B")
+        return ModelOutput.for_tool_call("mockllm/model", "lookup_spec", {"name": "X"})
+
+    dataset = load_dataset().filter(lambda s: s.id == "consensus-slots-per-epoch")
+    # system + user = 2 messages; one round adds 2 more; the final answer needs 1.
+    task = Task(
+        dataset=dataset, solver=eth_bench_solver(assist=assist, tool_rounds=10), message_limit=6
+    )
+    model = get_model("mockllm/model", custom_outputs=keeps_searching)
+    [log] = eval(task, model=model, log_dir=str(tmp_path / "logs"), display="none")
+    [sample] = log.samples
+    assert sample.limit is None, "the cap pre-empted the forced answer"
+    assert len([m for m in sample.messages if isinstance(m, ChatMessageTool)]) == 1
+    assert sample.output.completion == "ANSWER: B"
+
+
 # --- task -------------------------------------------------------------------------
 
 
@@ -295,7 +363,9 @@ def test_task_records_the_assist(skill_dir):
     task = eth_bench(assist=str(path), sections="eips")
     assert task.name == "eth_bench_mine"
     assert task.metadata == {"assist": "mine"}
-    assert task.message_limit == 60
+    assert task.message_limit is None
+    assert task.config.max_tool_output == MAX_TOOL_OUTPUT_BYTES
     bare = eth_bench(sections="eips")
     assert bare.name == "eth_bench"
     assert bare.message_limit is None
+    assert bare.config.max_tool_output is None

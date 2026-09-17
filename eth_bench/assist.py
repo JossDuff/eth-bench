@@ -18,11 +18,14 @@ Config format:
         transport: http        # or stdio
         url: https://mcp.wikipethia.org/mcp
         headers: {Authorization: "Bearer ${TOKEN}"}
+        timeout: 30            # seconds to connect; tool calls themselves are not bounded
         tools: all             # or a list of tool names
       - name: local
         transport: stdio
         command: wikipethia
         args: [mcp, --db, "${WIKIPETHIA_DB}"]
+        env: {RUST_LOG: info}  # optional extra environment for the process
+        cwd: .                 # optional, relative to this file
     skills:
       - name: ethskills
         source: https://ethskills.com/SKILL.md    # URL, or a path relative to this file
@@ -38,15 +41,23 @@ import os
 import re
 from pathlib import Path
 from typing import Any, Literal
-from urllib.parse import urlparse
+from urllib.parse import urljoin, urlparse
 
+import anyio
 import httpx
 import yaml
 from inspect_ai.tool import Tool, ToolSource, mcp_server_http, mcp_server_stdio, mcp_tools, tool
 from pydantic import BaseModel, ConfigDict, Field, model_validator
 
-MAX_DOCUMENT_CHARS = 200_000
+from eth_bench.dataset import package_data_dir
+
+# The most of a document the model is ever shown, in characters, and the matching
+# tool-output ceiling the task must set so Inspect does not truncate below it.
+MAX_DOCUMENT_CHARS = 100_000
+MAX_TOOL_OUTPUT_BYTES = 4 * MAX_DOCUMENT_CHARS
+
 _ENV_VAR = re.compile(r"\$\{([A-Za-z_][A-Za-z0-9_]*)\}")
+_document_cache: dict[str, str] = {}
 
 
 class AssistError(ValueError):
@@ -137,55 +148,109 @@ def load_assist_config(path: str | Path) -> AssistConfig:
         raise AssistError(f"{path}: {e}") from e
 
 
+# --- documents --------------------------------------------------------------------
+
+
 def _is_url(source: str) -> bool:
-    return urlparse(source).scheme in ("http", "https")
+    try:
+        return urlparse(source).scheme in ("http", "https")
+    except ValueError:
+        return False
 
 
-def _read_source(source: str) -> str:
-    """Read a document from a URL or a local path, truncating very large ones."""
-    if _is_url(source):
-        response = httpx.get(source, follow_redirects=True, timeout=30)
-        response.raise_for_status()
-        text = response.text
-    else:
-        text = Path(source).read_text()
+def _truncate(text: str) -> str:
     if len(text) > MAX_DOCUMENT_CHARS:
-        text = text[:MAX_DOCUMENT_CHARS] + f"\n\n[truncated at {MAX_DOCUMENT_CHARS} characters]"
+        return text[:MAX_DOCUMENT_CHARS] + f"\n\n[truncated at {MAX_DOCUMENT_CHARS} characters]"
     return text
 
 
-def _skill_scope(source: str) -> str:
-    """The prefix a skill's linked documents must share with its root document."""
+def read_document_sync(source: str) -> str:
+    """Read a skill's root document when the task is built.
+
+    Cached per process, so resolving the task once per model does not refetch it.
+    """
+    if source not in _document_cache:
+        try:
+            if _is_url(source):
+                response = httpx.get(source, follow_redirects=True, timeout=30)
+                response.raise_for_status()
+                text = response.text
+            else:
+                text = Path(source).read_text()
+        except (OSError, httpx.HTTPError, httpx.InvalidURL) as e:
+            raise AssistError(f"could not read skill document {source}: {e}") from e
+        _document_cache[source] = _truncate(text)
+    return _document_cache[source]
+
+
+_http: httpx.AsyncClient | None = None
+
+
+async def _read_document_async(source: str) -> str:
+    """Read a linked document from inside a tool call without blocking the event loop."""
+    global _http
     if _is_url(source):
-        parsed = urlparse(source)
-        return f"{parsed.scheme}://{parsed.netloc}/"
-    return str(Path(source).resolve().parent) + "/"
+        if _http is None:
+            _http = httpx.AsyncClient(follow_redirects=True, timeout=30)
+        response = await _http.get(source)
+        response.raise_for_status()
+        return _truncate(response.text)
+    return _truncate(await anyio.Path(source).read_text())
+
+
+class SkillBase:
+    """Where a skill's root document lives, for resolving and bounding its links."""
+
+    def __init__(self, source: str) -> None:
+        self.is_url = _is_url(source)
+        if self.is_url:
+            parsed = urlparse(source)
+            self.root = source
+            self.scope = f"{parsed.scheme}://{parsed.netloc}/"
+        else:
+            resolved = Path(source).resolve()
+            self.root = str(resolved)
+            self.scope = str(resolved.parent) + "/"
+
+    def resolve(self, location: str) -> str | None:
+        """The absolute location `location` refers to relative to this skill, or None
+        if it falls outside the skill's site or directory."""
+        if _is_url(location):
+            target = location
+        elif self.is_url:
+            target = urljoin(self.root, location)
+        else:
+            target = str((Path(self.scope) / location).resolve())
+        return target if target.startswith(self.scope) else None
 
 
 @tool
-def read_document(scopes: list[str]) -> Tool:
+def read_document(bases: list[SkillBase]) -> Tool:
     """Reads a document a skill links to, restricted to the skills' own locations."""
 
     async def execute(location: str) -> str:
         """Read a document that a skill document links to.
 
         Args:
-            location: The document's URL, or its path for a skill loaded from disk.
-                It must be under the same site or directory as the skill it was
-                linked from.
+            location: The document's URL or path, exactly as the skill document
+                links to it. Relative links are resolved against the skill. Only
+                documents under the same site or directory as a skill can be read.
         """
-        target = location if _is_url(location) else str(Path(location).resolve())
-        if not any(target.startswith(scope) for scope in scopes):
-            return (
-                f"Refused: {location} is outside the documents this assist may read. "
-                f"Allowed locations start with: {', '.join(scopes)}"
-            )
         try:
-            return _read_source(target)
-        except (OSError, httpx.HTTPError) as e:
+            targets = [t for base in bases if (t := base.resolve(location))]
+            if not targets:
+                return (
+                    f"Refused: {location} is outside the documents this assist may read. "
+                    f"Allowed locations start with: {', '.join(b.scope for b in bases)}"
+                )
+            return await _read_document_async(targets[0])
+        except Exception as e:  # noqa: BLE001 - anything the model can cause must come back as text
             return f"Could not read {location}: {e}"
 
     return execute
+
+
+# --- runtime ----------------------------------------------------------------------
 
 
 class Assist:
@@ -199,14 +264,16 @@ class Assist:
             self.tool_sources.append(mcp_tools(_make_server(server, base_dir), tools=server.tools))
 
         documents: list[str] = []
-        scopes: list[str] = []
+        bases: list[SkillBase] = []
         for skill in config.skills:
             source = skill.source if _is_url(skill.source) else str(base_dir / skill.source)
-            documents.append(f"# Skill: {skill.name}\nSource: {source}\n\n{_read_source(source)}")
+            documents.append(
+                f"# Skill: {skill.name}\nSource: {source}\n\n{read_document_sync(source)}"
+            )
             if skill.follow_links:
-                scopes.append(_skill_scope(source))
-        if scopes:
-            self.tool_sources.append(read_document(scopes))
+                bases.append(SkillBase(source))
+        if bases:
+            self.tool_sources.append(read_document(bases))
 
         parts: list[str] = []
         if config.instructions:
@@ -216,7 +283,7 @@ class Assist:
                 "You have tools available. Use them to look up anything you are not certain of "
                 "before answering."
             )
-        if scopes:
+        if bases:
             parts.append(
                 "The skill documents below link to further documents. Use the read_document "
                 "tool to read any of them that are relevant."
@@ -227,6 +294,10 @@ class Assist:
     @property
     def name(self) -> str:
         return self.config.name
+
+    @property
+    def has_tools(self) -> bool:
+        return bool(self.tool_sources)
 
 
 def _make_server(server: MCPServerConfig, base_dir: Path):
@@ -243,11 +314,8 @@ def _make_server(server: MCPServerConfig, base_dir: Path):
 
 
 def assists_dir() -> Path:
-    """The bundled assist files: inside the package when installed, else the repo root."""
-    packaged = Path(__file__).parent / "assists"
-    if packaged.is_dir():
-        return packaged
-    return Path(__file__).parent.parent / "assists"
+    """The bundled assist files."""
+    return package_data_dir("assists")
 
 
 def resolve_assist_path(value: str | Path) -> Path:

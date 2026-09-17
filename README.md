@@ -80,8 +80,9 @@ To test another MCP server or skill, copy one of these and change the details. T
 format is documented at the top of `eth_bench/assist.py`; `${VAR}` in any value is
 filled from the environment so keys stay out of the file. The model gets up to 10
 rounds of tool calls per question (`-T tool_rounds=N` to change), then must answer
-with tools disabled, and the log is named after the assist (`eth_bench_wikipethia`)
-so runs are easy to tell apart.
+with tools removed, and the log is named after the assist (`eth_bench_wikipethia`)
+so runs are easy to tell apart. Tool calls themselves have no deadline, so pass
+`--timeout` on runs against remote servers.
 
 The model must support tool calling for MCP assists to have any effect. Expect an
 assisted run to take several times longer than a bare one.
