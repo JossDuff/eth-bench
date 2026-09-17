@@ -28,8 +28,8 @@ it answered, from [wikipethia](https://github.com/JossDuff/wikipethia) and
 | Claude Sonnet 5           | 0.875   |
 | Qwen3.8-27b + wikipethia  | 0.794   |
 | Qwen3.8-27b + eth-mcp     | 0.655   |
-| Gemma 4 26B-A4B-it        | 0.496   |
 | Qwen3.8-27b               | 0.525   |
+| Gemma 4 26B-A4B-it        | 0.496   |
 
 ## Run it
 
