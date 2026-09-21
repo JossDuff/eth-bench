@@ -310,3 +310,44 @@
     choice. Casper CBC was a separate research direction by Vlad Zamfir that
     was never deployed. A correct response names Casper FFG or Gasper, not CBC.
   difficulty: recall
+
+- id: fake-solidity-checked-arithmetic-0-7
+  type: false_premise
+  question: |
+    Solidity 0.7.0 made integer arithmetic checked by default, reverting on
+    overflow. How did contracts written for 0.6 opt back into wrapping
+    behaviour after upgrading to 0.7?
+  answer: |
+    The premise is false. Checked arithmetic became the default in Solidity
+    0.8.0, not 0.7.0; in 0.7.x integers still wrapped silently and projects used
+    libraries such as SafeMath. The `unchecked { }` block that opts back into
+    wrapping was introduced alongside checked arithmetic in 0.8.0. A correct
+    response corrects the version to 0.8.0.
+  difficulty: recall
+
+- id: fake-solidity-float-type
+  type: false_premise
+  question: |
+    Solidity's `float` type is 64-bit IEEE 754. Why did the language designers
+    choose double precision over single precision?
+  answer: |
+    The premise is false. Solidity has no floating-point type at all. The
+    grammar reserves fixed-point types (`fixed` and `ufixed`), but they cannot
+    be assigned to or used in arithmetic, and there is no `float`. Fractional
+    values are handled with scaled integers. A correct response says Solidity
+    has no float type.
+  difficulty: recall
+
+- id: fake-solidity-transfer-forwards-all-gas
+  type: false_premise
+  question: |
+    Since Solidity 0.8.0, `address.transfer()` forwards all remaining gas to
+    the recipient. What reentrancy risks did this change introduce compared to
+    the old 2300 gas stipend?
+  answer: |
+    The premise is false. `address.transfer()` still forwards only the 2300 gas
+    stipend and reverts on failure, as it always has; the same is true of
+    `send`, which returns false instead of reverting. It is the low-level
+    `address.call{value: ...}("")` that forwards all remaining gas by default.
+    A correct response says transfer's gas stipend did not change.
+  difficulty: recall

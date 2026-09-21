@@ -1,0 +1,267 @@
+- id: solidity-uint8-overflow-0-8
+  type: multiple_choice
+  question: |
+    In Solidity 0.8.x, what happens when this function is called?
+
+        function f() external pure returns (uint8) {
+            uint8 x = 255;
+            x++;
+            return x;
+        }
+  choices:
+    - It reverts with a Panic error, code 0x11 (arithmetic overflow)
+    - It returns 0; the increment wraps around
+    - It fails to compile because the overflow is detectable at compile time
+    - It returns 255; the increment is silently ignored
+  answer: A
+  difficulty: recall
+  source: https://docs.soliditylang.org/en/latest/control-structures.html#checked-or-unchecked-arithmetic
+
+- id: solidity-storage-slot-packing
+  type: multiple_choice
+  question: |
+    Given this contract, which storage slot holds the variable e?
+
+        contract C {
+            uint128 a;
+            uint256 b;
+            uint128 c;
+            uint64 d;
+            address e;
+        }
+  choices:
+    - Slot 3
+    - Slot 2
+    - Slot 4
+    - Slot 1
+  answer: A
+  difficulty: reasoning
+  source: https://docs.soliditylang.org/en/latest/internals/layout_in_storage.html
+
+- id: solidity-selector-canonical-signature
+  type: multiple_choice
+  question: |
+    A Solidity function is declared as
+
+        function transfer(address to, uint256 amount) external returns (bool);
+
+    Which string is hashed with keccak256 to produce its 4-byte selector?
+  choices:
+    - transfer(address,uint256)
+    - transfer(address to,uint256 amount)
+    - transfer(address,uint)
+    - transfer(address, uint256) returns (bool)
+  answer: A
+  difficulty: understanding
+  source: https://docs.soliditylang.org/en/latest/abi-spec.html#function-selector
+
+- id: solidity-calldata-vs-memory-param
+  type: open
+  question: |
+    An external Solidity function takes a uint256[] parameter. What is the
+    difference between declaring it as `calldata` and as `memory`, and when
+    would you choose each?
+  answer: |
+    With `calldata` the array is read directly from the transaction's calldata:
+    nothing is copied, so the call costs no memory-expansion gas proportional to
+    the array's length, but the data is read-only and cannot be modified. With
+    `memory` the ABI decoder copies the array into memory first, which costs gas
+    that grows with the array's length, but the function can then modify it.
+    Choose `calldata` for parameters that are only read or passed along (it is
+    also the only option that supports slicing, `arr[i:j]`); choose `memory`
+    when the function needs to mutate the array. A complete answer must say
+    `calldata` avoids the copy and is read-only, and `memory` copies and is
+    mutable.
+  difficulty: understanding
+  source: https://docs.soliditylang.org/en/latest/types.html#data-location
+
+- id: solidity-reentrancy-in-withdraw
+  type: open
+  question: |
+    This function is part of a contract compiled with Solidity 0.8.20. What is
+    wrong with it, how would an attacker exploit it, and how should it be fixed?
+
+        mapping(address => uint256) public balances;
+
+        function withdraw() external {
+            uint256 amount = balances[msg.sender];
+            (bool ok, ) = msg.sender.call{value: amount}("");
+            require(ok, "transfer failed");
+            balances[msg.sender] = 0;
+        }
+  answer: |
+    It is vulnerable to reentrancy. The ETH is sent with a low-level call before
+    the caller's balance is zeroed, and `call` forwards all remaining gas, so a
+    contract at msg.sender can, in its receive or fallback function, call
+    withdraw again while balances[msg.sender] still holds the original amount,
+    repeating until the contract is drained. Solidity 0.8's checked arithmetic
+    does not help because no arithmetic overflows. The fix is to follow
+    checks-effects-interactions: set balances[msg.sender] = 0 before making the
+    external call (or use a reentrancy guard such as OpenZeppelin's
+    nonReentrant). A complete answer must identify reentrancy through the
+    external call happening before the state update, and give the fix of
+    updating state first or adding a reentrancy guard.
+  difficulty: reasoning
+  source: https://docs.soliditylang.org/en/latest/security-considerations.html#reentrancy
+
+- id: solidity-immutable-vs-constant
+  type: multiple_choice
+  question: |
+    In Solidity 0.8.x, how do `constant` and `immutable` state variables differ,
+    and where do their values live once the contract is deployed?
+  choices:
+    - A constant must be a compile-time expression and is inlined at each use; an immutable may be assigned once, in the constructor or at declaration, and its value is written into the deployed bytecode. Neither reads storage.
+    - Both are stored in storage slots but marked read-only by the compiler
+    - A constant may be assigned in the constructor; an immutable must be fixed at compile time
+    - An immutable is stored in storage and a constant in memory
+  answer: A
+  difficulty: understanding
+  source: https://docs.soliditylang.org/en/latest/contracts.html#constant-and-immutable-state-variables
+
+- id: solidity-abi-encode-string-length
+  type: multiple_choice
+  question: |
+    How many bytes long is the result of `abi.encode("abc")`?
+  choices:
+    - 96
+    - 64
+    - 35
+    - 32
+  answer: A
+  difficulty: reasoning
+  source: https://docs.soliditylang.org/en/latest/abi-spec.html#formal-specification-of-the-encoding
+
+- id: solidity-encodepacked-collision
+  type: open
+  question: |
+    A contract computes `keccak256(abi.encodePacked(a, b))` where `a` and `b`
+    are both `string` parameters supplied by the caller, and uses the hash as a
+    unique key. Why is this unsafe, and what should be used instead?
+  answer: |
+    `abi.encodePacked` concatenates dynamic types without padding or length
+    prefixes, so different pairs of inputs can produce identical bytes: ("a",
+    "bc") and ("ab", "c") both pack to "abc" and hash to the same key. A caller
+    can therefore forge a collision with another user's key. Use `abi.encode`,
+    which length-prefixes and pads every argument so the encoding is unambiguous,
+    or ensure at most one argument is dynamic (the compiler warns when two or
+    more are). A complete answer must explain that packed encoding of two dynamic
+    values is ambiguous, leading to hash collisions, and name `abi.encode` as the
+    fix.
+  difficulty: reasoning
+  source: https://docs.soliditylang.org/en/latest/abi-spec.html#non-standard-packed-mode
+
+- id: solidity-indexed-string-event
+  type: multiple_choice
+  question: |
+    An event is declared as `event Named(string indexed name);`. When it is
+    emitted, what does the log contain for `name`?
+  choices:
+    - The keccak256 hash of the string in a topic; the string itself is not in the log and cannot be recovered from it
+    - The full string in the log's data field
+    - The first 32 bytes of the string in a topic
+    - Nothing; indexing a dynamic type is a compile error
+  answer: A
+  difficulty: understanding
+  source: https://docs.soliditylang.org/en/latest/abi-spec.html#events
+
+- id: solidity-delete-struct-with-mapping
+  type: multiple_choice
+  question: |
+    Given
+
+        struct Account { uint256 total; mapping(address => uint256) shares; }
+        Account internal acct;
+
+    what does `delete acct;` do?
+  choices:
+    - Resets total to 0 and leaves every entry of shares untouched
+    - Resets total to 0 and clears every entry of shares
+    - Fails to compile because the struct contains a mapping
+    - Reverts at runtime because mappings cannot be deleted
+  answer: A
+  difficulty: understanding
+  source: https://docs.soliditylang.org/en/latest/types.html#delete
+
+- id: solidity-super-call-order
+  type: open
+  question: |
+    Contract A declares `function f() public virtual`. Contracts B and C each
+    inherit A, override f, and call `super.f()` in their body. Contract D is
+    declared `contract D is B, C`, overrides f, and calls `super.f()`. When
+    `D.f()` is called, in what order do the four bodies run, and what rule
+    determines it?
+  answer: |
+    D's body runs first, then C's, then B's, then A's. Solidity uses C3
+    linearization, and in the `is` list the bases are written from "most
+    base-like" to "most derived", so the right-most base, C, is the nearest
+    ancestor. `super` follows that linearization: D's super is C, C's super is
+    B, and B's super is A, even though B and C each declared only A as a
+    parent. A complete answer must give the order D, C, B, A and attribute it to
+    the linearization order, with the right-most base in the `is` list being
+    called first.
+  difficulty: reasoning
+  source: https://docs.soliditylang.org/en/latest/contracts.html#multiple-inheritance-and-linearization
+
+- id: solidity-custom-errors-revert-data
+  type: open
+  question: |
+    What revert data does `require(ok, "not owner")` produce, what does a custom
+    error such as `revert NotOwner(msg.sender)` produce, and why are custom
+    errors cheaper?
+  answer: |
+    A require with a string reverts with the ABI encoding of `Error(string)`:
+    the selector 0x08c379a0 followed by the ABI-encoded string. A custom error
+    reverts with its own 4-byte selector, the keccak256 of its signature
+    (`NotOwner(address)`), followed by the ABI-encoded arguments. Custom errors
+    are cheaper because the revert string does not have to be stored in the
+    deployed bytecode (lower deployment cost) and the revert data is a few words
+    instead of an encoded string (lower runtime cost), while still carrying
+    structured information the caller can decode. A complete answer must say
+    require strings encode as Error(string) and custom errors as their own
+    selector plus arguments, and give bytecode size or revert-data size as the
+    saving.
+  difficulty: understanding
+  source: https://docs.soliditylang.org/en/latest/contracts.html#errors-and-the-revert-statement
+
+- id: solidity-transient-keyword
+  type: multiple_choice
+  question: |
+    Since Solidity 0.8.28 a state variable can be declared
+    `uint256 transient locked;`. What does this do?
+  choices:
+    - Stores the variable with TSTORE/TLOAD; its value persists across calls within one transaction and is reset to zero when the transaction ends. It requires an EVM target of Cancun or later.
+    - Stores the variable in memory so it is reset on every external call
+    - Marks the variable as a cheaper form of permanent storage that skips the cold-access charge
+    - Makes the variable a compile-time constant that is inlined
+  answer: A
+  difficulty: recall
+  source: https://docs.soliditylang.org/en/latest/contracts.html#transient-storage
+
+- id: solidity-public-array-getter
+  type: multiple_choice
+  question: |
+    A contract declares `uint256[] public values;`. What does the automatically
+    generated getter `values(...)` do?
+  choices:
+    - Takes an index and returns the single element at that position
+    - Returns the whole array
+    - Returns the array's length
+    - Returns the array as ABI-encoded bytes
+  answer: A
+  difficulty: understanding
+  source: https://docs.soliditylang.org/en/latest/contracts.html#getter-functions
+
+- id: solidity-fallback-without-receive
+  type: multiple_choice
+  question: |
+    A contract declares `fallback() external payable { count++; }` and no
+    `receive` function. Someone sends it 1 ETH in a transaction with empty
+    calldata. What happens?
+  choices:
+    - The fallback function runs and count is incremented; the compiler only warns that receive is missing
+    - The transaction reverts because plain ETH transfers require a receive function
+    - The ETH is accepted but no code runs
+    - It fails to compile because a payable fallback needs a receive function
+  answer: A
+  difficulty: understanding
+  source: https://docs.soliditylang.org/en/latest/contracts.html#fallback-function
