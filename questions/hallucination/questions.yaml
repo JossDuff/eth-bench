@@ -351,3 +351,139 @@
     `address.call{value: ...}("")` that forwards all remaining gas by default.
     A correct response says transfer's gas stipend did not change.
   difficulty: recall
+
+- id: fake-3860-initcode-limit-equals-runtime-limit
+  type: false_premise
+  question: |-
+    In Shanghai, EIP-3860 set MAX_INITCODE_SIZE to 24,576 bytes, matching
+    EIP-170's deployed-code limit. Why did it choose the same size limit for
+    initcode and deployed runtime code?
+  answer: |-
+    The premise is false. EIP-3860 sets MAX_INITCODE_SIZE to twice
+    MAX_CODE_SIZE: 49,152 bytes, not 24,576 bytes. A correct response must
+    reject the claimed equality or identify the correct initcode limit.
+  difficulty: recall
+  source: https://eips.ethereum.org/EIPS/eip-3860
+- id: fake-2565-modexp-zero-minimum-gas
+  type: false_premise
+  question: |-
+    Under Berlin's EIP-2565 pricing, the MODEXP precompile has no minimum
+    gas charge, so sufficiently small inputs cost zero gas. Which input
+    lengths produce this zero-gas case?
+  answer: |-
+    The premise is false. EIP-2565 imposes a minimum MODEXP gas cost of
+    200, even when the calculated complexity-based charge is smaller.
+    A correct response must reject the zero-gas case by identifying the
+    nonzero minimum; stating the 200-gas floor is sufficient.
+  difficulty: recall
+  source: https://eips.ethereum.org/EIPS/eip-2565
+- id: fake-4788-ring-buffer-slot-index
+  type: false_premise
+  question: |-
+    Dencun's EIP-4788 beacon-roots contract indexes its ring buffer using
+    the beacon slot number modulo 8191. How does the contract derive that
+    slot number from the timestamp supplied in a lookup?
+  answer: |-
+    The premise is false. The contract indexes using the timestamp itself
+    modulo HISTORY_BUFFER_LENGTH, which is 8191, not a beacon slot number.
+    A lookup checks the stored timestamp at that index and retrieves the
+    root from the corresponding root entry. A correct response must reject
+    the slot-number indexing claim and identify timestamp-based indexing.
+  difficulty: understanding
+  source: https://eips.ethereum.org/EIPS/eip-4788
+- id: fake-7514-eight-validator-exit-cap
+  type: false_premise
+  question: |-
+    In Dencun, EIP-7514 capped voluntary validator exits at eight validators
+    per epoch. Where in the exit-queue calculation is its
+    MAX_PER_EPOCH_ACTIVATION_CHURN_LIMIT constant applied?
+  answer: |-
+    The premise is false. EIP-7514 caps activation churn at eight validators
+    per epoch, not exit churn. Its activation-specific limit is not applied
+    to the exit queue, which retains the existing validator churn limit.
+    A correct response must distinguish the activation cap from exit churn
+    and reject its claimed application to exits.
+  difficulty: understanding
+  source: https://eips.ethereum.org/EIPS/eip-7514
+- id: fake-1153-transient-writes-survive-revert
+  type: false_premise
+  question: |-
+    Under Cancun's EIP-1153, transient storage is cleared only at transaction
+    end, so TSTORE writes survive a call-frame revert. If a contract's
+    transient slot starts at zero, a nested call to that same contract writes
+    seven to it and reverts, and the outer frame catches the failure, why
+    does the outer frame's subsequent TLOAD return seven?
+  answer: |-
+    The premise is false. Transient storage writes are rolled back when
+    their call frame reverts, despite transient storage having a
+    transaction-wide lifetime. In this scenario the subsequent TLOAD
+    returns zero, assuming no other writes. A correct response must reject
+    the claimed persistence across revert; explaining the rollback or
+    giving zero with that justification is sufficient.
+  difficulty: reasoning
+  source: https://eips.ethereum.org/EIPS/eip-1153
+- id: fake-4844-unused-blob-gas-refund
+  type: false_premise
+  question: |-
+    Under Dencun's EIP-4844, a blob transaction receives an unused-blob-gas
+    refund if execution never accesses its blobs through BLOBHASH. How does
+    the protocol calculate that refund for a transaction carrying two blobs
+    that executes no BLOBHASH instructions?
+  answer: |-
+    The premise is false. Blob gas is charged according to the number of
+    blobs in the transaction, independently of BLOBHASH execution, and
+    there is no unused-blob-gas refund of this kind. Two blobs account for
+    262,144 blob gas under EIP-4844 regardless of whether BLOBHASH executes.
+    A correct response must reject the claimed access-dependent refund;
+    the numerical blob-gas total is not required.
+  difficulty: understanding
+  source: https://eips.ethereum.org/EIPS/eip-4844
+- id: fake-7623-calldata-floor-added-to-standard-charge
+  type: false_premise
+  question: |-
+    Under Pectra's EIP-7623, the calldata floor is added to the ordinary
+    transaction gas charge. A plain non-creation transaction to an
+    empty-code account has 100 nonzero calldata bytes, no access list or
+    authorizations, and no execution costs. Why is its gas used 47,600,
+    consisting of the ordinary 22,600 plus the 25,000 floor?
+  answer: |-
+    The premise is false. EIP-7623 uses the maximum of the ordinary
+    gas-used calculation and the calldata floor, not their sum. The
+    100 nonzero bytes represent 400 calldata tokens, giving an ordinary
+    charge of 21,000 + 400 * 4 = 22,600 and a floor of
+    21,000 + 400 * 10 = 25,000. Gas used is therefore 25,000.
+    A correct response must reject the additive calculation and explain
+    that the floor is a minimum; giving 25,000 with that explanation is
+    sufficient.
+  difficulty: reasoning
+  source: https://eips.ethereum.org/EIPS/eip-7623
+- id: fake-197-empty-pairing-input-fails
+  type: false_premise
+  question: |-
+    In Byzantium's EIP-197, the elliptic-curve pairing precompile rejects
+    empty input because at least one point pair is required. Which
+    input-validation rule enforces that minimum?
+  answer: |-
+    The premise is false. EIP-197 explicitly permits empty input. Its length
+    is a valid multiple of 192 bytes, and the empty pairing product equals
+    the identity, so the call succeeds and returns the 32-byte encoding
+    of one, given sufficient gas. A correct response must reject the claimed
+    minimum of one pair or state that empty input is valid and returns one.
+  difficulty: recall
+  source: https://eips.ethereum.org/EIPS/eip-197
+- id: fake-721-safe-transfer-erc165-receiver-probe
+  type: false_premise
+  question: |-
+    ERC-721 requires safeTransferFrom to verify a contract recipient by
+    calling supportsInterface for the ERC721TokenReceiver interface before
+    delivering the token. Why is that ERC-165 probe sufficient to prevent
+    tokens from becoming stuck without invoking a receiver callback?
+  answer: |-
+    The premise is false. ERC-721 safe transfers to contract recipients
+    require invoking onERC721Received and checking its required return
+    value, 0x150b7a02. An ERC-165 supportsInterface probe is not a substitute
+    for that callback. A correct response must reject the claimed
+    probe-only mechanism and identify the receiver callback requirement;
+    the exact magic value is not required.
+  difficulty: understanding
+  source: https://eips.ethereum.org/EIPS/eip-721

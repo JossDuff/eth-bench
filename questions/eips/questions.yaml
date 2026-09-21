@@ -509,3 +509,106 @@
   answer: A
   difficulty: recall
   source: https://eips.ethereum.org/EIPS/eip-7934
+
+- id: eip-150-call-gas-cap-rounding
+  type: multiple_choice
+  question: |-
+    Under EIP-150's CALL gas-forwarding rule, a caller has 10,000 gas remaining
+    after paying all applicable upfront CALL costs, including memory expansion.
+    It requests 10,000 gas for a CALL with zero value. How much gas is forwarded
+    to the callee?
+  choices:
+  - 9,843 gas
+  - 9,844 gas
+  - 10,000 gas
+  - 9,700 gas
+  answer: B
+  difficulty: reasoning
+  source: https://eips.ethereum.org/EIPS/eip-150
+- id: eip-211-empty-call-clears-returndata
+  type: open
+  question: |-
+    Under EIP-211, a contract calls another contract and receives 64 bytes of
+    return data. It then successfully makes a zero-value CALL to an address
+    with no code that is not a precompile, specifying an output size of zero.
+    What does RETURNDATASIZE return immediately after the second CALL?
+  answer: |-
+    RETURNDATASIZE returns zero. Each call-like operation clears the previous
+    return-data buffer, and a call to an address without code produces empty
+    return data. A complete answer must give zero and explain that the second
+    call replaces or clears the earlier return data; the output-memory size
+    does not preserve the previous buffer.
+  difficulty: understanding
+  source: https://eips.ethereum.org/EIPS/eip-211
+- id: eip-2200-sstore-sentry-noop
+  type: multiple_choice
+  question: |-
+    Under EIP-2200's SSTORE gas-sentry rule, execution reaches SSTORE with
+    exactly 2,300 gas left. The storage slot is already warm, and the new value
+    equals its current value. What happens?
+  choices:
+  - The write succeeds because a no-op SSTORE costs less than 2,300 gas.
+  - The write succeeds and consumes all 2,300 gas.
+  - The current execution frame fails with an out-of-gas exception.
+  - The instruction is skipped without charging gas.
+  answer: C
+  difficulty: understanding
+  source: https://eips.ethereum.org/EIPS/eip-2200
+- id: eip-3860-create-initcode-word-rounding
+  type: multiple_choice
+  question: |-
+    Under EIP-3860 as introduced in Shanghai, a CREATE instruction supplies
+    33 bytes of initcode. How much additional gas does EIP-3860 charge for
+    initcode metering alone, excluding memory expansion, CREATE's base cost,
+    initcode execution, and code deposit?
+  choices:
+  - 2 gas
+  - 4 gas
+  - 6 gas
+  - 66 gas
+  answer: B
+  difficulty: reasoning
+  source: https://eips.ethereum.org/EIPS/eip-3860
+- id: eip-4844-point-evaluation-first-output-word
+  type: multiple_choice
+  question: |-
+    In the point-evaluation precompile specified by EIP-4844 for Cancun, a
+    successful call returns two 32-byte values. What integer does the first
+    32-byte value encode?
+  choices:
+  - '32'
+  - 4,096
+  - 131,072
+  - 524,288
+  answer: B
+  difficulty: recall
+  source: https://eips.ethereum.org/EIPS/eip-4844
+- id: eip-152-blake2f-exact-input-length
+  type: multiple_choice
+  question: |-
+    For the BLAKE2 compression-function precompile introduced by EIP-152 in
+    Istanbul, what exact input length is required for a call to pass the
+    input-length validation?
+  choices:
+  - 192 bytes
+  - 212 bytes
+  - 213 bytes
+  - 256 bytes
+  answer: C
+  difficulty: recall
+  source: https://eips.ethereum.org/EIPS/eip-152
+- id: eip-3541-prefix-check-runtime-not-initcode-data
+  type: open
+  question: |-
+    Under the EIP-3541 rule introduced in London, otherwise valid initcode
+    contains byte 0xEF as PUSH instruction data and returns runtime bytecode
+    0x60EF00. Does EIP-3541 itself reject this deployment?
+  answer: |-
+    No. EIP-3541 rejects newly deployed runtime code whose first byte is 0xEF.
+    The returned runtime code here starts with 0x60, and the presence of 0xEF
+    elsewhere in runtime code or as data in initcode does not trigger this
+    rule. A complete answer must say the deployment is not rejected by
+    EIP-3541 and identify the first byte of returned runtime code as the
+    relevant check.
+  difficulty: understanding
+  source: https://eips.ethereum.org/EIPS/eip-3541

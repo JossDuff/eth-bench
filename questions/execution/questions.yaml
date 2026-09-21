@@ -481,3 +481,113 @@
     executes on the recipient.
   difficulty: understanding
   source: https://eips.ethereum.org/EIPS/eip-4895
+
+- id: execution-mcopy-overlapping-ranges
+  type: multiple_choice
+  question: |-
+    Under the Cancun rules for MCOPY, memory bytes at offsets 0 through 7
+    initially contain 0x0001020304050607. An MCOPY executes with destination
+    offset 2, source offset 0, and length 6. What do bytes 0 through 7
+    contain afterward?
+  choices:
+  - '0x0001000100010001'
+  - '0x0001020304050607'
+  - '0x0001000102030405'
+  - '0x0203040506070607'
+  answer: C
+  difficulty: reasoning
+  source: https://eips.ethereum.org/EIPS/eip-5656
+- id: execution-returndatacopy-empty-out-of-bounds
+  type: multiple_choice
+  question: |-
+    Under the RETURNDATACOPY semantics introduced in Byzantium by EIP-211,
+    a call frame has a return-data buffer exactly 32 bytes long. It executes
+    RETURNDATACOPY with memory destination offset 0, return-data source
+    offset 33, and length 0. Assuming sufficient gas, what happens?
+  choices:
+  - It succeeds because a zero-length copy never checks the source offset.
+  - It exceptionally halts because the source offset exceeds the buffer size.
+  - It succeeds and expands memory to 33 bytes.
+  - It reverts with the existing return-data buffer as its revert payload.
+  answer: B
+  difficulty: understanding
+  source: https://eips.ethereum.org/EIPS/eip-211
+- id: execution-reverted-callee-access-warmth
+  type: open
+  question: |-
+    Under Berlin's EIP-2929 rules, contract A calls an initially cold contract
+    B. B executes SLOAD on an initially cold storage slot and then executes
+    REVERT. A catches the failure and calls B again in the same transaction.
+    No other operation accesses B or that slot. For the second call, what
+    are the account-access gas charge for CALL's target B and the gas charge
+    for B's first SLOAD of that slot? Explain the difference, excluding all
+    other CALL costs.
+  answer: |-
+    The second CALL's target-account access costs 100 gas because B was
+    added to the accessed-address set in A's scope before entering B.
+    B's first SLOAD on the second call costs 2100 gas because the storage
+    access added inside the reverted callee scope was rolled back.
+    A complete answer must give both charges and explain that the callee's
+    reverted storage warming is undone while the caller's warming of the
+    CALL target remains.
+  difficulty: reasoning
+  source: https://eips.ethereum.org/EIPS/eip-2929
+- id: execution-transient-delegatecall-revert-rollback
+  type: open
+  question: |-
+    Under Cancun's EIP-1153 rules, contract A executes TSTORE(7, 5), then
+    DELEGATECALLs contract B. B executes TSTORE(7, 9) and then REVERTs.
+    A catches the failure and executes TLOAD(7), with no intervening writes.
+    What value does A read, and why?
+  answer: |-
+    A reads 5. During DELEGATECALL, B operates on A's transient storage,
+    but the write of 9 is rolled back when the delegated frame reverts.
+    A's earlier write of 5 precedes that frame and remains intact.
+    A complete answer must give 5 and explain both the shared transient
+    storage context and rollback of the delegated frame's write.
+  difficulty: reasoning
+  source: https://eips.ethereum.org/EIPS/eip-1153
+- id: execution-access-list-duplicate-intrinsic-charges
+  type: multiple_choice
+  question: |-
+    Under Berlin's EIP-2930 rules, a type-1 transaction's access list contains
+    two entries for the same address. Each entry lists the same single
+    storage key. How much intrinsic gas is charged for this access list
+    alone, excluding the transaction base cost and calldata cost?
+  choices:
+  - 4300 gas
+  - 6200 gas
+  - 6700 gas
+  - 8600 gas
+  answer: D
+  difficulty: reasoning
+  source: https://eips.ethereum.org/EIPS/eip-2930
+- id: execution-beacon-root-ring-buffer-storage-index
+  type: multiple_choice
+  question: |-
+    Under Cancun's EIP-4788 beacon-roots contract rules, a valid lookup
+    supplies timestamp 10000 as a 32-byte input. The corresponding timestamp
+    entry is present and matches. Using HISTORY_BUFFER_LENGTH = 8191, which
+    decimal storage-slot index holds the beacon root returned by this lookup?
+  choices:
+  - '1809'
+  - '8191'
+  - '10000'
+  - '18191'
+  answer: C
+  difficulty: reasoning
+  source: https://eips.ethereum.org/EIPS/eip-4788
+- id: execution-tstore-gas-stipend-sentry
+  type: open
+  question: |-
+    Under Cancun's EIP-1153 rules, a non-static call frame has exactly
+    2300 gas remaining immediately before executing TSTORE, with both
+    operands already on the stack. Does TSTORE fail because of a
+    storage-write gas-stipend check?
+  answer: |-
+    No. TSTORE is not subject to SSTORE's check that rejects execution when
+    gasleft is less than or equal to 2300. TSTORE costs 100 gas, so the
+    specified frame has enough gas to execute it. A complete answer must
+    state that the stipend-based SSTORE restriction does not apply to TSTORE.
+  difficulty: understanding
+  source: https://eips.ethereum.org/EIPS/eip-1153

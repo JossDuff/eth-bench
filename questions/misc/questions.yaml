@@ -521,3 +521,157 @@
   answer: A
   difficulty: understanding
   source: https://eips.ethereum.org/EIPS/eip-7864
+
+- id: rpc-quantity-leading-zero-rejection
+  type: multiple_choice
+  question: |-
+    Under EIP-1474's JSON-RPC encoding rules, which representation is valid
+    for a QUANTITY whose numerical value is zero?
+  choices:
+  - 0x
+  - '0x0'
+  - '0x00'
+  - '0x0000'
+  answer: B
+  difficulty: recall
+  source: https://eips.ethereum.org/EIPS/eip-1474
+- id: rpc-blockhash-canonicality-error-distinction
+  type: open
+  question: |-
+    Under EIP-1898, an eth_getBalance request identifies its block using
+    {"blockHash": H, "requireCanonical": true}. Compare the recommended
+    JSON-RPC errors when H is unknown and when H is known but noncanonical.
+    If both existence and canonicality checks would fail, which takes precedence?
+  answer: |-
+    An unknown block should produce a block-not-found error, with recommended
+    code -32001 (Resource not found). A known but noncanonical block should
+    produce a distinct error, with recommended code -32000 (Invalid input).
+    The block-not-found check takes precedence over the canonicality check.
+    A complete answer must distinguish the two cases, give the recommended
+    codes, and state that block-not-found takes precedence. These codes are
+    recommendations, not mandatory choices of error code.
+  difficulty: reasoning
+  source: https://eips.ethereum.org/EIPS/eip-1898
+- id: rpc-log-topic-position-filter
+  type: multiple_choice
+  question: |-
+    In an Ethereum JSON-RPC eth_getLogs filter, the topics field is
+    [[A, B], null, C], where A, B, C, D, and X denote distinct valid
+    32-byte topics. Assuming all other filter conditions match, which
+    log's ordered topic list matches this filter?
+  choices:
+  - '[B, X, C]'
+  - '[A, C, X]'
+  - '[X, B, C]'
+  - '[B, X, D]'
+  answer: A
+  difficulty: reasoning
+  source: https://ethereum.org/en/developers/docs/apis/json-rpc/#eth_getlogs
+- id: engine-forkchoice-invalid-attributes-side-effect
+  type: open
+  question: |-
+    Under the Paris Engine API specification, engine_forkchoiceUpdatedV1
+    receives a valid forkchoiceState that the execution client can apply,
+    but its non-null payloadAttributes are invalid because their timestamp
+    is not greater than the head block's timestamp. Does rejecting those
+    payload attributes also prevent the forkchoice update from taking effect?
+  answer: |-
+    No. The execution client must apply the valid forkchoice-state update
+    even though the payload attributes are invalid. Invalid payload attributes
+    prevent the requested payload build and produce an Invalid payload
+    attributes error; they do not roll back the forkchoice update.
+    A complete answer must state that the forkchoice update still takes effect.
+    The numeric error code is not required.
+  difficulty: understanding
+  source: https://github.com/ethereum/execution-apis/blob/main/src/engine/paris.md
+- id: engine-payload-bodies-range-head-truncation
+  type: multiple_choice
+  question: |-
+    Under the Shanghai Engine API specification, an execution client's
+    canonical head is block 100. All canonical bodies through that block
+    are available. What does engine_getPayloadBodiesByRangeV1 return for
+    start = 98 and count = 5?
+  choices:
+  - |-
+    A five-element array containing bodies 98, 99, and 100, followed by two null entries
+  - A three-element array containing bodies 98, 99, and 100
+  - An Invalid params error because the requested range extends beyond the head
+  - An empty array because the complete requested range is unavailable
+  answer: B
+  difficulty: reasoning
+  source: https://github.com/ethereum/execution-apis/blob/main/src/engine/shanghai.md
+- id: engine-newpayload-blob-hash-order
+  type: open
+  question: |-
+    Under the Cancun Engine API specification, the blob versioned hashes
+    extracted from an otherwise valid payload's transactions, in transaction
+    order and then in each transaction's hash order, are [h1, h2], with
+    h1 != h2. engine_newPayloadV3 is called with expectedBlobVersionedHashes
+    equal to [h2, h1]. What payload status must it return, and why?
+  answer: |-
+    It must return INVALID. The expectedBlobVersionedHashes parameter must
+    match the ordered list extracted from the payload exactly; equality as
+    a set is insufficient. A complete answer must identify INVALID and
+    explain that reversing the distinct hashes violates the ordering check.
+    No latestValidHash or validationError detail is required.
+  difficulty: reasoning
+  source: https://github.com/ethereum/execution-apis/blob/main/src/engine/cancun.md
+- id: networking-rlpx-frame-padding-total
+  type: multiple_choice
+  question: |-
+    Under the RLPx transport framing specification, an established connection
+    sends a frame whose frame-size field is 17 bytes. Excluding the connection
+    handshake, how many bytes does the complete frame occupy on the wire,
+    including the encrypted header, both MACs, and frame-data padding?
+  choices:
+  - '49'
+  - '65'
+  - '80'
+  - '96'
+  answer: C
+  difficulty: reasoning
+  source: https://github.com/ethereum/devp2p/blob/master/rlpx.md
+- id: networking-eth68-pooled-transaction-sizes
+  type: multiple_choice
+  question: |-
+    In eth/68, NewPooledTransactionHashes announces parallel lists of
+    transaction types, sizes, and hashes. For a transaction encoded using
+    EIP-2718, what does its announced size measure?
+  choices:
+  - The transaction's gas limit
+  - The transaction's intrinsic gas cost
+  - The encoded transaction size, including its transaction-type byte
+  - The encoded transaction payload size, excluding its transaction-type byte
+  answer: C
+  difficulty: recall
+  source: https://github.com/ethereum/devp2p/blob/master/caps/eth.md
+- id: networking-discv4-pong-ping-hash
+  type: multiple_choice
+  question: |-
+    In the Ethereum Discovery v4 wire protocol, which value must the
+    ping-hash field of a Pong packet contain?
+  choices:
+  - |-
+    The hash of the entire corresponding Ping packet, including its leading hash field
+  - The leading 32-byte packet hash from the corresponding Ping packet
+  - The Keccak-256 hash of the Ping sender's public key
+  - The hash of the Pong packet's RLP payload
+  answer: B
+  difficulty: recall
+  source: https://github.com/ethereum/devp2p/blob/master/discv4.md
+- id: l2-op-deposit-alias-modular-wrap
+  type: open
+  question: |-
+    Under the OP Stack deposit specification's L1-to-L2 address-aliasing
+    rule, consider a deposit whose sender is subject to aliasing. If its
+    L1 sender address is 0xffffffffffffffffffffffffffffffffffffffff,
+    what is the aliased L2 sender address? Show how the rule handles overflow.
+  answer: |-
+    The aliasing offset is 0x1111000000000000000000000000000000001111.
+    The rule adds this offset to the L1 address modulo 2^160.
+    Since the supplied address is 2^160 - 1, the result is the offset
+    minus one: 0x1111000000000000000000000000000000001110.
+    A complete answer must give that address and explain that addition wraps
+    modulo 2^160 rather than reverting or retaining a 161st bit.
+  difficulty: reasoning
+  source: https://specs.optimism.io/protocol/deposits.html#address-aliasing

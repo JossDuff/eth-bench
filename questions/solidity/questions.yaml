@@ -265,3 +265,222 @@
   answer: A
   difficulty: understanding
   source: https://docs.soliditylang.org/en/latest/contracts.html#fallback-function
+
+- id: solidity-short-bytes-slot-marker
+  type: multiple_choice
+  question: |-
+    In Solidity 0.8.24, a contract's first and only state variable is `bytes data`.
+    It contains exactly 31 bytes, each equal to 0xab. What is the complete
+    32-byte value stored in storage slot 0? Here, || denotes byte concatenation.
+  choices:
+  - (31 bytes of 0xab) || 0x1f
+  - (31 bytes of 0xab) || 0x3e
+  - (31 bytes of 0xab) || 0x3f
+  - 31 zero bytes || 0x3f
+  answer: B
+  difficulty: reasoning
+  source: |-
+    https://docs.soliditylang.org/en/v0.8.24/internals/layout_in_storage.html#bytes-and-string
+- id: solidity-abi-array-element-offset-origin
+  type: open
+  question: |-
+    Using Solidity 0.8.24's standard ABI encoder, let `items` be a memory
+    `string[]` containing ["a", "bc"]. Consider `abi.encode(uint256(7), items)`,
+    without any function selector prefix.
+
+    What integer values occupy the 32-byte words starting at byte offsets
+    0x60 and 0x80 of the encoded output, and from which byte position in the
+    output are those two offsets measured?
+  answer: |-
+    The word at 0x60 contains 0x40 (64), and the word at 0x80 contains
+    0x80 (128). Both offsets are measured from byte position 0x60, the start
+    of the array's element-head tuple immediately after its length word.
+    They therefore point to string encodings beginning at 0xa0 and 0xe0.
+    A complete answer must give both offset values and identify 0x60 as their
+    common origin. Giving the absolute target positions is optional.
+  difficulty: reasoning
+  source: |-
+    https://docs.soliditylang.org/en/v0.8.24/abi-spec.html#formal-specification-of-the-encoding
+- id: solidity-unchecked-zero-divisor-panic
+  type: multiple_choice
+  question: |-
+    In Solidity 0.8.24, this function is called with d = 0:
+
+    function quotient(uint256 d) external pure returns (uint256) {
+        unchecked {
+            return uint256(9) / d;
+        }
+    }
+
+    What happens?
+  choices:
+  - It returns 0, matching the EVM DIV opcode's zero-divisor behavior.
+  - It reverts with Panic(0x11).
+  - It reverts with Panic(0x12).
+  - It reverts with Error("division by zero").
+  answer: C
+  difficulty: recall
+  source: |-
+    https://docs.soliditylang.org/en/v0.8.24/control-structures.html#panic-via-assert-and-error-via-require
+- id: solidity-try-catch-return-decoding-boundary
+  type: open
+  question: |-
+    Consider this Solidity 0.8.24 code:
+
+    interface Target {
+        function value() external returns (uint256);
+    }
+
+    contract Reader {
+        function read(address target) external returns (uint256) {
+            try Target(target).value() returns (uint256 v) {
+                return v;
+            } catch {
+                return 99;
+            }
+        }
+    }
+
+    The target is a deployed contract whose fallback accepts this call and
+    successfully returns zero bytes. Does `read` return 99, or does it revert?
+    Explain the relevant boundary of Solidity's try/catch handling.
+  answer: |-
+    The read call reverts; it does not return 99. Although the external call
+    succeeds, decoding its empty return data as uint256 fails in the caller.
+    A return-data decoding error in this situation is not caught by the
+    catch clauses attached to that external call.
+    A complete answer must state that read reverts and that caller-side
+    return-data decoding failure is outside this try/catch's handling.
+  difficulty: understanding
+  source: https://docs.soliditylang.org/en/v0.8.24/control-structures.html#try-catch
+- id: solidity-memory-alias-rebinding
+  type: open
+  question: |-
+    In Solidity 0.8.24, what pair does this function return, and why?
+
+    function probe() external pure returns (uint256, uint256) {
+        uint256[] memory a = new uint256[](1);
+        a[0] = 3;
+        uint256[] memory b = a;
+        b[0] = 9;
+        b = new uint256[](1);
+        b[0] = 7;
+        return (a[0], b[0]);
+    }
+  answer: |-
+    The function returns (9, 7). The initial memory-to-memory assignment makes
+    b refer to the same array as a, so writing 9 through b changes that array.
+    Assigning a newly allocated array to b subsequently rebinds b without
+    changing a's reference.
+    A complete answer must give (9, 7) and explain both the initial aliasing
+    and the later rebinding rather than a copy of the original array.
+  difficulty: reasoning
+  source: |-
+    https://docs.soliditylang.org/en/v0.8.24/types.html#data-location-and-assignment-behaviour
+- id: solidity-dynamic-bytes-mapping-key-hash
+  type: multiple_choice
+  question: |-
+    Under Solidity 0.8.24's storage layout, `mapping(bytes => uint256) m`
+    has its assigned mapping slot at slot 5. Which expression computes the
+    storage slot for `m[hex"1234"]`? Here, || is byte concatenation, and
+    uint256_be(5) is the 32-byte big-endian encoding of 5.
+  choices:
+  - keccak256(hex"1234" || uint256_be(5))
+  - keccak256(right_pad_to_32_bytes(hex"1234") || uint256_be(5))
+  - keccak256(keccak256(hex"1234") || uint256_be(5))
+  - keccak256(uint256_be(5) || hex"1234")
+  answer: A
+  difficulty: understanding
+  source: |-
+    https://docs.soliditylang.org/en/v0.8.24/internals/layout_in_storage.html#mappings-and-dynamic-arrays
+- id: solidity-signed-shift-division-rounding
+  type: open
+  question: |-
+    In Solidity 0.8.24, what pair does this function return? Explain why
+    its two expressions do or do not produce the same value.
+
+    function rounding() external pure returns (int256, int256) {
+        int256 x = -5;
+        return (x >> 1, x / 2);
+    }
+  answer: |-
+    The function returns (-3, -2). Signed right shift is an arithmetic shift
+    and corresponds here to division by two rounded toward negative infinity.
+    Signed integer division rounds toward zero.
+    A complete answer must give both values and distinguish the rounding
+    behavior of signed right shift from signed division.
+  difficulty: reasoning
+  source: https://docs.soliditylang.org/en/v0.8.24/types.html#integers
+- id: solidity-constructor-virtual-dispatch
+  type: multiple_choice
+  question: |-
+    The following contracts are compiled with Solidity 0.8.24:
+
+    contract A {
+        uint256 public x;
+
+        constructor() {
+            x = f();
+        }
+
+        function f() internal pure virtual returns (uint256) {
+            return 1;
+        }
+    }
+
+    contract B is A {
+        function f() internal pure override returns (uint256) {
+            return 2;
+        }
+    }
+
+    After successfully deploying B, what does its x() getter return?
+  choices:
+  - 0, because B's implementation is unavailable while A's constructor runs.
+  - |-
+    1, because virtual calls in a base constructor resolve to the base implementation.
+  - 2, because the call resolves to the most-derived override.
+  - Deployment fails because constructors cannot call virtual functions.
+  answer: C
+  difficulty: understanding
+  source: https://docs.soliditylang.org/en/v0.8.24/contracts.html#constructors
+- id: solidity-interface-id-inherited-function-exclusion
+  type: multiple_choice
+  question: |-
+    In Solidity 0.8.24, consider:
+
+    interface Parent {
+        function a() external;
+    }
+
+    interface Child is Parent {
+        function b() external;
+        function c() external;
+    }
+
+    Let A, B, and C denote the bytes4 selectors for a(), b(), and c(),
+    respectively. Which expression equals `type(Child).interfaceId`?
+    Here, ^ denotes bitwise XOR.
+  choices:
+  - A ^ B ^ C
+  - B ^ C
+  - A
+  - bytes4(keccak256(abi.encodePacked(A, B, C)))
+  answer: B
+  difficulty: understanding
+  source: |-
+    https://docs.soliditylang.org/en/v0.8.24/units-and-global-variables.html#type-information
+- id: solidity-uninitialized-internal-function-panic-code
+  type: multiple_choice
+  question: |-
+    In Solidity 0.8.24, which Panic(uint256) error code is specified for
+    invoking a zero-initialized variable of internal function type?
+  choices:
+  - '0x00'
+  - '0x21'
+  - '0x41'
+  - '0x51'
+  answer: D
+  difficulty: recall
+  source: |-
+    https://docs.soliditylang.org/en/v0.8.24/control-structures.html#panic-via-assert-and-error-via-require

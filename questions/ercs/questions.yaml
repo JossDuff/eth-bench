@@ -463,3 +463,148 @@
   answer: A
   difficulty: recall
   source: https://eips.ethereum.org/EIPS/eip-20
+
+- id: erc-4626-preview-redeem-ignores-limits
+  type: open
+  question: |-
+    An ERC-4626 vault temporarily blocks withdrawals, so maxRedeem(owner)
+    returns 0. The owner holds 100 shares, whose redemption would yield
+    200 assets after fees if withdrawals were enabled. Assume the conversion
+    rate and fees remain unchanged. What should previewRedeem(100) return:
+    0, 200, or a revert caused by the withdrawal restriction?
+  answer: |-
+    It should return 200. ERC-4626 requires previewRedeem to ignore redemption
+    limits such as those reported by maxRedeem and act as though the redemption
+    would be accepted. A complete answer must give 200 and explain that the
+    withdrawal restriction does not constrain the preview.
+  difficulty: reasoning
+  source: https://eips.ethereum.org/EIPS/eip-4626
+- id: erc-7540-async-deposit-preview-behavior
+  type: open
+  question: |-
+    For an ERC-7540 vault implementing asynchronous deposits, how must
+    previewDeposit and previewMint behave, even when some deposit requests
+    are already claimable?
+  answer: |-
+    Both functions must revert for all callers and inputs. Claimable requests
+    do not create an exception to the asynchronous-deposit preview rule.
+    A complete answer must state that both previewDeposit and previewMint
+    revert; it need not discuss asynchronous withdrawals.
+  difficulty: understanding
+  source: https://eips.ethereum.org/EIPS/eip-7540
+- id: erc-4906-metadata-update-interface
+  type: multiple_choice
+  question: |-
+    Which interface identifier does ERC-4906 explicitly require an NFT
+    contract to report as supported through ERC-165 for its metadata-update
+    event extension?
+  choices:
+  - '0x80ac58cd'
+  - '0x5b5e139f'
+  - '0x49064906'
+  - '0x01ffc9a7'
+  answer: C
+  difficulty: recall
+  source: https://eips.ethereum.org/EIPS/eip-4906
+- id: erc-3156-borrower-callback-return
+  type: multiple_choice
+  question: |-
+    Under ERC-3156, which exact value must a lender verify was returned by
+    the borrower's onFlashLoan callback before proceeding with repayment?
+  choices:
+  - bytes32(uint256(1))
+  - keccak256("ERC3156FlashBorrower.onFlashLoan")
+  - keccak256("IERC3156FlashBorrower.onFlashLoan")
+  - keccak256("onFlashLoan(address,address,uint256,uint256,bytes)")
+  answer: B
+  difficulty: recall
+  source: https://eips.ethereum.org/EIPS/eip-3156
+- id: erc-721-self-transfer-clears-approval
+  type: multiple_choice
+  question: |-
+    Alice owns ERC-721 token 42 and has approved Bob specifically for that
+    token. Alice successfully calls transferFrom(Alice, Alice, 42).
+    Under ERC-721, what must getApproved(42) return afterward?
+  choices:
+  - Bob, because ownership did not change
+  - Alice, because the recipient becomes the approved address
+  - The token contract's address, because this was a self-transfer
+  - The zero address, because the transfer clears the token-specific approval
+  answer: D
+  difficulty: understanding
+  source: https://eips.ethereum.org/EIPS/eip-721
+- id: erc-1155-batch-callback-balance-order
+  type: open
+  question: |-
+    An ERC-1155 holder has 10 units of token ID 7. A distinct receiver contract
+    initially has none. A successful safeBatchTransferFrom sends IDs [7, 7]
+    with amounts [3, 4] to that receiver. At the start of
+    onERC1155BatchReceived, before the receiver performs any further calls,
+    what balances must balanceOf report for the holder and receiver for ID 7?
+    Explain the ordering requirement.
+  answer: |-
+    The holder must have 3 units and the receiver must have 7 units. All balance
+    changes for the batch must be applied before the receiver hook is called,
+    including both entries for the repeated token ID. A complete answer must
+    give both balances and state that the hook runs after the batch's balance
+    updates, not between entries or before the updates.
+  difficulty: reasoning
+  source: https://eips.ethereum.org/EIPS/eip-1155
+- id: erc-712-struct-array-field-encoding
+  type: open
+  question: |-
+    Under EIP-712, consider the types Item(string label,uint256 amount) and
+    Basket(Item[] items). A Basket contains exactly two items, and their
+    EIP-712 hashStruct values are h0 and h1, each 32 bytes. What exact byte
+    sequence is hashed to produce the 32-byte encoding of the items field?
+    Does that sequence contain an ABI array offset or length?
+  answer: |-
+    The field is encoded as keccak256(h0 || h1): the hashed byte sequence is
+    exactly the 64-byte concatenation of the two hashStruct values, in array
+    order. It contains neither an ABI offset nor an array length.
+    A complete answer must specify this concatenation and exclude offset and
+    length words. It need not expand the individual Item hashes.
+  difficulty: reasoning
+  source: https://eips.ethereum.org/EIPS/eip-712
+- id: erc-2535-remove-facet-address
+  type: multiple_choice
+  question: |-
+    In ERC-2535, a diamondCut entry uses FacetCutAction.Remove to remove
+    selectors that currently exist. What must its facetAddress field contain?
+  choices:
+  - The address of the facet currently implementing the selectors
+  - The diamond's own address
+  - The zero address
+  - The address of the facet implementing diamondCut
+  answer: C
+  difficulty: understanding
+  source: https://eips.ethereum.org/EIPS/eip-2535
+- id: erc-165-invalid-interface-probe
+  type: open
+  question: |-
+    A contract's supportsInterface function returns true for both 0x01ffc9a7
+    and 0xffffffff, with both probes succeeding within ERC-165's gas limit.
+    Under ERC-165's detection procedure, should a caller classify this
+    contract as supporting ERC-165? Explain the decisive check.
+  answer: |-
+    No. ERC-165 detection requires a successful true result for 0x01ffc9a7
+    and a successful false result for 0xffffffff. Returning true for the
+    invalid interface identifier fails the detection procedure.
+    A complete answer must reject ERC-165 support and identify the true result
+    for 0xffffffff as the reason.
+  difficulty: understanding
+  source: https://eips.ethereum.org/EIPS/eip-165
+- id: erc-2309-consecutive-transfer-unindexed-field
+  type: multiple_choice
+  question: |-
+    In ERC-2309's ConsecutiveTransfer event declaration, which parameter is
+    not indexed and therefore appears in the log data rather than an
+    indexed-parameter topic?
+  choices:
+  - fromTokenId
+  - toTokenId
+  - fromAddress
+  - toAddress
+  answer: B
+  difficulty: recall
+  source: https://eips.ethereum.org/EIPS/eip-2309

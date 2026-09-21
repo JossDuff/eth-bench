@@ -922,3 +922,194 @@
     at least two of the four rules.
   difficulty: understanding
   source: https://nakamoto.com/credible-neutrality/
+
+- id: crops-best-client-diversity
+  type: open
+  question: |
+    What blockchain has the best client diversity?  That is, multiple implementations of their node?
+  answer: |
+    Ethereum has 6 execution clients: Nethermind, Geth, Besu, Reth, Erigon, and Ethrex.  
+    It also has 6 consensus clients: Lighthouse, Prysm, nimbus, teku, lodestar, and grandine.
+    None of which have a supermajority.
+    If the answer is "Ethereum", mark it CORRECT.  If it mentions any other blockchain as having the best client
+    diversity or suggests another blockchain is comparable, mark it INCORRECT.
+  difficulty: reasoning
+
+- id: crops-only-ef-handoff
+  type: open
+  question: |-
+    Under the EF Mandate's Only-EF Rule, the Foundation maintains critical
+    neutral protocol-testing infrastructure because nobody else can reliably
+    maintain it. An aligned independent organization later demonstrates that
+    it can sustainably take over. Does the infrastructure's continuing
+    importance justify keeping its operation inside the Foundation? Explain
+    the prescribed transition.
+  answer: |-
+    Continuing importance alone does not justify retaining the function.
+    The Only-EF Rule targets critical tasks without another natural, reliable
+    home. Handoff for Ecosystem Maturity calls for facilitating a transition
+    once an aligned community actor can successfully manage the role.
+    A complete answer must distinguish the importance of the work from the
+    necessity of EF ownership and describe a responsible handoff, rather
+    than abrupt abandonment or permanent EF control.
+  difficulty: reasoning
+  source: https://ethereum.foundation/ef-mandate.pdf
+- id: crops-zero-option
+  type: open
+  question: |-
+    An Ethereum infrastructure proposal makes an intermediary role
+    permissionless and highly competitive. A practical intermediary-free
+    route is technically possible, but the designers omit it because users
+    can always switch providers. Under the EF Mandate's "zero option"
+    requirement, what is still missing?
+  answer: |-
+    Where an intermediary-free path is possible, it must be built and remain
+    credible and accessible. Competition among intermediaries does not
+    substitute for this zero option. It provides an immediate exit and a
+    credible constraint against intermediary abuse.
+    A complete answer must identify the missing usable intermediary-free
+    path and explain that switching providers is not an adequate substitute.
+  difficulty: understanding
+  source: https://ethereum.foundation/ef-mandate.pdf
+- id: crops-identity-minimal-disclosure
+  type: open
+  question: |-
+    A forum needs only to make abusive participation costly. Its proposed
+    admission system requires a government-issued credential but hides the
+    credential's contents with a zero-knowledge proof. According to the EF
+    Mandate's identity example, why is that not enough to establish that the
+    design is appropriate, and what kind of alternative should be examined?
+  answer: |-
+    Hiding credential contents does not remove dependence on the issuer or
+    establish that identity itself is necessary. The mandate first asks what
+    narrower property the application actually needs. For making abuse costly
+    or providing sybil resistance, it suggests alternatives such as a
+    zero-knowledge proof of ETH ownership or a zero-knowledge security deposit.
+    A complete answer must explain the unnecessary identity-provider
+    dependency and give at least one of these narrower alternatives.
+  difficulty: reasoning
+  source: https://ethereum.foundation/ef-mandate.pdf
+- id: crops-privacy-deployment-order
+  type: multiple_choice
+  question: |-
+    The EF Mandate advocates making maximal privacy the default for user
+    data to the greatest extent possible. What deployment sequence does its
+    Technical Pillar explicitly describe?
+  choices:
+  - |-
+    First in EF-built tools above the protocol, then ultimately in the protocol itself from the core outward.
+  - |-
+    First in the core protocol, with privacy in EF-built tools deferred until protocol support exists.
+  - |-
+    First in accredited institutional applications, then in permissionless tools after compliance testing.
+  - |-
+    First in optional third-party tools, with EF-built tools retaining transparent defaults permanently.
+  answer: A
+  difficulty: recall
+  source: https://ethereum.foundation/ef-mandate.pdf
+- id: crops-unstoppability-provider-capture
+  type: multiple_choice
+  question: |-
+    A transaction-inclusion service reliably delivers censorship resistance
+    to its approved customers. A cartel has durable, non-competitive control
+    over access to that service. Which additional requirement in the EF
+    Mandate's censorship-resistance principle does this arrangement violate?
+  choices:
+  - |-
+    Censorship resistance requires every transaction to receive the same execution price.
+  - |-
+    The provision of unstoppability must itself be censorship-resistant rather than selectively supplied by a captured gatekeeper.
+  - |-
+    Censorship resistance requires all transaction propagation to be public rather than encrypted.
+  - |-
+    Every inclusion service must be operated directly by the Foundation to remain neutral.
+  answer: B
+  difficulty: understanding
+  source: https://ethereum.foundation/ef-mandate.pdf
+- id: crops-security-accreditation-boundary
+  type: multiple_choice
+  question: |-
+    A proposal asks the Ethereum Foundation to improve ecosystem security.
+    Which implementation respects the EF Mandate's explicit boundary
+    against acting as an accreditation body?
+  choices:
+  - |-
+    Issue renewable EF security certificates to projects that pass an independent audit.
+  - |-
+    Publish an official list of endorsed auditors while leaving individual projects uncertified.
+  - |-
+    Support open mechanisms that let users evaluate security and legitimacy without an EF stamp of approval.
+  - Delegate the EF seal of approval to a committee of independent security firms.
+  answer: C
+  difficulty: understanding
+  source: https://ethereum.foundation/ef-mandate.pdf
+- id: crops-incrementalist-intervention-conditions
+  type: open
+  question: |-
+    Under the EF Mandate's Tradeoff Considerations, greater reach alone does
+    not justify an incrementalist intervention in centralized infrastructure.
+    What three conditions define the tightly bounded circumstances in which
+    the Foundation leaves room for such an intervention?
+  answer: |-
+    The tactical intervention must durably reduce central control, must not
+    result in deeper entrenchment than what it supersedes, and must accelerate
+    the availability of a credible alternative that fully embodies the
+    Foundation's principles.
+    A complete answer must include all three conditions. Increased adoption,
+    promises of eventual decentralization, or temporary EF oversight do not
+    substitute for them.
+  difficulty: recall
+  source: https://ethereum.foundation/ef-mandate.pdf
+- id: crops-wallet-defense-agency
+  type: open
+  question: |-
+    A wallet's safety system uses a publicly documented blocklist, but users
+    cannot replace it or override its decisions. Its developers argue that
+    transparency makes the system consistent with the EF Mandate's approach
+    to adversarial user environments. Evaluate that claim and describe the
+    missing design properties.
+  answer: |-
+    Transparency alone is insufficient because the mandate favors
+    user-controlled defenses rather than imposed restrictions on user agency.
+    It describes independent, locally verifiable filters with transparent
+    rules, plural independently built lists, and clear override paths.
+    A complete answer must reject the claim that documentation alone is
+    sufficient and identify user choice or replacement of defenses together
+    with a clear override or opt-out path. It need not reject blocklists
+    themselves.
+  difficulty: reasoning
+  source: https://ethereum.foundation/ef-mandate.pdf
+- id: crops-unused-native-aggregation
+  type: open
+  question: |-
+    In the EF Mandate's native-aggregation example, suppose an aggregation
+    scheme is added to Ethereum but nobody uses it, including users with
+    strong needs for CROPS properties. Why is this not merely an unsuccessful
+    optional feature, as it might be in an application?
+  answer: |-
+    The scheme adds protocol code and therefore permanent ongoing risk
+    without delivering the intended benefit. Protocol complexity expands
+    the bug surface and makes independent implementations harder, while
+    users cannot individually opt out of a protocol change in the way they
+    can decline an application. The mandate therefore applies a much higher
+    bar to improvements that risk protocol CROPS properties.
+    A complete answer must identify the ongoing protocol-wide risk without
+    corresponding use or benefit and contrast this with users' ability to
+    opt out at the application layer.
+  difficulty: reasoning
+  source: https://ethereum.foundation/ef-mandate.pdf
+- id: crops-governance-security-boundary
+  type: multiple_choice
+  question: |-
+    Which statement most precisely matches the EF Mandate's treatment of
+    governance minimization as part of security?
+  choices:
+  - |-
+    Protocol guarantees must never change, even through a voluntarily adopted upgrade.
+  - A social layer should not override protocol guarantees lightly.
+  - Social overrides are acceptable whenever a token-holder majority approves them.
+  - |-
+    The Foundation should retain a unilateral emergency override while ordinary governance is minimized.
+  answer: B
+  difficulty: understanding
+  source: https://ethereum.foundation/ef-mandate.pdf

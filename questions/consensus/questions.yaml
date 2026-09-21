@@ -448,3 +448,161 @@
   answer: A
   difficulty: recall
   source: https://github.com/ethereum/consensus-specs/blob/dev/specs/phase0/beacon-chain.md
+
+- id: consensus-finalization-without-current-target-supermajority
+  type: open
+  question: |-
+    In the Phase 0 justification and finalization algorithm, the current epoch
+    is 100. The saved old previous justified checkpoint is at epoch 98, and
+    the saved old current justified checkpoint is at epoch 99. After shifting
+    justification_bits and applying this epoch's justification results, the
+    bits at indices 0 through 3 are [false, true, true, false].
+    Which checkpoint does the finalization logic finalize, and why?
+  answer: |-
+    It finalizes the saved old previous justified checkpoint at epoch 98.
+    The condition all(bits[1:3]) is true, and
+    old_previous_justified_checkpoint.epoch + 2 == current_epoch.
+    The other finalization conditions do not match. A complete answer must
+    identify epoch 98 and explain that bits 1 and 2, together with the
+    two-epoch distance, satisfy a finalization condition despite bit 0 being
+    false.
+  difficulty: reasoning
+  source: |-
+    https://github.com/ethereum/consensus-specs/blob/master/specs/phase0/beacon-chain.md#justification-and-finalization
+- id: consensus-inactivity-score-recovery-order
+  type: multiple_choice
+  question: |-
+    Under Altair's inactivity-score update rules on mainnet, an eligible
+    validator starts an epoch transition with inactivity_score = 20 and is
+    absent from the previous epoch's unslashed timely-target participants.
+    The chain is not in an inactivity leak. What is its inactivity score
+    after process_inactivity_updates?
+  choices:
+  - '24'
+  - '20'
+  - '8'
+  - '4'
+  answer: C
+  difficulty: reasoning
+  source: |-
+    https://github.com/ethereum/consensus-specs/blob/master/specs/altair/beacon-chain.md#inactivity-scores
+- id: consensus-sync-committee-repeated-validator-positions
+  type: open
+  question: |-
+    Under Altair's sync-aggregate processing rules, a validator occupies two
+    positions in the current sync committee. A valid aggregate has the
+    participation bit set for one of those positions and unset for the
+    other. How does the protocol apply participant rewards and penalties
+    to that validator?
+  answer: |-
+    Processing is per committee position, not per distinct validator. The
+    validator receives one participant reward for the set bit and one
+    participant penalty for the unset bit. These have equal magnitude,
+    giving a net-zero participant balance change if its balance can absorb
+    the penalty. A complete answer must state that both positions are
+    processed separately, producing one reward and one penalty; it need
+    not discuss any separate reward earned as block proposer.
+  difficulty: understanding
+  source: |-
+    https://github.com/ethereum/consensus-specs/blob/master/specs/altair/beacon-chain.md#sync-aggregate-processing
+- id: consensus-missing-timely-head-direct-penalty
+  type: multiple_choice
+  question: |-
+    Under Altair's participation-flag reward rules, an unslashed validator
+    earns timely-source and timely-target participation but not timely-head
+    participation. Outside an inactivity leak, what direct balance penalty
+    does get_flag_index_deltas assign for the missing timely-head flag?
+  choices:
+  - A penalty equal to its full base reward
+  - A penalty equal to its base reward multiplied by 14/64
+  - A penalty equal to its base reward multiplied by 26/64
+  - No direct penalty; the validator forgoes the timely-head reward
+  answer: D
+  difficulty: understanding
+  source: |-
+    https://github.com/ethereum/consensus-specs/blob/master/specs/altair/beacon-chain.md#rewards-and-penalties
+- id: consensus-deneb-voluntary-exit-domain-version
+  type: multiple_choice
+  question: |-
+    Under Deneb's modified voluntary-exit signature verification, which fork
+    version is used to construct the DOMAIN_VOLUNTARY_EXIT signing domain,
+    regardless of the epoch specified in the exit?
+  choices:
+  - GENESIS_FORK_VERSION
+  - CAPELLA_FORK_VERSION
+  - DENEB_FORK_VERSION
+  - The fork version active at the exit's specified epoch
+  answer: B
+  difficulty: recall
+  source: |-
+    https://github.com/ethereum/consensus-specs/blob/master/specs/deneb/beacon-chain.md#modified-process_voluntary_exit
+- id: consensus-capella-withdrawal-sweep-pointer-advance
+  type: open
+  question: |-
+    Under Capella's withdrawal-processing rules on mainnet, the validator
+    registry contains 50,000 validators and next_withdrawal_validator_index
+    starts at 100. The expected withdrawal list contains exactly one
+    withdrawal, for validator 150, and the payload supplies that list.
+    What is next_withdrawal_validator_index after processing the payload,
+    and why is it not 151?
+  answer: |-
+    The new index is 16,484. Because the withdrawal list has fewer than
+    MAX_WITHDRAWALS_PER_PAYLOAD entries, the pointer advances from its old
+    value by MAX_VALIDATORS_PER_WITHDRAWALS_SWEEP, which is 16,384:
+    (100 + 16,384) % 50,000 = 16,484. Advancing to the index after the last
+    withdrawal applies when the withdrawal list reaches the payload limit.
+    A complete answer must give 16,484 and connect it to the non-full-list
+    sweep-advance rule.
+  difficulty: reasoning
+  source: |-
+    https://github.com/ethereum/consensus-specs/blob/master/specs/capella/beacon-chain.md#new-process_withdrawals
+- id: consensus-light-client-supermajority-integer-boundary
+  type: multiple_choice
+  question: |-
+    In Altair's light-client update processing, a sync committee has 512
+    positions. What is the smallest number of set participation bits that
+    satisfies the has_supermajority test?
+  choices:
+  - '256'
+  - '341'
+  - '342'
+  - '343'
+  answer: C
+  difficulty: reasoning
+  source: |-
+    https://github.com/ethereum/consensus-specs/blob/master/specs/altair/light-client/sync-protocol.md#process_light_client_update
+- id: consensus-seed-randao-mix-vector-index
+  type: multiple_choice
+  question: |-
+    Using the Phase 0 mainnet get_seed rule, with
+    EPOCHS_PER_HISTORICAL_VECTOR = 65,536 and MIN_SEED_LOOKAHEAD = 1,
+    which index of state.randao_mixes supplies the mix when computing a
+    seed for epoch 100?
+  choices:
+  - '98'
+  - '99'
+  - '100'
+  - '101'
+  answer: A
+  difficulty: recall
+  source: |-
+    https://github.com/ethereum/consensus-specs/blob/master/specs/phase0/beacon-chain.md#get_seed
+- id: consensus-activation-eligibility-finalized-checkpoint-gate
+  type: open
+  question: |-
+    On the Deneb beacon chain, a validator has effective_balance = 32 ETH,
+    activation_eligibility_epoch = 80, and activation_epoch =
+    FAR_FUTURE_EPOCH. The current epoch is 84, but the finalized checkpoint
+    is still at epoch 79. Does this validator pass is_eligible_for_activation
+    for entry into the activation queue? Explain the decisive condition.
+  answer: |-
+    No. Entry into the activation queue requires
+    activation_eligibility_epoch <= state.finalized_checkpoint.epoch,
+    as well as activation_epoch == FAR_FUTURE_EPOCH. Here 80 is greater
+    than 79, so the finalized-checkpoint condition fails even though the
+    current epoch is 84 and the validator has 32 ETH effective balance.
+    A complete answer must reject eligibility and identify the comparison
+    against the finalized checkpoint's epoch, not the current epoch.
+  difficulty: understanding
+  source: |-
+    https://github.com/ethereum/consensus-specs/blob/master/specs/phase0/beacon-chain.md#is_eligible_for_activation

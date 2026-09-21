@@ -464,3 +464,103 @@
   answer: A
   difficulty: recall
   source: https://blog.ethereum.org/2014/08/08/ether-sale-a-statistical-overview
+
+- id: history-homestead-code-deposit-failure
+  type: open
+  question: |-
+    A contract-creation transaction finishes executing its initialization code
+    but has insufficient remaining gas to pay for depositing the returned
+    runtime code. How did the outcome change from Frontier to Homestead?
+  answer: |-
+    Under Frontier, insufficient code-deposit gas could leave a successfully
+    created contract with empty code. Homestead changed this to an out-of-gas
+    failure of contract creation, rather than successful creation with empty
+    code. A complete answer must contrast Frontier's empty-code creation with
+    Homestead's failed creation.
+  difficulty: reasoning
+  source: https://eips.ethereum.org/EIPS/eip-2
+- id: history-spurious-dragon-code-size-limit
+  type: multiple_choice
+  question: |-
+    What maximum deployed contract-code size did EIP-170 introduce at the
+    Spurious Dragon upgrade, excluding initialization code?
+  choices:
+  - 16,384 bytes
+  - 24,576 bytes
+  - 32,768 bytes
+  - 49,152 bytes
+  answer: B
+  difficulty: recall
+  source: https://eips.ethereum.org/EIPS/eip-170
+- id: history-byzantium-receipt-status-scope
+  type: open
+  question: |-
+    Byzantium introduced the receipt status field through EIP-658. Does a
+    receipt status of 1 guarantee that every internal call in the transaction
+    succeeded? Explain what that status actually reports.
+  answer: |-
+    No. The status reports success of the top-level transaction execution.
+    An internal call can fail while its caller handles that failure and the
+    top-level execution succeeds. A complete answer must identify top-level
+    success as the scope of the status and reject the guarantee that all
+    internal calls succeeded.
+  difficulty: understanding
+  source: https://eips.ethereum.org/EIPS/eip-658
+- id: history-muir-glacier-additional-bomb-delay
+  type: multiple_choice
+  question: |-
+    Under EIP-2384, how many additional blocks of difficulty-bomb delay did
+    Muir Glacier introduce relative to the schedule already in effect?
+  choices:
+  - 3,000,000 blocks
+  - 4,000,000 blocks
+  - 5,000,000 blocks
+  - 9,000,000 blocks
+  answer: B
+  difficulty: recall
+  source: https://eips.ethereum.org/EIPS/eip-2384
+- id: history-altair-initial-slashing-quotient
+  type: multiple_choice
+  question: |-
+    Immediately after Altair activated on Ethereum mainnet, what was
+    MIN_SLASHING_PENALTY_QUOTIENT_ALTAIR, the divisor used to calculate
+    a validator's minimum initial slashing penalty?
+  choices:
+  - '32'
+  - '64'
+  - '128'
+  - '512'
+  answer: B
+  difficulty: recall
+  source: |-
+    https://github.com/ethereum/consensus-specs/blob/v1.1.0/presets/mainnet/altair.yaml
+- id: history-istanbul-calldata-cost-reduction
+  type: open
+  question: |-
+    An ordinary, non-contract-creation transaction has calldata containing
+    exactly 100 zero bytes and 100 nonzero bytes. By how much did Istanbul's
+    EIP-2028 reduce the intrinsic gas charge for this calldata, compared with
+    the rules immediately before Istanbul? Exclude the base transaction cost.
+  answer: |-
+    EIP-2028 reduced the charge for each nonzero calldata byte from 68 to
+    16 gas while leaving the zero-byte charge at 4 gas. The calldata charge
+    fell from 7,200 gas to 2,000 gas, a reduction of 5,200 gas. A complete
+    answer must give the reduction as 5,200 gas; the intermediate totals
+    are not required.
+  difficulty: reasoning
+  source: https://eips.ethereum.org/EIPS/eip-2028
+- id: history-berlin-modexp-minimum-charge
+  type: multiple_choice
+  question: |-
+    Under the EIP-2565 MODEXP pricing activated in Berlin, what is the
+    precompile's execution gas charge for inputs with a 32-byte base,
+    a 32-byte modulus, and a 3-byte exponent encoding 65537 (0x010001)?
+    Exclude call overhead, memory expansion, and transaction intrinsic gas.
+  choices:
+  - 85 gas
+  - 200 gas
+  - 256 gas
+  - 819 gas
+  answer: B
+  difficulty: reasoning
+  source: https://eips.ethereum.org/EIPS/eip-2565
