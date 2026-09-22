@@ -1,0 +1,794 @@
+# Imported from https://github.com/clawdbotatg/eth-evals (MIT, Austin Griffith)
+# by scripts/import_ethevals.py. Edit the script, not this file.
+
+- id: addresses-k-01
+  type: open
+  question: |
+    What is the canonical Ethereum mainnet contract address of native USDC (Circle's USD Coin)? End your reply with a line of the form "Answer: <address>".
+  answer: |
+    The response's final answer must be exactly `0xA0b86991c6218b36c1d19D4a2e9Eb0cE3606eB48` (case-insensitive). Reference from ethskills: "| Mainnet | `0xA0b86991c6218b36c1d19D4a2e9Eb0cE3606eB48` | ✅ Verified |"
+  difficulty: recall
+  source: https://github.com/clawdbotatg/eth-evals/blob/main/tasks/skill-addresses.jsonl
+  tags:
+  - eth-evals
+  - addresses
+- id: addresses-k-02
+  type: open
+  question: |
+    What is the canonical Ethereum mainnet contract address of WETH (Wrapped Ether)? End your reply with a line of the form "Answer: <address>".
+  answer: |
+    The response's final answer must be exactly `0xC02aaA39b223FE8D0A0e5C4F27eAD9083C756Cc2` (case-insensitive). Reference from ethskills: "| Mainnet | `0xC02aaA39b223FE8D0A0e5C4F27eAD9083C756Cc2` | ✅ Verified |"
+  difficulty: recall
+  source: https://github.com/clawdbotatg/eth-evals/blob/main/tasks/skill-addresses.jsonl
+  tags:
+  - eth-evals
+  - addresses
+- id: addresses-k-03
+  type: open
+  question: |
+    What is the canonical Ethereum mainnet contract address of USDT (Tether)? End your reply with a line of the form "Answer: <address>".
+  answer: |
+    The response's final answer must be exactly `0xdAC17F958D2ee523a2206206994597C13D831ec7` (case-insensitive). Reference from ethskills: "| Mainnet | `0xdAC17F958D2ee523a2206206994597C13D831ec7` | ✅ Verified |"
+  difficulty: recall
+  source: https://github.com/clawdbotatg/eth-evals/blob/main/tasks/skill-addresses.jsonl
+  tags:
+  - eth-evals
+  - addresses
+- id: addresses-k-04
+  type: open
+  question: |
+    What is the canonical Ethereum mainnet address of the Uniswap V2 Router (Router02)? End your reply with a line of the form "Answer: <address>".
+  answer: |
+    The response's final answer must be exactly `0x7a250d5630B4cF539739dF2C5dAcb4c659F2488D` (case-insensitive). Reference from ethskills: "| Router | `0x7a250d5630B4cF539739dF2C5dAcb4c659F2488D` | ✅ Verified |"
+  difficulty: recall
+  source: https://github.com/clawdbotatg/eth-evals/blob/main/tasks/skill-addresses.jsonl
+  tags:
+  - eth-evals
+  - addresses
+- id: addresses-k-05
+  type: open
+  question: |
+    Permit2, the universal token-approval contract used by the Uniswap Universal Router, is deployed via CREATE2 at the same address on all EVM chains. What is that address? End your reply with a line of the form "Answer: <address>".
+  answer: |
+    The response's final answer must be exactly `0x000000000022D473030F116dDEE9F6B43aC78BA3` (case-insensitive). Reference from ethskills: "| All chains | `0x000000000022D473030F116dDEE9F6B43aC78BA3` | ✅ Verified |"
+  difficulty: recall
+  source: https://github.com/clawdbotatg/eth-evals/blob/main/tasks/skill-addresses.jsonl
+  tags:
+  - eth-evals
+  - addresses
+- id: addresses-k-06
+  type: open
+  question: |
+    What is the Ethereum mainnet address of the current ENS Registry (the registry contract in use since the 2020 migration)? End your reply with a line of the form "Answer: <address>".
+  answer: |
+    The response's final answer must be exactly `0x00000000000C2E074eC69A0dFb2997BA6C7d2e1e` (case-insensitive). Reference from ethskills: "| Registry | `0x00000000000C2E074eC69A0dFb2997BA6C7d2e1e` | ✅ Verified |"
+  difficulty: recall
+  source: https://github.com/clawdbotatg/eth-evals/blob/main/tasks/skill-addresses.jsonl
+  tags:
+  - eth-evals
+  - addresses
+- id: addresses-k-07
+  type: open
+  question: |
+    What is the canonical address of the ERC-4337 EntryPoint v0.6 contract (same CREATE2 address on all EVM chains)? End your reply with a line of the form "Answer: <address>".
+  answer: |
+    The response's final answer must be exactly `0x5FF137D4b0FDCD49DcA30c7CF57E578a026d2789` (case-insensitive). Reference from ethskills: "| EntryPoint v0.6 | `0x5FF137D4b0FDCD49DcA30c7CF57E578a026d2789` | ✅ Verified |"
+  difficulty: recall
+  source: https://github.com/clawdbotatg/eth-evals/blob/main/tasks/skill-addresses.jsonl
+  tags:
+  - eth-evals
+  - addresses
+- id: addresses-k-08
+  type: open
+  question: |
+    Arachnid's deterministic CREATE2 deployer (the proxy used by Foundry and many protocols for deterministic deployments) lives at the same address on every EVM chain. What is that address? End your reply with a line of the form "Answer: <address>".
+  answer: |
+    The response's final answer must be exactly `0x4e59b44847b379578588920cA78FbF26c0B4956C` (case-insensitive). Reference from ethskills: "| Arachnid's Deployer | `0x4e59b44847b379578588920cA78FbF26c0B4956C` | ✅ Verified |"
+  difficulty: recall
+  source: https://github.com/clawdbotatg/eth-evals/blob/main/tasks/skill-addresses.jsonl
+  tags:
+  - eth-evals
+  - addresses
+- id: addresses-k-09
+  type: open
+  question: |
+    What is the Ethereum mainnet address of the Safe (Gnosis Safe) ProxyFactory used with the v1.3.0 singleton to deploy new Safe multisig wallets? End your reply with a line of the form "Answer: <address>".
+  answer: |
+    The response's final answer must be exactly `0xa6B71E26C5e0845f74c812102Ca7114b6a896AB2` (case-insensitive). Reference from ethskills: "| ProxyFactory | `0xa6B71E26C5e0845f74c812102Ca7114b6a896AB2` | ✅ Verified |"
+  difficulty: recall
+  source: https://github.com/clawdbotatg/eth-evals/blob/main/tasks/skill-addresses.jsonl
+  tags:
+  - eth-evals
+  - addresses
+- id: addresses-k-10
+  type: open
+  question: |
+    What is the contract address of native USDC (issued by Circle, not the bridged USDbC) on Base? End your reply with a line of the form "Answer: <address>".
+  answer: |
+    The response's final answer must be exactly `0x833589fCD6eDb6E08f4c7C32D4f71b54bdA02913` (case-insensitive). Reference from ethskills: "| Base | `0x833589fCD6eDb6E08f4c7C32D4f71b54bdA02913` | ✅ Verified |"
+  difficulty: recall
+  source: https://github.com/clawdbotatg/eth-evals/blob/main/tasks/skill-addresses.jsonl
+  tags:
+  - eth-evals
+  - addresses
+- id: concepts-k-01
+  type: open
+  question: |
+    When referring to activity that happens on the blockchain, the Ethereum community has settled on one preferred spelling of the term. Which is it: "on-chain", "on chain", or "onchain"?
+    End your reply with a line of the form "Answer: <spelling>".
+  answer: |
+    The response's final answer must be exactly `onchain` (case-insensitive). Reference from ethskills: "**Terminology:** You say "on-chain." The Ethereum community says **"onchain"** — one word, no hyphen."
+  difficulty: recall
+  source: https://github.com/clawdbotatg/eth-evals/blob/main/tasks/skill-concepts.jsonl
+  tags:
+  - eth-evals
+  - concepts
+- id: concepts-k-04
+  type: open
+  question: |
+    A contract derives "randomness" as `uint(keccak256(abi.encodePacked(block.timestamp)))`. Post-Merge, the proposer cannot freely choose the timestamp (it is fixed by the slot) — yet this is still worthless as a source of randomness. Why?
+    End your reply with a line of the form "Answer: <why>".
+  answer: |
+    The response's answer must match the pattern `predict|known|advance|public|determin|comput|read` (that is, it must name the concept the pattern captures). The reference answer is: Answer: the timestamp is publicly predictable — anyone can compute the same value before acting. Reference from ethskills: "// ❌ Validators can manipulate block.timestamp (within ~15 seconds)" Grade INCORRECT for these tempting wrong answers: `Answer: validators manipulate the timestamp`
+  difficulty: recall
+  source: https://github.com/clawdbotatg/eth-evals/blob/main/tasks/skill-concepts.jsonl
+  tags:
+  - eth-evals
+  - concepts
+- id: concepts-k-05
+  type: open
+  question: |
+    In a commit-reveal randomness scheme where the random seed mixes the revealed secret with `blockhash(commitBlock)`, the reveal must happen within a limited number of blocks after the commit — wait longer and `blockhash` for the commit block returns zero. Within how many blocks must the reveal happen?
+    End your reply with a line of the form "Answer: <integer>".
+  answer: |
+    The response's final answer must be the integer 256 (decimal or the equivalent hex). Reference from ethskills: "- Must reveal within 256 blocks (blockhash returns zero after that)"
+  difficulty: recall
+  source: https://github.com/clawdbotatg/eth-evals/blob/main/tasks/skill-concepts.jsonl
+  tags:
+  - eth-evals
+  - concepts
+- id: concepts-k-08
+  type: open
+  question: |
+    In Aave-style overcollateralized lending, anyone may call `liquidate()` on a loan once its health factor drops below a specific numeric threshold. What is that threshold value?
+    End your reply with a line of the form "Answer: <number>".
+  answer: |
+    The response's final answer must be the number 1. Reference from ethskills: "Loan health factor drops below 1 → ANYONE can call liquidate()"
+  difficulty: recall
+  source: https://github.com/clawdbotatg/eth-evals/blob/main/tasks/skill-concepts.jsonl
+  tags:
+  - eth-evals
+  - concepts
+- id: frontend-k-01
+  type: open
+  question: |
+    In a dApp frontend using viem, you have an account balance as a bigint in wei and want to display it as a human-readable ETH string (e.g. 1500000000000000000n should display as "1.5"). Which viem utility function do you call?
+    End your reply with a line of the form "Answer: <function name>".
+  answer: |
+    The response's answer must match the pattern `formatEther` (that is, it must name the concept the pattern captures). The reference answer is: Answer: formatEther. Reference from ethskills: "import { formatEther, formatUnits, parseEther, parseUnits } from "viem"; formatEther(weiAmount);"
+  difficulty: recall
+  source: https://github.com/clawdbotatg/eth-evals/blob/main/tasks/skill-frontend.jsonl
+  tags:
+  - eth-evals
+  - frontend
+- id: frontend-k-02
+  type: open
+  question: |
+    Using viem's parseUnits to convert the human-readable amount "100" of USDC into token base units (using USDC's standard number of decimals), what integer value do you get?
+    End your reply with a line of the form "Answer: <integer>".
+  answer: |
+    The response's final answer must be the integer 100000000 (decimal or the equivalent hex). Reference from ethskills: "parseUnits("100", 6); // USDC-style 6 decimals"
+  difficulty: recall
+  source: https://github.com/clawdbotatg/eth-evals/blob/main/tasks/skill-frontend.jsonl
+  tags:
+  - eth-evals
+  - frontend
+- id: frontend-k-04
+  type: multiple_choice
+  question: |
+    A developer using wagmi's useWriteContract disables an Approve button only while the hook's isPending is true. Why can a user still double-submit the approval?
+  choices:
+  - isPending stays true forever if the transaction reverts
+  - |-
+    isPending becomes false as soon as the wallet returns the transaction hash, before onchain confirmation
+  - isPending only tracks read calls, not writes
+  - isPending resets only after the allowance query refetches
+  answer: B
+  difficulty: understanding
+  source: https://github.com/clawdbotatg/eth-evals/blob/main/tasks/skill-frontend.jsonl
+  tags:
+  - eth-evals
+  - frontend
+- id: frontend-k-05
+  type: multiple_choice
+  question: |
+    In a dApp's approval button handler, a submitting flag is set on click and cleared only after the awaited transaction call succeeds — there is no finally block. The user rejects the transaction in their wallet. What happens to the button?
+  choices:
+  - It re-enables after a 4 second cooldown
+  - It automatically resubmits the approval
+  - It shows a success state
+  - It stays disabled permanently
+  answer: D
+  difficulty: understanding
+  source: https://github.com/clawdbotatg/eth-evals/blob/main/tasks/skill-frontend.jsonl
+  tags:
+  - eth-evals
+  - frontend
+- id: frontend-k-06
+  type: open
+  question: |
+    You run a Scaffold-ETH 2 project in fork mode with `yarn fork --network base`. The fork runs locally on Anvil. What chain ID must the frontend's targetNetworks entry in scaffold.config.ts correspond to during development?
+    End your reply with a line of the form "Answer: <integer>".
+  answer: |
+    The response's final answer must be the integer 31337 (decimal or the equivalent hex). Reference from ethskills: "When using fork mode, the frontend target network MUST be `chains.foundry` (chain ID 31337), NOT the chain you're forking."
+  difficulty: recall
+  source: https://github.com/clawdbotatg/eth-evals/blob/main/tasks/skill-frontend.jsonl
+  tags:
+  - eth-evals
+  - frontend
+- id: frontend-k-07
+  type: open
+  question: |
+    A Next.js app is statically exported (output: "export") and deployed to IPFS. The root route / loads fine, but /debug returns 404 because the build emitted debug.html instead of a directory with an index.html, and IPFS gateways only resolve directories to index.html. Which next.config.ts option (name and value) fixes this?
+    End your reply with a line of the form "Answer: <option>: <value>".
+  answer: |
+    The response must mention every one of these: `trailingSlash`, `\btrue\b`. The reference answer is: Answer: trailingSlash: true. Reference from ethskills: "`trailingSlash: true` (CRITICAL)** — This is the #1 reason routes break: - `trailingSlash: false` (default) → generates `debug.html` - `trailingSlash: true` → generates `debug/index.html`"
+  difficulty: recall
+  source: https://github.com/clawdbotatg/eth-evals/blob/main/tasks/skill-frontend.jsonl
+  tags:
+  - eth-evals
+  - frontend
+- id: frontend-k-08
+  type: open
+  question: |
+    On a local Anvil fork, block.timestamp stays frozen between transactions, silently breaking any contract logic that uses timestamps (deadlines, expiry, vesting). Which JSON-RPC method do you call (e.g. via `cast rpc <method> 1`) to make the node mine a block every second?
+    End your reply with a line of the form "Answer: <rpc method name>".
+  answer: |
+    The response's answer must match the pattern `(anvil|evm)_setIntervalMining` (that is, it must name the concept the pattern captures). The reference answer is: Answer: anvil_setIntervalMining. Reference from ethskills: "cast rpc anvil_setIntervalMining 1 ``` Without this, `block.timestamp` stays FROZEN. Any contract logic using timestamps (deadlines, expiry, vesting) will break silently."
+  difficulty: recall
+  source: https://github.com/clawdbotatg/eth-evals/blob/main/tasks/skill-frontend.jsonl
+  tags:
+  - eth-evals
+  - frontend
+- id: frontend-k-09
+  type: multiple_choice
+  question: |
+    Node.js 25+ ships a built-in localStorage object that is missing standard WebStorage methods like getItem/setItem, which crashes next-themes and RainbowKit during Next.js static prerendering. The fix is a localStorage polyfill, but it must be injected via NODE_OPTIONS="--require ./polyfill.cjs" rather than Next.js's instrumentation.ts. Why?
+  choices:
+  - instrumentation.ts only runs in production mode, not during builds
+  - --require is needed to transpile the TypeScript polyfill
+  - |-
+    Next.js prerenders pages in a separate build worker process where instrumentation.ts never runs, while --require injects into every Node process including workers
+  - instrumentation.ts runs after pages have already been rendered
+  answer: C
+  difficulty: understanding
+  source: https://github.com/clawdbotatg/eth-evals/blob/main/tasks/skill-frontend.jsonl
+  tags:
+  - eth-evals
+  - frontend
+- id: indexing-k-01
+  type: open
+  question: |
+    How many `indexed` parameters (topics, excluding the event signature topic0) can a standard non-anonymous Solidity event declare at most?
+    End your reply with a line of the form "Answer: <integer>".
+  answer: |
+    The response's final answer must be the integer 3 (decimal or the equivalent hex). Reference from ethskills: "You get 3 indexed topics per event."
+  difficulty: recall
+  source: https://github.com/clawdbotatg/eth-evals/blob/main/tasks/skill-indexing.jsonl
+  tags:
+  - eth-evals
+  - indexing
+- id: indexing-k-02
+  type: open
+  question: |
+    Where does Ethereum store the event logs a contract emits?
+    A) In transaction receipts
+    B) In the contract's storage slots
+    C) In the transaction's calldata
+    D) In the block header only
+    End your reply with a line of the form "Answer: <letter>".
+  answer: |
+    Any of the following counts as correct: The response's answer must match the pattern `^\(?A\b` (that is, it must name the concept the pattern captures). OR The response's answer must match the pattern `receipt` (that is, it must name the concept the pattern captures).. Reference from ethskills: "They're stored in transaction receipts, not in contract storage, so they don't cost storage gas."
+  difficulty: recall
+  source: https://github.com/clawdbotatg/eth-evals/blob/main/tasks/skill-indexing.jsonl
+  tags:
+  - eth-evals
+  - indexing
+- id: indexing-k-03
+  type: open
+  question: |
+    You need to read a contract's state as it was at a block from three years ago via JSON-RPC (an `eth_call` against an old block tag). What special kind of Ethereum node does this require?
+    End your reply with a line of the form "Answer: <node type>".
+  answer: |
+    The response's answer must match the pattern `archive` (that is, it must name the concept the pattern captures). The reference answer is: Answer: an archive node. Reference from ethskills: "Reading state at a historical block requires an archive node (expensive, slow)."
+  difficulty: recall
+  source: https://github.com/clawdbotatg/eth-evals/blob/main/tasks/skill-indexing.jsonl
+  tags:
+  - eth-evals
+  - indexing
+- id: indexing-k-04
+  type: open
+  question: |
+    The Multicall3 contract is deployed at the same address on Ethereum, Arbitrum, Optimism, Base, Polygon, and 50+ other chains. What is that address?
+    End your reply with a line of the form "Answer: <0x-prefixed address>".
+  answer: |
+    The response's final answer must be exactly `0xcA11bde05977b3631167028862bE2a173976CA11` (case-insensitive). Reference from ethskills: "// Multicall3: 0xcA11bde05977b3631167028862bE2a173976CA11 // Same address on Ethereum, Arbitrum, Optimism, Base, Polygon, and 50+ chains"
+  difficulty: recall
+  source: https://github.com/clawdbotatg/eth-evals/blob/main/tasks/skill-indexing.jsonl
+  tags:
+  - eth-evals
+  - indexing
+- id: indexing-k-05
+  type: open
+  question: |
+    When you deploy a subgraph to The Graph, your contract's events become queryable through an API. What query language does that API use?
+    End your reply with a line of the form "Answer: <query language>".
+  answer: |
+    The response's answer must match the pattern `graph\s?-?\s?ql` (that is, it must name the concept the pattern captures). The reference answer is: Answer: GraphQL. Reference from ethskills: "The Graph turns your contract's events into a queryable GraphQL API."
+  difficulty: recall
+  source: https://github.com/clawdbotatg/eth-evals/blob/main/tasks/skill-indexing.jsonl
+  tags:
+  - eth-evals
+  - indexing
+- id: indexing-k-06
+  type: open
+  question: |
+    Using The Graph's `graph` CLI while building a subgraph, which command generates the typed classes for your entities and events from the schema and contract ABIs?
+    End your reply with a line of the form "Answer: <command>".
+  answer: |
+    The response's answer must match the pattern `codegen` (that is, it must name the concept the pattern captures). The reference answer is: Answer: graph codegen. Reference from ethskills: "# Generate types from schema graph codegen"
+  difficulty: recall
+  source: https://github.com/clawdbotatg/eth-evals/blob/main/tasks/skill-indexing.jsonl
+  tags:
+  - eth-evals
+  - indexing
+- id: indexing-k-07
+  type: open
+  question: |
+    In a subgraph's schema.graphql, which directive do you attach to an entity field to declare it as a reverse lookup — populated from a field on another entity rather than stored directly?
+    End your reply with a line of the form "Answer: <directive>".
+  answer: |
+    The response's answer must match the pattern `derived.?from` (that is, it must name the concept the pattern captures). The reference answer is: Answer: @derivedFrom. Reference from ethskills: "transfers: [Transfer!]! @derivedFrom(field: "token")"
+  difficulty: recall
+  source: https://github.com/clawdbotatg/eth-evals/blob/main/tasks/skill-indexing.jsonl
+  tags:
+  - eth-evals
+  - indexing
+- id: indexing-k-08
+  type: open
+  question: |
+    Under EVM LOG opcode pricing, how many gas does each byte of an event's non-indexed data payload cost to emit?
+    End your reply with a line of the form "Answer: <integer>".
+  answer: |
+    The response's final answer must be the integer 8 (decimal or the equivalent hex). Reference from ethskills: "Solidity events are cheap to emit (~375 gas base + 375 per indexed topic + 8 gas per byte of data) and free to read offchain."
+  difficulty: recall
+  source: https://github.com/clawdbotatg/eth-evals/blob/main/tasks/skill-indexing.jsonl
+  tags:
+  - eth-evals
+  - indexing
+- id: navigation-k-04
+  type: open
+  question: |
+    Which block explorer do you go to for Arbitrum?
+    End your reply with a line of the form "Answer: <answer>".
+  answer: |
+    The response's answer must match the pattern `arbiscan` (that is, it must name the concept the pattern captures). The reference answer is: Answer: Arbiscan (arbiscan.io). Reference from ethskills: "| Arbitrum | https://arbiscan.io | Etherscan-compatible |" Grade INCORRECT for these tempting wrong answers: `Answer: etherscan.io`; `Answer: basescan.org`
+  difficulty: recall
+  source: https://github.com/clawdbotatg/eth-evals/blob/main/tasks/skill-navigation.jsonl
+  tags:
+  - eth-evals
+  - navigation
+- id: navigation-k-06
+  type: open
+  question: |
+    Which RPC provider is MetaMask's default?
+    End your reply with a line of the form "Answer: <answer>".
+  answer: |
+    The response's answer must match the pattern `infura` (that is, it must name the concept the pattern captures). The reference answer is: Answer: Infura. Reference from ethskills: "- **Infura** — established, MetaMask default" Grade INCORRECT for these tempting wrong answers: `Answer: Alchemy`; `Answer: QuickNode`
+  difficulty: recall
+  source: https://github.com/clawdbotatg/eth-evals/blob/main/tasks/skill-navigation.jsonl
+  tags:
+  - eth-evals
+  - navigation
+- id: navigation-k-08
+  type: open
+  question: |
+    You need testnet ETH on an L2 testnet (e.g. an OP Stack chain's Sepolia). Per ethskills, what is the two-step path to get it?
+    End your reply with a line of the form "Answer: <answer>".
+  answer: |
+    The response must mention every one of these: `faucet`, `bridge`. The reference answer is: Answer: get Sepolia ETH from a faucet, then bridge it over using that L2's testnet bridge. Reference from ethskills: "Once you have Sepolia ETH you can bridge it to any L2 using each L2's testnet bridge then you will have ETH on that L2 testnet." Grade INCORRECT for these tempting wrong answers: `Answer: buy it on an exchange`; `Answer: use a faucet`
+  difficulty: recall
+  source: https://github.com/clawdbotatg/eth-evals/blob/main/tasks/skill-navigation.jsonl
+  tags:
+  - eth-evals
+  - navigation
+- id: navigation-k-09
+  type: open
+  question: |
+    For making paid HTTP requests from TypeScript using the x402 payment protocol, which npm package provides the fetch wrapper?
+    End your reply with a line of the form "Answer: <answer>".
+  answer: |
+    The response's answer must match the pattern `x402/fetch` (that is, it must name the concept the pattern captures). The reference answer is: Answer: @x402/fetch. Reference from ethskills: "**x402 has production SDKs:** `@x402/fetch` (TS), `x402` (Python), `github.com/coinbase/x402/go` — production-ready libraries for HTTP payments." Grade INCORRECT for these tempting wrong answers: `Answer: @x402/express`; `Answer: x402 (the Python package)`
+  difficulty: recall
+  source: https://github.com/clawdbotatg/eth-evals/blob/main/tasks/skill-navigation.jsonl
+  tags:
+  - eth-evals
+  - navigation
+- id: testing-k-01
+  type: open
+  question: |
+    In a Foundry (forge-std) Solidity test, which cheatcode sets msg.sender to a given address for only the next external call?
+    End your reply with a line of the form "Answer: <cheatcode name>".
+  answer: |
+    The response's answer must match the pattern `\bprank\b` (that is, it must name the concept the pattern captures). The reference answer is: Answer: vm.prank. Reference from ethskills: "vm.prank(alice); token.transfer(bob, 1_000e18);"
+  difficulty: recall
+  source: https://github.com/clawdbotatg/eth-evals/blob/main/tasks/skill-testing.jsonl
+  tags:
+  - eth-evals
+  - testing
+- id: testing-k-02
+  type: open
+  question: |
+    In a Foundry test you need a fresh test address to hold 1 ether of native ETH before it sends a transaction. Which cheatcode sets an address's ETH balance?
+    End your reply with a line of the form "Answer: <cheatcode name>".
+  answer: |
+    The response's answer must match the pattern `\bdeal\b` (that is, it must name the concept the pattern captures). The reference answer is: Answer: vm.deal. Reference from ethskills: "address user = makeAddr("user"); vm.deal(user, 1 ether);"
+  difficulty: recall
+  source: https://github.com/clawdbotatg/eth-evals/blob/main/tasks/skill-testing.jsonl
+  tags:
+  - eth-evals
+  - testing
+- id: testing-k-03
+  type: open
+  question: |
+    In a Foundry test, which cheatcode do you call immediately before an external call to assert that the call reverts (optionally matching a specific revert reason)?
+    End your reply with a line of the form "Answer: <cheatcode name>".
+  answer: |
+    The response's answer must match the pattern `expect\s?_?revert` (that is, it must name the concept the pattern captures). The reference answer is: Answer: vm.expectRevert. Reference from ethskills: "vm.expectRevert(); // Any revert vm.expectRevert("Insufficient balance"); // Specific message"
+  difficulty: recall
+  source: https://github.com/clawdbotatg/eth-evals/blob/main/tasks/skill-testing.jsonl
+  tags:
+  - eth-evals
+  - testing
+- id: testing-k-04
+  type: open
+  question: |
+    When you run `forge test` with no fuzz configuration in foundry.toml and no CLI flags, how many runs does Foundry execute per fuzz test by default?
+    End your reply with a line of the form "Answer: <integer>".
+  answer: |
+    The response's final answer must be the integer 256 (decimal or the equivalent hex). Reference from ethskills: "# Default: 256 runs forge test"
+  difficulty: recall
+  source: https://github.com/clawdbotatg/eth-evals/blob/main/tasks/skill-testing.jsonl
+  tags:
+  - eth-evals
+  - testing
+- id: testing-k-05
+  type: open
+  question: |
+    forge-std's vm.expectEmit takes four boolean flags, e.g. vm.expectEmit(true, true, false, true). The first three flags choose whether to check the event's three indexed topics. What part of the emitted event does the fourth flag choose to check? Answer with one word.
+    End your reply with a line of the form "Answer: <word>".
+  answer: |
+    The response's answer must match the pattern `\bdata\b` (that is, it must name the concept the pattern captures). The reference answer is: Answer: data. Reference from ethskills: "vm.expectEmit(true, true, false, true); // (topic1, topic2, topic3, data)"
+  difficulty: recall
+  source: https://github.com/clawdbotatg/eth-evals/blob/main/tasks/skill-testing.jsonl
+  tags:
+  - eth-evals
+  - testing
+- id: testing-k-07
+  type: open
+  question: |
+    In a Foundry fork test's setUp function, which single cheatcode both creates a fork of a network (from an RPC alias or URL, optionally pinned to a block number) and makes it the currently active fork?
+    End your reply with a line of the form "Answer: <cheatcode name>".
+  answer: |
+    The response's answer must match the pattern `create\s?_?select\s?_?fork` (that is, it must name the concept the pattern captures). The reference answer is: Answer: vm.createSelectFork. Reference from ethskills: "// Fork mainnet at a specific block for reproducibility vm.createSelectFork("mainnet", 19_000_000);"
+  difficulty: recall
+  source: https://github.com/clawdbotatg/eth-evals/blob/main/tasks/skill-testing.jsonl
+  tags:
+  - eth-evals
+  - testing
+- id: testing-k-08
+  type: open
+  question: |
+    In a Foundry invariant test, random calls are usually routed through a handler contract. Which forge-std function do you call in setUp to register the handler as the contract whose functions the invariant fuzzer will call in random sequences?
+    End your reply with a line of the form "Answer: <function name>".
+  answer: |
+    The response's answer must match the pattern `target\s?_?contract` (that is, it must name the concept the pattern captures). The reference answer is: Answer: targetContract. Reference from ethskills: "// Tell Foundry which contract to call randomly targetContract(address(handler));"
+  difficulty: recall
+  source: https://github.com/clawdbotatg/eth-evals/blob/main/tasks/skill-testing.jsonl
+  tags:
+  - eth-evals
+  - testing
+- id: testing-k-09
+  type: open
+  question: |
+    forge-std's assertApproxEqRel(actual, expected, maxPercentDelta) takes a relative tolerance. In the fixed-point scale used for maxPercentDelta, what numeric value represents 100%?
+    End your reply with a line of the form "Answer: <value>".
+  answer: |
+    The response's answer must match the pattern `(1e18|10\s*\^\s*18|10\s*\*\*\s*18|\bwad\b|1[,_]?000[,_]?000[,_]?000[,_]?000[,_]?000[,_]?000)` (that is, it must name the concept the pattern captures). The reference answer is: Answer: 1e18 (WAD). Reference from ethskills: "assertApproxEqRel(actual, expected, maxPercentDelta); // in WAD (1e18 = 100%)"
+  difficulty: recall
+  source: https://github.com/clawdbotatg/eth-evals/blob/main/tasks/skill-testing.jsonl
+  tags:
+  - eth-evals
+  - testing
+- id: testing-k-10
+  type: open
+  question: |
+    In a Foundry test, a contract reverts with the parameterless custom error `Unauthorized()`. To make vm.expectRevert match that specific custom error, you pass a member of the error type as the argument. What is the name of that member?
+    End your reply with a line of the form "Answer: <member name>".
+  answer: |
+    The response's answer must match the pattern `\bselector\b` (that is, it must name the concept the pattern captures). The reference answer is: Answer: selector (e.g. MyContract.Unauthorized.selector). Reference from ethskills: "vm.expectRevert(MyContract.CustomError.selector); // Custom error"
+  difficulty: recall
+  source: https://github.com/clawdbotatg/eth-evals/blob/main/tasks/skill-testing.jsonl
+  tags:
+  - eth-evals
+  - testing
+- id: toolchain-k-01
+  type: open
+  question: |
+    In 2026 both Foundry and Hardhat 3 are considered legitimate smart-contract development choices. Foundry is faster and Solidity-native; what is Hardhat 3's distinguishing strength?
+    End your reply with a line of the form "Answer: <answer>".
+  answer: |
+    The response's answer must match the pattern `typescript` (that is, it must name the concept the pattern captures). The reference answer is: Answer: it is TypeScript-first with a mature plugin ecosystem. Reference from ethskills: "**Foundry and Hardhat 3 are both legitimate choices in 2026.** Foundry: faster, Solidity-native. Hardhat 3: TypeScript-first, mature plugin ecosystem." Grade INCORRECT for these tempting wrong answers: `Answer: it is Solidity-native and faster`
+  difficulty: recall
+  source: https://github.com/clawdbotatg/eth-evals/blob/main/tasks/skill-toolchain.jsonl
+  tags:
+  - eth-evals
+  - toolchain
+- id: toolchain-k-02
+  type: open
+  question: |
+    Foundry became the default over Hardhat for new projects — until Hardhat 3 (August 2025) shipped capabilities that made it a legitimate choice again. Name two of them.
+    End your reply with a line of the form "Answer: <answer>".
+  answer: |
+    The response must mention every one of these: `solidity`, `fuzz|rust`. The reference answer is: Answer: Solidity testing and fuzzing (plus Rust internals). Reference from ethskills: "**Foundry became the default** over Hardhat for new projects — then Hardhat 3 (Aug 2025) shipped Solidity testing, fuzzing, and Rust internals, making it a legitimate choice again." Grade INCORRECT for these tempting wrong answers: `Answer: TypeScript support and plugins`
+  difficulty: recall
+  source: https://github.com/clawdbotatg/eth-evals/blob/main/tasks/skill-toolchain.jsonl
+  tags:
+  - eth-evals
+  - toolchain
+- id: toolchain-k-06
+  type: open
+  question: |
+    Which single Scaffold-ETH 2 yarn command deploys your frontend to IPFS (via BuidlGuidl IPFS)?
+    End your reply with a line of the form "Answer: <answer>".
+  answer: |
+    The response's answer must match the pattern `yarn\s+ipfs` (that is, it must name the concept the pattern captures). The reference answer is: Answer: yarn ipfs. Reference from ethskills: "- **Deploy to IPFS:** `yarn ipfs` (BuidlGuidl IPFS)" Grade INCORRECT for these tempting wrong answers: `Answer: yarn vercel`; `Answer: yarn deploy`
+  difficulty: recall
+  source: https://github.com/clawdbotatg/eth-evals/blob/main/tasks/skill-toolchain.jsonl
+  tags:
+  - eth-evals
+  - toolchain
+- id: toolchain-k-07
+  type: open
+  question: |
+    Scaffold-ETH 2 trap: `rpcOverrides` and `alchemyApiKey` in scaffold.config.ts are committed to git, so an API key pasted there leaks. Where should the key live instead?
+    End your reply with a line of the form "Answer: <answer>".
+  answer: |
+    The response's answer must match the pattern `\.env|environment variable` (that is, it must name the concept the pattern captures). The reference answer is: Answer: in an environment variable (.env.local), read via process.env. Reference from ethskills: "`rpcOverrides` and `alchemyApiKey` in `scaffold.config.ts` are committed to Git. **NEVER paste API keys directly into this file.** Use environment variables" Grade INCORRECT for these tempting wrong answers: `Answer: directly in scaffold.config.ts`
+  difficulty: recall
+  source: https://github.com/clawdbotatg/eth-evals/blob/main/tasks/skill-toolchain.jsonl
+  tags:
+  - eth-evals
+  - toolchain
+- id: toolchain-k-09
+  type: open
+  question: |
+    In a Scaffold-ETH 2 monorepo using Foundry, in which directory (path from the repo root) do your Solidity contracts live?
+    End your reply with a line of the form "Answer: <answer>".
+  answer: |
+    The response's answer must match the pattern `packages/foundry/contracts` (that is, it must name the concept the pattern captures). The reference answer is: Answer: packages/foundry/contracts/. Reference from ethskills: "1. Write contracts in `packages/foundry/contracts/` (or `packages/hardhat/contracts/`)" Grade INCORRECT for these tempting wrong answers: `Answer: contracts/`; `Answer: src/`
+  difficulty: recall
+  source: https://github.com/clawdbotatg/eth-evals/blob/main/tasks/skill-toolchain.jsonl
+  tags:
+  - eth-evals
+  - toolchain
+- id: toolchain-k-11
+  type: open
+  question: |
+    Before a production Scaffold-ETH 2 deploy, what value must `burnerWalletMode` in scaffold.config.ts be set to, so burner wallets never show up in production?
+    End your reply with a line of the form "Answer: <answer>".
+  answer: |
+    The response's answer must match the pattern `localNetworksOnly` (that is, it must name the concept the pattern captures). The reference answer is: Answer: "localNetworksOnly". Reference from ethskills: "- `burnerWalletMode: "localNetworksOnly"` in scaffold.config.ts (prevents burner wallet on prod)" Grade INCORRECT for these tempting wrong answers: `Answer: false`; `Answer: disabled`
+  difficulty: recall
+  source: https://github.com/clawdbotatg/eth-evals/blob/main/tasks/skill-toolchain.jsonl
+  tags:
+  - eth-evals
+  - toolchain
+- id: tooling-k-01
+  type: open
+  question: |
+    In the Foundry toolchain, which tool do you run to spin up a local Ethereum node that forks mainnet state (e.g. with a --fork-url flag) so you can test against real deployed contracts with fake ETH?
+    End your reply with a line of the form "Answer: <tool name>".
+  answer: |
+    The response's answer must match the pattern `\banvil\b` (that is, it must name the concept the pattern captures). The reference answer is: Answer: anvil. Reference from ethskills: "**Fork mainnet locally:** ```bash anvil --fork-url <YOUR_RPC_URL> # Now test against real contracts with fake ETH at http://localhost:8545 ```"
+  difficulty: recall
+  source: https://github.com/clawdbotatg/eth-evals/blob/main/tasks/skill-tooling.jsonl
+  tags:
+  - eth-evals
+  - tooling
+- id: tooling-k-02
+  type: open
+  question: |
+    Goerli and Rinkeby are deprecated. Name the primary Ethereum testnet developers should use instead, and give its chain ID.
+    End your reply with a line of the form "Answer: <testnet name>, chain ID <number>".
+  answer: |
+    The response must mention every one of these: `sepolia`, `\b11155111\b`. The reference answer is: Answer: Sepolia, chain ID 11155111. Reference from ethskills: "**Primary testnet:** Sepolia (Chain ID: 11155111). Goerli and Rinkeby are deprecated."
+  difficulty: recall
+  source: https://github.com/clawdbotatg/eth-evals/blob/main/tasks/skill-tooling.jsonl
+  tags:
+  - eth-evals
+  - tooling
+- id: tooling-k-03
+  type: open
+  question: |
+    One long-standing Ethereum smart-contract development framework (a JavaScript-based suite dating back to the early days of Solidity tooling) is now deprecated, with developers told to use Foundry or Hardhat instead. Which framework is it?
+    End your reply with a line of the form "Answer: <framework>".
+  answer: |
+    The response's answer must match the pattern `\btruffle\b` (that is, it must name the concept the pattern captures). The reference answer is: Answer: Truffle. Reference from ethskills: "**Deprecated:** Truffle (use Foundry/Hardhat), Goerli/Rinkeby (use Sepolia)"
+  difficulty: recall
+  source: https://github.com/clawdbotatg/eth-evals/blob/main/tasks/skill-tooling.jsonl
+  tags:
+  - eth-evals
+  - tooling
+- id: tooling-k-04
+  type: open
+  question: |
+    You have raw transaction calldata (like 0xa9059cbb...) but no ABI. Which Foundry `cast` subcommand decodes it by looking up the function selector in the public 4-byte signature directory?
+    End your reply with a line of the form "Answer: cast <subcommand>".
+  answer: |
+    The response's answer must match the pattern `4[- ]?byte[- ]?(decode|calldata)` (that is, it must name the concept the pattern captures). The reference answer is: Answer: cast 4byte-decode. Reference from ethskills: "# Decode calldata cast 4byte-decode 0xa9059cbb..."
+  difficulty: recall
+  source: https://github.com/clawdbotatg/eth-evals/blob/main/tasks/skill-tooling.jsonl
+  tags:
+  - eth-evals
+  - tooling
+- id: tooling-k-05
+  type: open
+  question: |
+    Using Foundry's `cast` CLI, which subcommand resolves an ENS name like vitalik.eth to its address?
+    End your reply with a line of the form "Answer: cast <subcommand>".
+  answer: |
+    The response's answer must match the pattern `resolve[- _]?name` (that is, it must name the concept the pattern captures). The reference answer is: Answer: cast resolve-name. Reference from ethskills: "# ENS resolution cast resolve-name vitalik.eth --rpc-url $RPC"
+  difficulty: recall
+  source: https://github.com/clawdbotatg/eth-evals/blob/main/tasks/skill-tooling.jsonl
+  tags:
+  - eth-evals
+  - tooling
+- id: tooling-k-06
+  type: open
+  question: |
+    After deploying with Foundry, which `forge` subcommand submits your contract's source code for verification on a block explorer such as Etherscan?
+    End your reply with a line of the form "Answer: forge <subcommand>".
+  answer: |
+    The response's answer must match the pattern `verify[- _]?contract` (that is, it must name the concept the pattern captures). The reference answer is: Answer: forge verify-contract. Reference from ethskills: "6. **Verification:** `forge verify-contract` or Etherscan API"
+  difficulty: recall
+  source: https://github.com/clawdbotatg/eth-evals/blob/main/tasks/skill-tooling.jsonl
+  tags:
+  - eth-evals
+  - tooling
+- id: tooling-k-09
+  type: open
+  question: |
+    What single npx command scaffolds a new Scaffold-ETH 2 project (the full-stack Solidity + Next.js + Foundry toolkit)?
+    End your reply with a line of the form "Answer: npx <package>".
+  answer: |
+    The response's answer must match the pattern `create[- _]?eth` (that is, it must name the concept the pattern captures). The reference answer is: Answer: npx create-eth@latest. Reference from ethskills: "- **Setup:** `npx create-eth@latest`"
+  difficulty: recall
+  source: https://github.com/clawdbotatg/eth-evals/blob/main/tasks/skill-tooling.jsonl
+  tags:
+  - eth-evals
+  - tooling
+- id: tooling-k-10
+  type: open
+  question: |
+    From the command line, which Foundry `cast` subcommand generates a Solidity interface for a deployed verified contract (the CLI counterpart to exploring a contract in a browser tool)?
+    End your reply with a line of the form "Answer: cast <subcommand>".
+  answer: |
+    The response's answer must match the pattern `cast\s+interface|^\s*interface\b` (that is, it must name the concept the pattern captures). The reference answer is: Answer: cast interface. Reference from ethskills: "3. **Contract exploration:** abi.ninja (browser) or `cast interface` (CLI)"
+  difficulty: recall
+  source: https://github.com/clawdbotatg/eth-evals/blob/main/tasks/skill-tooling.jsonl
+  tags:
+  - eth-evals
+  - tooling
+- id: wallets-k-01
+  type: open
+  question: |
+    Which EIP, activated in Ethereum's Pectra upgrade, lets a regular EOA delegate execution to smart-contract code (enabling batching, gas sponsorship, and session-key-style UX) without migrating to a new wallet?
+    End your reply with a line of the form "Answer: <EIP number>".
+  answer: |
+    The response's answer must match the pattern `\b7702\b` (that is, it must name the concept the pattern captures). The reference answer is: Answer: EIP-7702. Reference from ethskills: "**EIP-7702 is live.** Since Pectra (May 7, 2025), regular EOAs can delegate execution to smart-contract code without migrating wallets. This enables batching, gas sponsorship, and session-key-style UX."
+  difficulty: recall
+  source: https://github.com/clawdbotatg/eth-evals/blob/main/tasks/skill-wallets.jsonl
+  tags:
+  - eth-evals
+  - wallets
+- id: wallets-k-02
+  type: open
+  question: |
+    A raw Ethereum private key, written in hexadecimal without the 0x prefix, is how many hex characters long?
+    End your reply with a line of the form "Answer: <integer>".
+  answer: |
+    The response's final answer must be the integer 64 (decimal or the equivalent hex). Reference from ethskills: "**Rule of thumb:** If `grep -r "0x[a-fA-F0-9]{64}" .` matches anything in your source code, you have a problem."
+  difficulty: recall
+  source: https://github.com/clawdbotatg/eth-evals/blob/main/tasks/skill-wallets.jsonl
+  tags:
+  - eth-evals
+  - wallets
+- id: wallets-k-03
+  type: open
+  question: |
+    In which month and year did Ethereum's Pectra upgrade activate on mainnet?
+    End your reply with a line of the form "Answer: <month year>".
+  answer: |
+    The response must mention every one of these: `\bmay\b`, `\b2025\b`. The reference answer is: Answer: May 2025. Reference from ethskills: "**EIP-7702 is live.** Since Pectra (May 7, 2025), regular EOAs can delegate execution to smart-contract code without migrating wallets."
+  difficulty: recall
+  source: https://github.com/clawdbotatg/eth-evals/blob/main/tasks/skill-wallets.jsonl
+  tags:
+  - eth-evals
+  - wallets
+- id: wallets-k-04
+  type: multiple_choice
+  question: |
+    After an EOA installs an EIP-7702 delegation, how long does that delegation remain active?
+  choices:
+  - It stays active until it is replaced or explicitly cleared
+  - It applies to exactly one transaction, then clears automatically
+  - It expires at the end of the current epoch
+  - It expires after 24 hours
+  answer: A
+  difficulty: understanding
+  source: https://github.com/clawdbotatg/eth-evals/blob/main/tasks/skill-wallets.jsonl
+  tags:
+  - eth-evals
+  - wallets
+- id: wallets-k-05
+  type: multiple_choice
+  question: |
+    In EIP-7702, what does the EOA holder's signed authorization message specify?
+  choices:
+  - Which contract code the EOA is allowed to run as its account logic
+  - A spending limit in wei for the account
+  - A list of token contracts the account may approve
+  - A replacement private key for the account
+  answer: A
+  difficulty: understanding
+  source: https://github.com/clawdbotatg/eth-evals/blob/main/tasks/skill-wallets.jsonl
+  tags:
+  - eth-evals
+  - wallets
+- id: wallets-k-06
+  type: open
+  question: |
+    What is the canonical deployed address of the ERC-4337 EntryPoint contract, version 0.7?
+    End your reply with a line of the form "Answer: <0x-prefixed address>".
+  answer: |
+    The response's final answer must be exactly `0x0000000071727De22E5E9d8BAf0edAc6f37da032` (case-insensitive). Reference from ethskills: "EntryPoint v0.7: `0x0000000071727De22E5E9d8BAf0edAc6f37da032`."
+  difficulty: recall
+  source: https://github.com/clawdbotatg/eth-evals/blob/main/tasks/skill-wallets.jsonl
+  tags:
+  - eth-evals
+  - wallets
+- id: wallets-k-07
+  type: open
+  question: |
+    Safe (formerly Gnosis Safe) v1.4.1 contracts are deployed at deterministic addresses that are identical across Mainnet, Arbitrum, Base, and other major chains. What is the address of the Safe Singleton (the master-copy implementation) for v1.4.1?
+    End your reply with a line of the form "Answer: <0x-prefixed address>".
+  answer: |
+    The response's final answer must be exactly `0x41675C099F32341bf84BFc5382aF534df5C7461a` (case-insensitive). Reference from ethskills: "| Safe Singleton | `0x41675C099F32341bf84BFc5382aF534df5C7461a` |"
+  difficulty: recall
+  source: https://github.com/clawdbotatg/eth-evals/blob/main/tasks/skill-wallets.jsonl
+  tags:
+  - eth-evals
+  - wallets
+- id: wallets-k-08
+  type: open
+  question: |
+    Safe (formerly Gnosis Safe) v1.4.1 contracts are deployed at deterministic addresses that are identical across major chains. What is the address of the Safe MultiSend contract for v1.4.1?
+    End your reply with a line of the form "Answer: <0x-prefixed address>".
+  answer: |
+    The response's final answer must be exactly `0x38869bf66a61cF6bDB996A6aE40D5853Fd43B526` (case-insensitive). Reference from ethskills: "| MultiSend | `0x38869bf66a61cF6bDB996A6aE40D5853Fd43B526` |"
+  difficulty: recall
+  source: https://github.com/clawdbotatg/eth-evals/blob/main/tasks/skill-wallets.jsonl
+  tags:
+  - eth-evals
+  - wallets

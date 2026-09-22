@@ -1,0 +1,87 @@
+# Imported from https://github.com/clawdbotatg/eth-evals (MIT, Austin Griffith)
+# by scripts/import_ethevals.py. Edit the script, not this file.
+
+- id: standards-k-01
+  type: open
+  question: |
+    A DeFi protocol wants its yield-bearing vault to expose a standardized share-accounting interface (deposit/mint/withdraw/redeem, convertToShares/convertToAssets) so aggregators can integrate any vault the same way. Which ERC number is the standard for tokenized vaults?
+    End your reply with a line of the form "Answer: <ERC number>".
+  answer: |
+    The response's answer must match the pattern `\b4626\b` (that is, it must name the concept the pattern captures). The reference answer is: Answer: ERC-4626. Reference from ethskills: "| ERC-4626 | Tokenized vaults | ✅ Standard for yield |"
+  difficulty: recall
+  source: https://github.com/clawdbotatg/eth-evals/blob/main/tasks/skill-standards.jsonl
+  tags:
+  - eth-evals
+  - standards
+- id: standards-k-02
+  type: open
+  question: |
+    Which ERC number standardizes the `permit` function, letting an ERC-20 holder grant a spender an allowance with an off-chain signature instead of an on-chain `approve` transaction (gasless approvals)?
+    End your reply with a line of the form "Answer: <ERC number>".
+  answer: |
+    The response's answer must match the pattern `\b2612\b` (that is, it must name the concept the pattern captures). The reference answer is: Answer: ERC-2612. Reference from ethskills: "| ERC-2612 | Gasless approvals (Permit) | ✅ Widely adopted |"
+  difficulty: recall
+  source: https://github.com/clawdbotatg/eth-evals/blob/main/tasks/skill-standards.jsonl
+  tags:
+  - eth-evals
+  - standards
+- id: standards-k-03
+  type: open
+  question: |
+    Which ERC number defines token-bound accounts — giving every NFT its own smart contract wallet that can hold assets and act onchain?
+    End your reply with a line of the form "Answer: <ERC number>".
+  answer: |
+    The response's answer must match the pattern `\b6551\b` (that is, it must name the concept the pattern captures). The reference answer is: Answer: ERC-6551. Reference from ethskills: "| ERC-6551 | Token-bound accounts (NFT wallets) | ✅ Niche adoption |"
+  difficulty: recall
+  source: https://github.com/clawdbotatg/eth-evals/blob/main/tasks/skill-standards.jsonl
+  tags:
+  - eth-evals
+  - standards
+- id: standards-k-04
+  type: open
+  question: |
+    EIP-3009 lets a token holder sign an off-chain authorization that a third party can submit onchain to move the holder's tokens (USDC implements it, and the x402 payment protocol relies on it for settlement). What is the exact name of the token function the settling party calls?
+    End your reply with a line of the form "Answer: <functionName>".
+  answer: |
+    The response's answer must match the pattern `transfer\s*with\s*authorization` (that is, it must name the concept the pattern captures). The reference answer is: Answer: transferWithAuthorization. Reference from ethskills: "The x402 server calls `transferWithAuthorization` to settle payments on behalf of the client."
+  difficulty: recall
+  source: https://github.com/clawdbotatg/eth-evals/blob/main/tasks/skill-standards.jsonl
+  tags:
+  - eth-evals
+  - standards
+- id: standards-k-05
+  type: open
+  question: |
+    The x402 payment protocol is named after the HTTP status code a server returns when a resource requires payment. What is the standard reason phrase (the text name) of that HTTP status code?
+    End your reply with a line of the form "Answer: <reason phrase>".
+  answer: |
+    The response's answer must match the pattern `payment\s*required` (that is, it must name the concept the pattern captures). The reference answer is: Answer: Payment Required. Reference from ethskills: "Uses the HTTP 402 "Payment Required" status code for internet-native payments."
+  difficulty: recall
+  source: https://github.com/clawdbotatg/eth-evals/blob/main/tasks/skill-standards.jsonl
+  tags:
+  - eth-evals
+  - standards
+- id: standards-k-08
+  type: open
+  question: |
+    ERC-8004 (the onchain agent identity registry deployed in January 2026) builds its Identity Registry on top of a pre-existing token standard, so each registered agent is a token with a unique tokenId. Which ERC token standard is it based on?
+    End your reply with a line of the form "Answer: <ERC number>".
+  answer: |
+    The response's answer must match the pattern `\b721\b` (that is, it must name the concept the pattern captures). The reference answer is: Answer: ERC-721. Reference from ethskills: "**1. Identity Registry (ERC-721 based)** - Globally unique onchain identities for AI agents - Each agent is an NFT with unique identifier"
+  difficulty: recall
+  source: https://github.com/clawdbotatg/eth-evals/blob/main/tasks/skill-standards.jsonl
+  tags:
+  - eth-evals
+  - standards
+- id: standards-k-09
+  type: open
+  question: |
+    The x402 HTTP payment protocol defines payment schemes. `exact` covers fixed known-upfront prices. What is the name of the scheme for metered services (e.g. per-token LLM inference), where the client authorizes a maximum amount and the server settles only what was actually consumed?
+    End your reply with a line of the form "Answer: <scheme name>".
+  answer: |
+    Any of the following counts as correct: The response's final answer must be exactly `upto` (case-insensitive). OR The response's answer must match the pattern `\bup[- ]?to\b` (that is, it must name the concept the pattern captures).. Reference from ethskills: "**`upto`** (emerging) — Pay up to a maximum, final amount determined after work completes. Critical for metered services"
+  difficulty: recall
+  source: https://github.com/clawdbotatg/eth-evals/blob/main/tasks/skill-standards.jsonl
+  tags:
+  - eth-evals
+  - standards

@@ -130,8 +130,8 @@ uv run inspect eval eth_bench -T cot=true --model <your-model> --model-role grad
 uv run inspect eval eth_bench --limit 5 --model <your-model> --model-role grader=...
 ```
 
-Sections: `eips`, `ercs`, `consensus`, `execution`, `history`, `crops`, `misc`,
-`hallucination`.
+Sections: `eips`, `ercs`, `consensus`, `execution`, `history`, `crops`, `solidity`,
+`security`, `building`, `misc`, `hallucination`.
 
 ## Add a question
 
