@@ -295,8 +295,8 @@
       - eth-evals
       - gas
   assert:
-    - type: javascript
-      value: file://src/multiple_choice.js
+    - type: regex
+      value: 'ANSWER:\W*{{answer}}\b(?!\s*,\s*[A-H]\b)'
       metric: execution
 
 - description: execution/gas-k-09
@@ -318,6 +318,6 @@
       - eth-evals
       - gas
   assert:
-    - type: javascript
-      value: file://src/multiple_choice.js
+    - type: regex
+      value: 'ANSWER:\W*{{answer}}\b(?!\s*,\s*[A-H]\b)'
       metric: execution

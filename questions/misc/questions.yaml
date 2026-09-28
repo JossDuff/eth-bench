@@ -273,8 +273,8 @@
     difficulty: understanding
     source: https://github.com/ethereum/execution-apis/blob/main/src/engine/paris.md
   assert:
-    - type: javascript
-      value: file://src/multiple_choice.js
+    - type: regex
+      value: 'ANSWER:\W*{{answer}}\b(?!\s*,\s*[A-H]\b)'
       metric: misc
 
 - description: misc/engine-api-authentication
@@ -296,8 +296,8 @@
     source: |-
       https://github.com/ethereum/execution-apis/blob/main/src/engine/authentication.md
   assert:
-    - type: javascript
-      value: file://src/multiple_choice.js
+    - type: regex
+      value: 'ANSWER:\W*{{answer}}\b(?!\s*,\s*[A-H]\b)'
       metric: misc
 
 - description: misc/networking-beacon-discovery-protocol
@@ -319,8 +319,8 @@
     source: |-
       https://github.com/ethereum/consensus-specs/blob/dev/specs/phase0/p2p-interface.md
   assert:
-    - type: javascript
-      value: file://src/multiple_choice.js
+    - type: regex
+      value: 'ANSWER:\W*{{answer}}\b(?!\s*,\s*[A-H]\b)'
       metric: misc
 
 - description: misc/networking-attestation-subnets
@@ -343,8 +343,8 @@
     source: |-
       https://github.com/ethereum/consensus-specs/blob/dev/specs/phase0/p2p-interface.md
   assert:
-    - type: javascript
-      value: file://src/multiple_choice.js
+    - type: regex
+      value: 'ANSWER:\W*{{answer}}\b(?!\s*,\s*[A-H]\b)'
       metric: misc
 
 - description: misc/epbs-payload-timeliness-committee
@@ -483,8 +483,8 @@
     difficulty: recall
     source: https://docs.optimism.io/stack/rollup/overview
   assert:
-    - type: javascript
-      value: file://src/multiple_choice.js
+    - type: regex
+      value: 'ANSWER:\W*{{answer}}\b(?!\s*,\s*[A-H]\b)'
       metric: misc
 
 - description: misc/glamsterdam-not-scheduled
@@ -505,8 +505,8 @@
     difficulty: recall
     source: https://eips.ethereum.org/EIPS/eip-7773
   assert:
-    - type: javascript
-      value: file://src/multiple_choice.js
+    - type: regex
+      value: 'ANSWER:\W*{{answer}}\b(?!\s*,\s*[A-H]\b)'
       metric: misc
 
 - description: misc/rpc-eth-getproof
@@ -528,8 +528,8 @@
     difficulty: recall
     source: https://eips.ethereum.org/EIPS/eip-1186
   assert:
-    - type: javascript
-      value: file://src/multiple_choice.js
+    - type: regex
+      value: 'ANSWER:\W*{{answer}}\b(?!\s*,\s*[A-H]\b)'
       metric: misc
 
 - description: misc/rpc-block-tags-safe-finalized
@@ -551,8 +551,8 @@
     difficulty: understanding
     source: https://github.com/ethereum/execution-apis
   assert:
-    - type: javascript
-      value: file://src/multiple_choice.js
+    - type: regex
+      value: 'ANSWER:\W*{{answer}}\b(?!\s*,\s*[A-H]\b)'
       metric: misc
 
 - description: misc/sync-snap-sync
@@ -663,8 +663,8 @@
     difficulty: recall
     source: https://specs.optimism.io/fault-proof/cannon-fault-proof-vm.html
   assert:
-    - type: javascript
-      value: file://src/multiple_choice.js
+    - type: regex
+      value: 'ANSWER:\W*{{answer}}\b(?!\s*,\s*[A-H]\b)'
       metric: misc
 
 - description: misc/l2-zkevm-types
@@ -687,8 +687,8 @@
     difficulty: understanding
     source: https://vitalik.eth.limo/general/2022/08/04/zkevm.html
   assert:
-    - type: javascript
-      value: file://src/multiple_choice.js
+    - type: regex
+      value: 'ANSWER:\W*{{answer}}\b(?!\s*,\s*[A-H]\b)'
       metric: misc
 
 - description: misc/da-blob-field-elements
@@ -709,8 +709,8 @@
     difficulty: recall
     source: https://eips.ethereum.org/EIPS/eip-4844
   assert:
-    - type: javascript
-      value: file://src/multiple_choice.js
+    - type: regex
+      value: 'ANSWER:\W*{{answer}}\b(?!\s*,\s*[A-H]\b)'
       metric: misc
 
 - description: misc/roadmap-state-vs-history-expiry
@@ -764,8 +764,8 @@
     difficulty: understanding
     source: https://eips.ethereum.org/EIPS/eip-7864
   assert:
-    - type: javascript
-      value: file://src/multiple_choice.js
+    - type: regex
+      value: 'ANSWER:\W*{{answer}}\b(?!\s*,\s*[A-H]\b)'
       metric: misc
 
 - description: misc/rpc-quantity-leading-zero-rejection
@@ -786,8 +786,8 @@
     difficulty: recall
     source: https://eips.ethereum.org/EIPS/eip-1474
   assert:
-    - type: javascript
-      value: file://src/multiple_choice.js
+    - type: regex
+      value: 'ANSWER:\W*{{answer}}\b(?!\s*,\s*[A-H]\b)'
       metric: misc
 
 - description: misc/rpc-blockhash-canonicality-error-distinction
@@ -836,8 +836,8 @@
     difficulty: reasoning
     source: https://ethereum.org/en/developers/docs/apis/json-rpc/#eth_getlogs
   assert:
-    - type: javascript
-      value: file://src/multiple_choice.js
+    - type: regex
+      value: 'ANSWER:\W*{{answer}}\b(?!\s*,\s*[A-H]\b)'
       metric: misc
 
 - description: misc/engine-forkchoice-invalid-attributes-side-effect
@@ -887,8 +887,8 @@
     difficulty: reasoning
     source: https://github.com/ethereum/execution-apis/blob/main/src/engine/shanghai.md
   assert:
-    - type: javascript
-      value: file://src/multiple_choice.js
+    - type: regex
+      value: 'ANSWER:\W*{{answer}}\b(?!\s*,\s*[A-H]\b)'
       metric: misc
 
 - description: misc/engine-newpayload-blob-hash-order
@@ -936,8 +936,8 @@
     difficulty: reasoning
     source: https://github.com/ethereum/devp2p/blob/master/rlpx.md
   assert:
-    - type: javascript
-      value: file://src/multiple_choice.js
+    - type: regex
+      value: 'ANSWER:\W*{{answer}}\b(?!\s*,\s*[A-H]\b)'
       metric: misc
 
 - description: misc/networking-eth68-pooled-transaction-sizes
@@ -959,8 +959,8 @@
     difficulty: recall
     source: https://github.com/ethereum/devp2p/blob/master/caps/eth.md
   assert:
-    - type: javascript
-      value: file://src/multiple_choice.js
+    - type: regex
+      value: 'ANSWER:\W*{{answer}}\b(?!\s*,\s*[A-H]\b)'
       metric: misc
 
 - description: misc/networking-discv4-pong-ping-hash
@@ -982,8 +982,8 @@
     difficulty: recall
     source: https://github.com/ethereum/devp2p/blob/master/discv4.md
   assert:
-    - type: javascript
-      value: file://src/multiple_choice.js
+    - type: regex
+      value: 'ANSWER:\W*{{answer}}\b(?!\s*,\s*[A-H]\b)'
       metric: misc
 
 - description: misc/l2-op-deposit-alias-modular-wrap

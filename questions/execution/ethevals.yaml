@@ -22,8 +22,8 @@
       - ethevals
       - transactions
   assert:
-    - type: javascript
-      value: file://src/multiple_choice.js
+    - type: regex
+      value: 'ANSWER:\W*{{answer}}\b(?!\s*,\s*[A-H]\b)'
       metric: execution
 
 - description: execution/transactions-11-internal-transactions
@@ -48,8 +48,8 @@
       - ethevals
       - transactions
   assert:
-    - type: javascript
-      value: file://src/multiple_choice.js
+    - type: regex
+      value: 'ANSWER:\W*{{answer}}\b(?!\s*,\s*[A-H]\b)'
       metric: execution
 
 - description: execution/transactions-12-effective-gas-price
@@ -97,8 +97,8 @@
       - ethevals
       - transactions
   assert:
-    - type: javascript
-      value: file://src/multiple_choice.js
+    - type: regex
+      value: 'ANSWER:\W*{{answer}}\b(?!\s*,\s*[A-H]\b)'
       metric: execution
 
 - description: execution/transactions-14-gwei-to-wei

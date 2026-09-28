@@ -175,8 +175,8 @@ file there, or make a new file:
     difficulty: recall
     source: https://eips.ethereum.org/EIPS/eip-1559
   assert:
-    - type: javascript
-      value: file://src/multiple_choice.js
+    - type: regex
+      value: 'ANSWER:\W*{{answer}}\b(?!\s*,\s*[A-H]\b)'
       metric: eips
 ```
 

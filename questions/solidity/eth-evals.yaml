@@ -213,8 +213,8 @@
       - eth-evals
       - contract-reading
   assert:
-    - type: javascript
-      value: file://src/multiple_choice.js
+    - type: regex
+      value: 'ANSWER:\W*{{answer}}\b(?!\s*,\s*[A-H]\b)'
       metric: solidity
 
 - description: solidity/contract-reading-k-02
@@ -637,8 +637,8 @@
       - eth-evals
       - contract-reading
   assert:
-    - type: javascript
-      value: file://src/multiple_choice.js
+    - type: regex
+      value: 'ANSWER:\W*{{answer}}\b(?!\s*,\s*[A-H]\b)'
       metric: solidity
 
 - description: solidity/contract-reading-k-10

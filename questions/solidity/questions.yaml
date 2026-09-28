@@ -22,8 +22,8 @@
     source: |-
       https://docs.soliditylang.org/en/latest/control-structures.html#checked-or-unchecked-arithmetic
   assert:
-    - type: javascript
-      value: file://src/multiple_choice.js
+    - type: regex
+      value: 'ANSWER:\W*{{answer}}\b(?!\s*,\s*[A-H]\b)'
       metric: solidity
 
 - description: solidity/solidity-storage-slot-packing
@@ -51,8 +51,8 @@
     difficulty: reasoning
     source: https://docs.soliditylang.org/en/latest/internals/layout_in_storage.html
   assert:
-    - type: javascript
-      value: file://src/multiple_choice.js
+    - type: regex
+      value: 'ANSWER:\W*{{answer}}\b(?!\s*,\s*[A-H]\b)'
       metric: solidity
 
 - description: solidity/solidity-selector-canonical-signature
@@ -76,8 +76,8 @@
     difficulty: understanding
     source: https://docs.soliditylang.org/en/latest/abi-spec.html#function-selector
   assert:
-    - type: javascript
-      value: file://src/multiple_choice.js
+    - type: regex
+      value: 'ANSWER:\W*{{answer}}\b(?!\s*,\s*[A-H]\b)'
       metric: solidity
 
 - description: solidity/solidity-calldata-vs-memory-param
@@ -166,8 +166,8 @@
     source: |-
       https://docs.soliditylang.org/en/latest/contracts.html#constant-and-immutable-state-variables
   assert:
-    - type: javascript
-      value: file://src/multiple_choice.js
+    - type: regex
+      value: 'ANSWER:\W*{{answer}}\b(?!\s*,\s*[A-H]\b)'
       metric: solidity
 
 - description: solidity/solidity-abi-encode-string-length
@@ -187,8 +187,8 @@
     source: |-
       https://docs.soliditylang.org/en/latest/abi-spec.html#formal-specification-of-the-encoding
   assert:
-    - type: javascript
-      value: file://src/multiple_choice.js
+    - type: regex
+      value: 'ANSWER:\W*{{answer}}\b(?!\s*,\s*[A-H]\b)'
       metric: solidity
 
 - description: solidity/solidity-encodepacked-collision
@@ -237,8 +237,8 @@
     difficulty: understanding
     source: https://docs.soliditylang.org/en/latest/abi-spec.html#events
   assert:
-    - type: javascript
-      value: file://src/multiple_choice.js
+    - type: regex
+      value: 'ANSWER:\W*{{answer}}\b(?!\s*,\s*[A-H]\b)'
       metric: solidity
 
 - description: solidity/solidity-delete-struct-with-mapping
@@ -263,8 +263,8 @@
     difficulty: understanding
     source: https://docs.soliditylang.org/en/latest/types.html#delete
   assert:
-    - type: javascript
-      value: file://src/multiple_choice.js
+    - type: regex
+      value: 'ANSWER:\W*{{answer}}\b(?!\s*,\s*[A-H]\b)'
       metric: solidity
 
 - description: solidity/solidity-super-call-order
@@ -346,8 +346,8 @@
     difficulty: recall
     source: https://docs.soliditylang.org/en/latest/contracts.html#transient-storage
   assert:
-    - type: javascript
-      value: file://src/multiple_choice.js
+    - type: regex
+      value: 'ANSWER:\W*{{answer}}\b(?!\s*,\s*[A-H]\b)'
       metric: solidity
 
 - description: solidity/solidity-public-array-getter
@@ -368,8 +368,8 @@
     difficulty: understanding
     source: https://docs.soliditylang.org/en/latest/contracts.html#getter-functions
   assert:
-    - type: javascript
-      value: file://src/multiple_choice.js
+    - type: regex
+      value: 'ANSWER:\W*{{answer}}\b(?!\s*,\s*[A-H]\b)'
       metric: solidity
 
 - description: solidity/solidity-fallback-without-receive
@@ -392,8 +392,8 @@
     difficulty: understanding
     source: https://docs.soliditylang.org/en/latest/contracts.html#fallback-function
   assert:
-    - type: javascript
-      value: file://src/multiple_choice.js
+    - type: regex
+      value: 'ANSWER:\W*{{answer}}\b(?!\s*,\s*[A-H]\b)'
       metric: solidity
 
 - description: solidity/solidity-short-bytes-slot-marker
@@ -416,8 +416,8 @@
     source: |-
       https://docs.soliditylang.org/en/v0.8.24/internals/layout_in_storage.html#bytes-and-string
   assert:
-    - type: javascript
-      value: file://src/multiple_choice.js
+    - type: regex
+      value: 'ANSWER:\W*{{answer}}\b(?!\s*,\s*[A-H]\b)'
       metric: solidity
 
 - description: solidity/solidity-abi-array-element-offset-origin
@@ -475,8 +475,8 @@
     source: |-
       https://docs.soliditylang.org/en/v0.8.24/control-structures.html#panic-via-assert-and-error-via-require
   assert:
-    - type: javascript
-      value: file://src/multiple_choice.js
+    - type: regex
+      value: 'ANSWER:\W*{{answer}}\b(?!\s*,\s*[A-H]\b)'
       metric: solidity
 
 - description: solidity/solidity-try-catch-return-decoding-boundary
@@ -573,8 +573,8 @@
     source: |-
       https://docs.soliditylang.org/en/v0.8.24/internals/layout_in_storage.html#mappings-and-dynamic-arrays
   assert:
-    - type: javascript
-      value: file://src/multiple_choice.js
+    - type: regex
+      value: 'ANSWER:\W*{{answer}}\b(?!\s*,\s*[A-H]\b)'
       metric: solidity
 
 - description: solidity/solidity-signed-shift-division-rounding
@@ -642,8 +642,8 @@
     difficulty: understanding
     source: https://docs.soliditylang.org/en/v0.8.24/contracts.html#constructors
   assert:
-    - type: javascript
-      value: file://src/multiple_choice.js
+    - type: regex
+      value: 'ANSWER:\W*{{answer}}\b(?!\s*,\s*[A-H]\b)'
       metric: solidity
 
 - description: solidity/solidity-interface-id-inherited-function-exclusion
@@ -677,8 +677,8 @@
     source: |-
       https://docs.soliditylang.org/en/v0.8.24/units-and-global-variables.html#type-information
   assert:
-    - type: javascript
-      value: file://src/multiple_choice.js
+    - type: regex
+      value: 'ANSWER:\W*{{answer}}\b(?!\s*,\s*[A-H]\b)'
       metric: solidity
 
 - description: solidity/solidity-uninitialized-internal-function-panic-code
@@ -700,6 +700,6 @@
     source: |-
       https://docs.soliditylang.org/en/v0.8.24/control-structures.html#panic-via-assert-and-error-via-require
   assert:
-    - type: javascript
-      value: file://src/multiple_choice.js
+    - type: regex
+      value: 'ANSWER:\W*{{answer}}\b(?!\s*,\s*[A-H]\b)'
       metric: solidity

@@ -15,8 +15,8 @@
     source: |-
       https://github.com/ethereum/consensus-specs/blob/dev/specs/phase0/beacon-chain.md
   assert:
-    - type: javascript
-      value: file://src/multiple_choice.js
+    - type: regex
+      value: 'ANSWER:\W*{{answer}}\b(?!\s*,\s*[A-H]\b)'
       metric: consensus
 
 - description: consensus/consensus-fork-choice-head
@@ -37,8 +37,8 @@
     difficulty: recall
     source: https://github.com/ethereum/consensus-specs/blob/dev/specs/phase0/fork-choice.md
   assert:
-    - type: javascript
-      value: file://src/multiple_choice.js
+    - type: regex
+      value: 'ANSWER:\W*{{answer}}\b(?!\s*,\s*[A-H]\b)'
       metric: consensus
 
 - description: consensus/consensus-justified-vs-finalized
@@ -134,8 +134,8 @@
     source: |-
       https://github.com/ethereum/consensus-specs/blob/master/specs/electra/beacon-chain.md
   assert:
-    - type: javascript
-      value: file://src/multiple_choice.js
+    - type: regex
+      value: 'ANSWER:\W*{{answer}}\b(?!\s*,\s*[A-H]\b)'
       metric: consensus
 
 - description: consensus/consensus-electra-deposit-processing
@@ -236,8 +236,8 @@
     source: |-
       https://github.com/ethereum/consensus-specs/blob/dev/specs/electra/beacon-chain.md
   assert:
-    - type: javascript
-      value: file://src/multiple_choice.js
+    - type: regex
+      value: 'ANSWER:\W*{{answer}}\b(?!\s*,\s*[A-H]\b)'
       metric: consensus
 
 - description: consensus/consensus-effective-balance-hysteresis
@@ -260,8 +260,8 @@
     source: |-
       https://github.com/ethereum/consensus-specs/blob/dev/specs/phase0/beacon-chain.md
   assert:
-    - type: javascript
-      value: file://src/multiple_choice.js
+    - type: regex
+      value: 'ANSWER:\W*{{answer}}\b(?!\s*,\s*[A-H]\b)'
       metric: consensus
 
 - description: consensus/consensus-randao-bias
@@ -312,8 +312,8 @@
     source: |-
       https://github.com/ethereum/consensus-specs/blob/dev/specs/altair/beacon-chain.md
   assert:
-    - type: javascript
-      value: file://src/multiple_choice.js
+    - type: regex
+      value: 'ANSWER:\W*{{answer}}\b(?!\s*,\s*[A-H]\b)'
       metric: consensus
 
 - description: consensus/consensus-sync-committee-size-period
@@ -333,8 +333,8 @@
     source: |-
       https://github.com/ethereum/consensus-specs/blob/dev/specs/altair/beacon-chain.md
   assert:
-    - type: javascript
-      value: file://src/multiple_choice.js
+    - type: regex
+      value: 'ANSWER:\W*{{answer}}\b(?!\s*,\s*[A-H]\b)'
       metric: consensus
 
 - description: consensus/consensus-largest-reward-weight
@@ -356,8 +356,8 @@
     source: |-
       https://github.com/ethereum/consensus-specs/blob/dev/specs/altair/beacon-chain.md
   assert:
-    - type: javascript
-      value: file://src/multiple_choice.js
+    - type: regex
+      value: 'ANSWER:\W*{{answer}}\b(?!\s*,\s*[A-H]\b)'
       metric: consensus
 
 - description: consensus/consensus-deneb-attestation-inclusion-window
@@ -406,8 +406,8 @@
     difficulty: recall
     source: https://github.com/ethereum/consensus-specs/blob/dev/specs/fulu/das-core.md
   assert:
-    - type: javascript
-      value: file://src/multiple_choice.js
+    - type: regex
+      value: 'ANSWER:\W*{{answer}}\b(?!\s*,\s*[A-H]\b)'
       metric: consensus
 
 - description: consensus/consensus-exit-vs-slashed-withdrawability
@@ -459,8 +459,8 @@
     source: |-
       https://github.com/ethereum/consensus-specs/blob/dev/specs/phase0/beacon-chain.md
   assert:
-    - type: javascript
-      value: file://src/multiple_choice.js
+    - type: regex
+      value: 'ANSWER:\W*{{answer}}\b(?!\s*,\s*[A-H]\b)'
       metric: consensus
 
 - description: consensus/consensus-aggregator-selection
@@ -485,8 +485,8 @@
     difficulty: understanding
     source: https://github.com/ethereum/consensus-specs/blob/dev/specs/phase0/validator.md
   assert:
-    - type: javascript
-      value: file://src/multiple_choice.js
+    - type: regex
+      value: 'ANSWER:\W*{{answer}}\b(?!\s*,\s*[A-H]\b)'
       metric: consensus
 
 - description: consensus/consensus-proposer-boost
@@ -507,8 +507,8 @@
     difficulty: recall
     source: https://github.com/ethereum/consensus-specs/blob/dev/specs/phase0/fork-choice.md
   assert:
-    - type: javascript
-      value: file://src/multiple_choice.js
+    - type: regex
+      value: 'ANSWER:\W*{{answer}}\b(?!\s*,\s*[A-H]\b)'
       metric: consensus
 
 - description: consensus/consensus-electra-activation-churn
@@ -531,8 +531,8 @@
     source: |-
       https://github.com/ethereum/consensus-specs/blob/dev/specs/electra/beacon-chain.md
   assert:
-    - type: javascript
-      value: file://src/multiple_choice.js
+    - type: regex
+      value: 'ANSWER:\W*{{answer}}\b(?!\s*,\s*[A-H]\b)'
       metric: consensus
 
 - description: consensus/consensus-whistleblower-reward
@@ -618,8 +618,8 @@
     source: |-
       https://github.com/ethereum/consensus-specs/blob/dev/specs/phase0/beacon-chain.md
   assert:
-    - type: javascript
-      value: file://src/multiple_choice.js
+    - type: regex
+      value: 'ANSWER:\W*{{answer}}\b(?!\s*,\s*[A-H]\b)'
       metric: consensus
 
 - description: consensus/consensus-attestation-timing
@@ -640,8 +640,8 @@
     difficulty: recall
     source: https://github.com/ethereum/consensus-specs/blob/dev/specs/phase0/validator.md
   assert:
-    - type: javascript
-      value: file://src/multiple_choice.js
+    - type: regex
+      value: 'ANSWER:\W*{{answer}}\b(?!\s*,\s*[A-H]\b)'
       metric: consensus
 
 - description: consensus/consensus-timely-source-inclusion-limit
@@ -664,8 +664,8 @@
     source: |-
       https://github.com/ethereum/consensus-specs/blob/dev/specs/altair/beacon-chain.md
   assert:
-    - type: javascript
-      value: file://src/multiple_choice.js
+    - type: regex
+      value: 'ANSWER:\W*{{answer}}\b(?!\s*,\s*[A-H]\b)'
       metric: consensus
 
 - description: consensus/consensus-attestation-data-fields
@@ -687,8 +687,8 @@
     source: |-
       https://github.com/ethereum/consensus-specs/blob/dev/specs/phase0/beacon-chain.md
   assert:
-    - type: javascript
-      value: file://src/multiple_choice.js
+    - type: regex
+      value: 'ANSWER:\W*{{answer}}\b(?!\s*,\s*[A-H]\b)'
       metric: consensus
 
 - description: consensus/consensus-finalization-without-current-target-supermajority
@@ -742,8 +742,8 @@
     source: |-
       https://github.com/ethereum/consensus-specs/blob/master/specs/altair/beacon-chain.md#inactivity-scores
   assert:
-    - type: javascript
-      value: file://src/multiple_choice.js
+    - type: regex
+      value: 'ANSWER:\W*{{answer}}\b(?!\s*,\s*[A-H]\b)'
       metric: consensus
 
 - description: consensus/consensus-sync-committee-repeated-validator-positions
@@ -795,8 +795,8 @@
     source: |-
       https://github.com/ethereum/consensus-specs/blob/master/specs/altair/beacon-chain.md#rewards-and-penalties
   assert:
-    - type: javascript
-      value: file://src/multiple_choice.js
+    - type: regex
+      value: 'ANSWER:\W*{{answer}}\b(?!\s*,\s*[A-H]\b)'
       metric: consensus
 
 - description: consensus/consensus-deneb-voluntary-exit-domain-version
@@ -819,8 +819,8 @@
     source: |-
       https://github.com/ethereum/consensus-specs/blob/master/specs/deneb/beacon-chain.md#modified-process_voluntary_exit
   assert:
-    - type: javascript
-      value: file://src/multiple_choice.js
+    - type: regex
+      value: 'ANSWER:\W*{{answer}}\b(?!\s*,\s*[A-H]\b)'
       metric: consensus
 
 - description: consensus/consensus-capella-withdrawal-sweep-pointer-advance
@@ -872,8 +872,8 @@
     source: |-
       https://github.com/ethereum/consensus-specs/blob/master/specs/altair/light-client/sync-protocol.md#process_light_client_update
   assert:
-    - type: javascript
-      value: file://src/multiple_choice.js
+    - type: regex
+      value: 'ANSWER:\W*{{answer}}\b(?!\s*,\s*[A-H]\b)'
       metric: consensus
 
 - description: consensus/consensus-seed-randao-mix-vector-index
@@ -897,8 +897,8 @@
     source: |-
       https://github.com/ethereum/consensus-specs/blob/master/specs/phase0/beacon-chain.md#get_seed
   assert:
-    - type: javascript
-      value: file://src/multiple_choice.js
+    - type: regex
+      value: 'ANSWER:\W*{{answer}}\b(?!\s*,\s*[A-H]\b)'
       metric: consensus
 
 - description: consensus/consensus-activation-eligibility-finalized-checkpoint-gate

@@ -52,6 +52,34 @@ function answerLetters(answer) {
     .filter(Boolean);
 }
 
+// The regex must accept `ANSWER: <the answer>` and reject every other choice, the way
+// promptfoo will apply it: `{{answer}}` rendered from vars, then `new RegExp(value)`.
+function checkAnswerRegex(value, answer, letters, valid, where) {
+  assert.equal(typeof value, "string", `${where}: regex value must be a string`);
+  const regex = new RegExp(value.replaceAll("{{answer}}", answer));
+  const accepts = (text) => regex.test(text);
+
+  assert.ok(accepts(`ANSWER: ${answer}`), `${where}: regex must accept "ANSWER: ${answer}"`);
+  assert.ok(accepts(`Some reasoning.\n\nANSWER: ${answer}`), `${where}: regex must accept the answer as a last line`);
+  assert.ok(accepts(`**ANSWER: ${answer}**`), `${where}: regex must tolerate markdown around the answer`);
+  for (const other of valid) {
+    if (letters.includes(other)) continue;
+    assert.ok(!accepts(`ANSWER: ${other}`), `${where}: regex must reject "ANSWER: ${other}"`);
+  }
+  if (letters.length === 1) {
+    const other = valid.split("").find((l) => l !== answer);
+    assert.ok(!accepts(`ANSWER: ${answer}, ${other}`), `${where}: regex must reject "ANSWER: ${answer}, ${other}"`);
+  } else {
+    const reversed = [...letters].reverse().join(", ");
+    assert.ok(accepts(`ANSWER: ${reversed}`), `${where}: regex must accept the letters in any order`);
+    assert.ok(!accepts(`ANSWER: ${letters.slice(1).join(", ")}`), `${where}: regex must reject a subset of the letters`);
+    const extra = valid.split("").find((l) => !letters.includes(l));
+    if (extra) {
+      assert.ok(!accepts(`ANSWER: ${[...letters, extra].join(", ")}`), `${where}: regex must reject extra letters`);
+    }
+  }
+}
+
 function checkQuestion(t, section, where) {
   assert.equal(typeof t.description, "string", `${where}: description must be a string`);
   const [dir, id, ...rest] = t.description.split("/");
@@ -103,7 +131,8 @@ function checkQuestion(t, section, where) {
     } else {
       assert.equal(letters.length, 1, `${where}: answer must be a single letter unless multiple_correct is set`);
     }
-    assert.deepEqual({ type: a.type, value: a.value }, { type: "javascript", value: "file://src/multiple_choice.js" }, `${where}: multiple_choice assertion`);
+    assert.equal(a.type, "regex", `${where}: multiple_choice questions are graded by a regex assertion`);
+    checkAnswerRegex(a.value, vars.answer, letters, valid, where);
   } else {
     assert.equal(vars.choices, undefined, `${where}: ${vars.type} questions must not have choices`);
     assert.equal(vars.multiple_correct, undefined, `${where}: ${vars.type} questions cannot set multiple_correct`);

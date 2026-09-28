@@ -347,8 +347,8 @@
       - eth-evals
       - frontend
   assert:
-    - type: javascript
-      value: file://src/multiple_choice.js
+    - type: regex
+      value: 'ANSWER:\W*{{answer}}\b(?!\s*,\s*[A-H]\b)'
       metric: building
 
 - description: building/frontend-k-05
@@ -371,8 +371,8 @@
       - eth-evals
       - frontend
   assert:
-    - type: javascript
-      value: file://src/multiple_choice.js
+    - type: regex
+      value: 'ANSWER:\W*{{answer}}\b(?!\s*,\s*[A-H]\b)'
       metric: building
 
 - description: building/frontend-k-06
@@ -459,8 +459,8 @@
       - eth-evals
       - frontend
   assert:
-    - type: javascript
-      value: file://src/multiple_choice.js
+    - type: regex
+      value: 'ANSWER:\W*{{answer}}\b(?!\s*,\s*[A-H]\b)'
       metric: building
 
 - description: building/indexing-k-01
@@ -1285,8 +1285,8 @@
       - eth-evals
       - wallets
   assert:
-    - type: javascript
-      value: file://src/multiple_choice.js
+    - type: regex
+      value: 'ANSWER:\W*{{answer}}\b(?!\s*,\s*[A-H]\b)'
       metric: building
 
 - description: building/wallets-k-05
@@ -1308,8 +1308,8 @@
       - eth-evals
       - wallets
   assert:
-    - type: javascript
-      value: file://src/multiple_choice.js
+    - type: regex
+      value: 'ANSWER:\W*{{answer}}\b(?!\s*,\s*[A-H]\b)'
       metric: building
 
 - description: building/wallets-k-06

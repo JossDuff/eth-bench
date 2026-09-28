@@ -16,8 +16,8 @@
     difficulty: recall
     source: https://eips.ethereum.org/EIPS/eip-1559
   assert:
-    - type: javascript
-      value: file://src/multiple_choice.js
+    - type: regex
+      value: 'ANSWER:\W*{{answer}}\b(?!\s*,\s*[A-H]\b)'
       metric: eips
 
 - description: eips/eip-1559-why-burn
@@ -61,8 +61,8 @@
     difficulty: recall
     source: https://eips.ethereum.org/EIPS/eip-4844
   assert:
-    - type: javascript
-      value: file://src/multiple_choice.js
+    - type: regex
+      value: 'ANSWER:\W*{{answer}}\b(?!\s*,\s*[A-H]\b)'
       metric: eips
 
 - description: eips/eip-4844-evm-blob-access
@@ -104,8 +104,8 @@
     difficulty: recall
     source: https://eips.ethereum.org/EIPS/eip-7702
   assert:
-    - type: javascript
-      value: file://src/multiple_choice.js
+    - type: regex
+      value: 'ANSWER:\W*{{answer}}\b(?!\s*,\s*[A-H]\b)'
       metric: eips
 
 - description: eips/eip-4844-what-it-is
@@ -273,8 +273,8 @@
     difficulty: recall
     source: https://eips.ethereum.org/EIPS/eip-7702
   assert:
-    - type: javascript
-      value: file://src/multiple_choice.js
+    - type: regex
+      value: 'ANSWER:\W*{{answer}}\b(?!\s*,\s*[A-H]\b)'
       metric: eips
 
 - description: eips/eip-7702-extcodesize-delegated
@@ -296,8 +296,8 @@
     difficulty: understanding
     source: https://eips.ethereum.org/EIPS/eip-7702
   assert:
-    - type: javascript
-      value: file://src/multiple_choice.js
+    - type: regex
+      value: 'ANSWER:\W*{{answer}}\b(?!\s*,\s*[A-H]\b)'
       metric: eips
 
 - description: eips/eip-7702-delegation-survives-revert
@@ -347,8 +347,8 @@
     difficulty: reasoning
     source: https://eips.ethereum.org/EIPS/eip-7623
   assert:
-    - type: javascript
-      value: file://src/multiple_choice.js
+    - type: regex
+      value: 'ANSWER:\W*{{answer}}\b(?!\s*,\s*[A-H]\b)'
       metric: eips
 
 - description: eips/eip-7825-transaction-gas-cap
@@ -369,8 +369,8 @@
     difficulty: recall
     source: https://eips.ethereum.org/EIPS/eip-7825
   assert:
-    - type: javascript
-      value: file://src/multiple_choice.js
+    - type: regex
+      value: 'ANSWER:\W*{{answer}}\b(?!\s*,\s*[A-H]\b)'
       metric: eips
 
 - description: eips/eip-7918-blob-reserve-price
@@ -420,8 +420,8 @@
     difficulty: recall
     source: https://eips.ethereum.org/EIPS/eip-7951
   assert:
-    - type: javascript
-      value: file://src/multiple_choice.js
+    - type: regex
+      value: 'ANSWER:\W*{{answer}}\b(?!\s*,\s*[A-H]\b)'
       metric: eips
 
 - description: eips/eip-7685-execution-requests
@@ -468,8 +468,8 @@
     difficulty: recall
     source: https://eips.ethereum.org/EIPS/eip-2935
   assert:
-    - type: javascript
-      value: file://src/multiple_choice.js
+    - type: regex
+      value: 'ANSWER:\W*{{answer}}\b(?!\s*,\s*[A-H]\b)'
       metric: eips
 
 - description: eips/eip-1153-transient-storage-lifetime
@@ -547,8 +547,8 @@
     difficulty: reasoning
     source: https://eips.ethereum.org/EIPS/eip-2930
   assert:
-    - type: javascript
-      value: file://src/multiple_choice.js
+    - type: regex
+      value: 'ANSWER:\W*{{answer}}\b(?!\s*,\s*[A-H]\b)'
       metric: eips
 
 - description: eips/eip-4788-beacon-root-contract
@@ -654,8 +654,8 @@
     difficulty: recall
     source: https://eips.ethereum.org/EIPS/eip-2537
   assert:
-    - type: javascript
-      value: file://src/multiple_choice.js
+    - type: regex
+      value: 'ANSWER:\W*{{answer}}\b(?!\s*,\s*[A-H]\b)'
       metric: eips
 
 - description: eips/eip-3855-push0-cost
@@ -677,8 +677,8 @@
     difficulty: recall
     source: https://eips.ethereum.org/EIPS/eip-3855
   assert:
-    - type: javascript
-      value: file://src/multiple_choice.js
+    - type: regex
+      value: 'ANSWER:\W*{{answer}}\b(?!\s*,\s*[A-H]\b)'
       metric: eips
 
 - description: eips/eip-3651-warm-coinbase-rationale
@@ -727,8 +727,8 @@
     difficulty: recall
     source: https://eips.ethereum.org/EIPS/eip-7939
   assert:
-    - type: javascript
-      value: file://src/multiple_choice.js
+    - type: regex
+      value: 'ANSWER:\W*{{answer}}\b(?!\s*,\s*[A-H]\b)'
       metric: eips
 
 - description: eips/eip-7934-rlp-block-size-limit
@@ -749,8 +749,8 @@
     difficulty: recall
     source: https://eips.ethereum.org/EIPS/eip-7934
   assert:
-    - type: javascript
-      value: file://src/multiple_choice.js
+    - type: regex
+      value: 'ANSWER:\W*{{answer}}\b(?!\s*,\s*[A-H]\b)'
       metric: eips
 
 - description: eips/eip-150-call-gas-cap-rounding
@@ -773,8 +773,8 @@
     difficulty: reasoning
     source: https://eips.ethereum.org/EIPS/eip-150
   assert:
-    - type: javascript
-      value: file://src/multiple_choice.js
+    - type: regex
+      value: 'ANSWER:\W*{{answer}}\b(?!\s*,\s*[A-H]\b)'
       metric: eips
 
 - description: eips/eip-211-empty-call-clears-returndata
@@ -820,8 +820,8 @@
     difficulty: understanding
     source: https://eips.ethereum.org/EIPS/eip-2200
   assert:
-    - type: javascript
-      value: file://src/multiple_choice.js
+    - type: regex
+      value: 'ANSWER:\W*{{answer}}\b(?!\s*,\s*[A-H]\b)'
       metric: eips
 
 - description: eips/eip-3860-create-initcode-word-rounding
@@ -844,8 +844,8 @@
     difficulty: reasoning
     source: https://eips.ethereum.org/EIPS/eip-3860
   assert:
-    - type: javascript
-      value: file://src/multiple_choice.js
+    - type: regex
+      value: 'ANSWER:\W*{{answer}}\b(?!\s*,\s*[A-H]\b)'
       metric: eips
 
 - description: eips/eip-4844-point-evaluation-first-output-word
@@ -867,8 +867,8 @@
     difficulty: recall
     source: https://eips.ethereum.org/EIPS/eip-4844
   assert:
-    - type: javascript
-      value: file://src/multiple_choice.js
+    - type: regex
+      value: 'ANSWER:\W*{{answer}}\b(?!\s*,\s*[A-H]\b)'
       metric: eips
 
 - description: eips/eip-152-blake2f-exact-input-length
@@ -890,8 +890,8 @@
     difficulty: recall
     source: https://eips.ethereum.org/EIPS/eip-152
   assert:
-    - type: javascript
-      value: file://src/multiple_choice.js
+    - type: regex
+      value: 'ANSWER:\W*{{answer}}\b(?!\s*,\s*[A-H]\b)'
       metric: eips
 
 - description: eips/eip-3541-prefix-check-runtime-not-initcode-data

@@ -663,8 +663,8 @@
       - ethevals
       - building
   assert:
-    - type: javascript
-      value: file://src/multiple_choice.js
+    - type: regex
+      value: 'ANSWER:\W*{{answer}}\b(?!\s*,\s*[A-H]\b)'
       metric: building
 
 - description: building/building-22-sign-transaction
@@ -690,8 +690,8 @@
       - ethevals
       - building
   assert:
-    - type: javascript
-      value: file://src/multiple_choice.js
+    - type: regex
+      value: 'ANSWER:\W*{{answer}}\b(?!\s*,\s*[A-H]\b)'
       metric: building
 
 - description: building/building-23-compact-signature
@@ -786,8 +786,8 @@
       - ethevals
       - concepts
   assert:
-    - type: javascript
-      value: file://src/multiple_choice.js
+    - type: regex
+      value: 'ANSWER:\W*{{answer}}\b(?!\s*,\s*[A-H]\b)'
       metric: building
 
 - description: building/concepts-03-keeper-bounty-math
@@ -812,6 +812,6 @@
       - ethevals
       - concepts
   assert:
-    - type: javascript
-      value: file://src/multiple_choice.js
+    - type: regex
+      value: 'ANSWER:\W*{{answer}}\b(?!\s*,\s*[A-H]\b)'
       metric: building

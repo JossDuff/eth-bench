@@ -67,8 +67,8 @@
       - ethevals
       - security
   assert:
-    - type: javascript
-      value: file://src/multiple_choice.js
+    - type: regex
+      value: 'ANSWER:\W*{{answer}}\b(?!\s*,\s*[A-H]\b)'
       metric: security
 
 - description: security/security-03-cross-function-reentrancy
@@ -95,8 +95,8 @@
       - ethevals
       - security
   assert:
-    - type: javascript
-      value: file://src/multiple_choice.js
+    - type: regex
+      value: 'ANSWER:\W*{{answer}}\b(?!\s*,\s*[A-H]\b)'
       metric: security
 
 - description: security/security-04-vault-inflation
@@ -460,8 +460,8 @@
       - ethevals
       - security
   assert:
-    - type: javascript
-      value: file://src/multiple_choice.js
+    - type: regex
+      value: 'ANSWER:\W*{{answer}}\b(?!\s*,\s*[A-H]\b)'
       metric: security
 
 - description: security/security-13-authorize-upgrade
@@ -820,8 +820,8 @@
       - ethevals
       - security
   assert:
-    - type: javascript
-      value: file://src/multiple_choice.js
+    - type: regex
+      value: 'ANSWER:\W*{{answer}}\b(?!\s*,\s*[A-H]\b)'
       metric: security
 
 - description: security/security-25-safe-delegatecall
@@ -847,8 +847,8 @@
       - ethevals
       - security
   assert:
-    - type: javascript
-      value: file://src/multiple_choice.js
+    - type: regex
+      value: 'ANSWER:\W*{{answer}}\b(?!\s*,\s*[A-H]\b)'
       metric: security
 
 - description: security/transactions-25-safe-tx-hash

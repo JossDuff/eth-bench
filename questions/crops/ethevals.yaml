@@ -22,8 +22,8 @@
       - ethevals
       - concepts
   assert:
-    - type: javascript
-      value: file://src/multiple_choice.js
+    - type: regex
+      value: 'ANSWER:\W*{{answer}}\b(?!\s*,\s*[A-H]\b)'
       metric: crops
 
 - description: crops/concepts-04-hyperstructures
@@ -73,8 +73,8 @@
       - ethevals
       - concepts
   assert:
-    - type: javascript
-      value: file://src/multiple_choice.js
+    - type: regex
+      value: 'ANSWER:\W*{{answer}}\b(?!\s*,\s*[A-H]\b)'
       metric: crops
 
 - description: crops/concepts-06-sybil-resistance
@@ -120,8 +120,8 @@
       - ethevals
       - concepts
   assert:
-    - type: javascript
-      value: file://src/multiple_choice.js
+    - type: regex
+      value: 'ANSWER:\W*{{answer}}\b(?!\s*,\s*[A-H]\b)'
       metric: crops
 
 - description: crops/concepts-08-verified-is-not-open
@@ -147,8 +147,8 @@
       - ethevals
       - concepts
   assert:
-    - type: javascript
-      value: file://src/multiple_choice.js
+    - type: regex
+      value: 'ANSWER:\W*{{answer}}\b(?!\s*,\s*[A-H]\b)'
       metric: crops
 
 - description: crops/concepts-17-forced-inclusion

@@ -17,8 +17,8 @@
     difficulty: recall
     source: https://eips.ethereum.org/EIPS/eip-7805
   assert:
-    - type: javascript
-      value: file://src/multiple_choice.js
+    - type: regex
+      value: 'ANSWER:\W*{{answer}}\b(?!\s*,\s*[A-H]\b)'
       metric: crops
 
 - description: crops/crops-client-diversity
@@ -85,8 +85,8 @@
     difficulty: recall
     source: https://github.com/ethereum/go-ethereum#license
   assert:
-    - type: javascript
-      value: file://src/multiple_choice.js
+    - type: regex
+      value: 'ANSWER:\W*{{answer}}\b(?!\s*,\s*[A-H]\b)'
       metric: crops
 
 - description: crops/crops-focil-problem
@@ -159,8 +159,9 @@
     type: multiple_choice
     source: https://l2beat.com/layer2s/
   assert:
-    - type: javascript
-      value: file://src/multiple_choice.js
+    # All three letters, in any order, and nothing else.
+    - type: regex
+      value: 'ANSWER:\W*(?=[^\n]*\bB\b)(?=[^\n]*\bF\b)(?=[^\n]*\bG\b)(?:[BFG]\b\W*){3}(?!\s*,?\s*[A-H]\b)'
       metric: crops
 
 - description: crops/crops-founder-funding-decision
@@ -251,8 +252,8 @@
     difficulty: recall
     source: https://ethereum.foundation/ef-mandate.pdf
   assert:
-    - type: javascript
-      value: file://src/multiple_choice.js
+    - type: regex
+      value: 'ANSWER:\W*{{answer}}\b(?!\s*,\s*[A-H]\b)'
       metric: crops
 
 - description: crops/crops-mandate-cross-layer-capture
@@ -360,8 +361,8 @@
     difficulty: recall
     source: https://ethereum.foundation/ef-mandate.pdf
   assert:
-    - type: javascript
-      value: file://src/multiple_choice.js
+    - type: regex
+      value: 'ANSWER:\W*{{answer}}\b(?!\s*,\s*[A-H]\b)'
       metric: crops
 
 - description: crops/crops-weak-vs-strong-censorship
@@ -415,8 +416,8 @@
     difficulty: understanding
     source: https://eips.ethereum.org/EIPS/eip-8182
   assert:
-    - type: javascript
-      value: file://src/multiple_choice.js
+    - type: regex
+      value: 'ANSWER:\W*{{answer}}\b(?!\s*,\s*[A-H]\b)'
       metric: crops
 
 - description: crops/crops-privacy-pools-association-sets
@@ -466,8 +467,8 @@
     difficulty: understanding
     source: https://blog.ethereum.org/2025/07/31/lean-ethereum
   assert:
-    - type: javascript
-      value: file://src/multiple_choice.js
+    - type: regex
+      value: 'ANSWER:\W*{{answer}}\b(?!\s*,\s*[A-H]\b)'
       metric: crops
 
 - description: crops/crops-rpc-provider-privacy-leak
@@ -1055,8 +1056,8 @@
     difficulty: understanding
     source: https://sourcify.dev
   assert:
-    - type: javascript
-      value: file://src/multiple_choice.js
+    - type: regex
+      value: 'ANSWER:\W*{{answer}}\b(?!\s*,\s*[A-H]\b)'
       metric: crops
 
 - description: crops/crops-consensus-client-gpl
@@ -1075,8 +1076,8 @@
     difficulty: recall
     source: https://github.com/OffchainLabs/prysm/blob/develop/LICENSE.md
   assert:
-    - type: javascript
-      value: file://src/multiple_choice.js
+    - type: regex
+      value: 'ANSWER:\W*{{answer}}\b(?!\s*,\s*[A-H]\b)'
       metric: crops
 
 - description: crops/crops-mandate-security-simplicity
@@ -1328,8 +1329,8 @@
     difficulty: recall
     source: https://ethereum.foundation/ef-mandate.pdf
   assert:
-    - type: javascript
-      value: file://src/multiple_choice.js
+    - type: regex
+      value: 'ANSWER:\W*{{answer}}\b(?!\s*,\s*[A-H]\b)'
       metric: crops
 
 - description: crops/crops-unstoppability-provider-capture
@@ -1356,8 +1357,8 @@
     difficulty: understanding
     source: https://ethereum.foundation/ef-mandate.pdf
   assert:
-    - type: javascript
-      value: file://src/multiple_choice.js
+    - type: regex
+      value: 'ANSWER:\W*{{answer}}\b(?!\s*,\s*[A-H]\b)'
       metric: crops
 
 - description: crops/crops-security-accreditation-boundary
@@ -1382,8 +1383,8 @@
     difficulty: understanding
     source: https://ethereum.foundation/ef-mandate.pdf
   assert:
-    - type: javascript
-      value: file://src/multiple_choice.js
+    - type: regex
+      value: 'ANSWER:\W*{{answer}}\b(?!\s*,\s*[A-H]\b)'
       metric: crops
 
 - description: crops/crops-incrementalist-intervention-conditions
@@ -1488,6 +1489,6 @@
     difficulty: understanding
     source: https://ethereum.foundation/ef-mandate.pdf
   assert:
-    - type: javascript
-      value: file://src/multiple_choice.js
+    - type: regex
+      value: 'ANSWER:\W*{{answer}}\b(?!\s*,\s*[A-H]\b)'
       metric: crops

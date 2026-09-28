@@ -22,8 +22,8 @@
       - eth-evals
       - crops
   assert:
-    - type: javascript
-      value: file://src/multiple_choice.js
+    - type: regex
+      value: 'ANSWER:\W*{{answer}}\b(?!\s*,\s*[A-H]\b)'
       metric: crops
 
 - description: crops/crops-k-12
@@ -133,8 +133,8 @@
       - eth-evals
       - cryptoecon
   assert:
-    - type: javascript
-      value: file://src/multiple_choice.js
+    - type: regex
+      value: 'ANSWER:\W*{{answer}}\b(?!\s*,\s*[A-H]\b)'
       metric: crops
 
 - description: crops/cypherpunk-k-01
@@ -242,8 +242,8 @@
       - eth-evals
       - cypherpunk
   assert:
-    - type: javascript
-      value: file://src/multiple_choice.js
+    - type: regex
+      value: 'ANSWER:\W*{{answer}}\b(?!\s*,\s*[A-H]\b)'
       metric: crops
 
 - description: crops/cypherpunk-k-06
@@ -309,8 +309,8 @@
       - eth-evals
       - cypherpunk
   assert:
-    - type: javascript
-      value: file://src/multiple_choice.js
+    - type: regex
+      value: 'ANSWER:\W*{{answer}}\b(?!\s*,\s*[A-H]\b)'
       metric: crops
 
 - description: crops/cypherpunk-k-10
@@ -334,6 +334,6 @@
       - eth-evals
       - cypherpunk
   assert:
-    - type: javascript
-      value: file://src/multiple_choice.js
+    - type: regex
+      value: 'ANSWER:\W*{{answer}}\b(?!\s*,\s*[A-H]\b)'
       metric: crops

@@ -32,8 +32,8 @@
     difficulty: recall
     source: https://eips.ethereum.org/EIPS/eip-4626
   assert:
-    - type: javascript
-      value: file://src/multiple_choice.js
+    - type: regex
+      value: 'ANSWER:\W*{{answer}}\b(?!\s*,\s*[A-H]\b)'
       metric: ercs
 
 - description: ercs/erc-20-approve-function
@@ -54,8 +54,8 @@
     difficulty: recall
     source: https://eips.ethereum.org/EIPS/eip-20
   assert:
-    - type: javascript
-      value: file://src/multiple_choice.js
+    - type: regex
+      value: 'ANSWER:\W*{{answer}}\b(?!\s*,\s*[A-H]\b)'
       metric: ercs
 
 - description: ercs/erc-2612-permit-purpose
@@ -203,8 +203,8 @@
     difficulty: recall
     source: https://eips.ethereum.org/EIPS/eip-721
   assert:
-    - type: javascript
-      value: file://src/multiple_choice.js
+    - type: regex
+      value: 'ANSWER:\W*{{answer}}\b(?!\s*,\s*[A-H]\b)'
       metric: ercs
 
 - description: ercs/erc-1967-slot-minus-one
@@ -253,8 +253,8 @@
     difficulty: recall
     source: https://eips.ethereum.org/EIPS/eip-712
   assert:
-    - type: javascript
-      value: file://src/multiple_choice.js
+    - type: regex
+      value: 'ANSWER:\W*{{answer}}\b(?!\s*,\s*[A-H]\b)'
       metric: ercs
 
 - description: ercs/erc-3009-vs-2612
@@ -332,8 +332,8 @@
     difficulty: understanding
     source: https://eips.ethereum.org/EIPS/eip-4337
   assert:
-    - type: javascript
-      value: file://src/multiple_choice.js
+    - type: regex
+      value: 'ANSWER:\W*{{answer}}\b(?!\s*,\s*[A-H]\b)'
       metric: ercs
 
 - description: ercs/erc-4337-banned-validation-opcodes
@@ -386,8 +386,8 @@
     difficulty: understanding
     source: https://eips.ethereum.org/EIPS/eip-2981
   assert:
-    - type: javascript
-      value: file://src/multiple_choice.js
+    - type: regex
+      value: 'ANSWER:\W*{{answer}}\b(?!\s*,\s*[A-H]\b)'
       metric: ercs
 
 - description: ercs/erc-8004-registries
@@ -408,8 +408,8 @@
     difficulty: recall
     source: https://eips.ethereum.org/EIPS/eip-8004
   assert:
-    - type: javascript
-      value: file://src/multiple_choice.js
+    - type: regex
+      value: 'ANSWER:\W*{{answer}}\b(?!\s*,\s*[A-H]\b)'
       metric: ercs
 
 - description: ercs/erc-20-approve-race
@@ -458,8 +458,8 @@
     difficulty: recall
     source: https://eips.ethereum.org/EIPS/eip-1155
   assert:
-    - type: javascript
-      value: file://src/multiple_choice.js
+    - type: regex
+      value: 'ANSWER:\W*{{answer}}\b(?!\s*,\s*[A-H]\b)'
       metric: ercs
 
 - description: ercs/erc-1155-uri-id-substitution
@@ -507,8 +507,8 @@
     difficulty: understanding
     source: https://eips.ethereum.org/EIPS/eip-1167
   assert:
-    - type: javascript
-      value: file://src/multiple_choice.js
+    - type: regex
+      value: 'ANSWER:\W*{{answer}}\b(?!\s*,\s*[A-H]\b)'
       metric: ercs
 
 - description: ercs/erc-4337-paymaster-flow
@@ -587,8 +587,8 @@
     difficulty: understanding
     source: https://eips.ethereum.org/EIPS/eip-4337
   assert:
-    - type: javascript
-      value: file://src/multiple_choice.js
+    - type: regex
+      value: 'ANSWER:\W*{{answer}}\b(?!\s*,\s*[A-H]\b)'
       metric: ercs
 
 - description: ercs/erc-6551-token-bound-accounts
@@ -670,8 +670,8 @@
     difficulty: understanding
     source: https://eips.ethereum.org/EIPS/eip-2535
   assert:
-    - type: javascript
-      value: file://src/multiple_choice.js
+    - type: regex
+      value: 'ANSWER:\W*{{answer}}\b(?!\s*,\s*[A-H]\b)'
       metric: ercs
 
 - description: ercs/erc-20-zero-value-transfer
@@ -692,8 +692,8 @@
     difficulty: recall
     source: https://eips.ethereum.org/EIPS/eip-20
   assert:
-    - type: javascript
-      value: file://src/multiple_choice.js
+    - type: regex
+      value: 'ANSWER:\W*{{answer}}\b(?!\s*,\s*[A-H]\b)'
       metric: ercs
 
 - description: ercs/erc-4626-preview-redeem-ignores-limits
@@ -761,8 +761,8 @@
     difficulty: recall
     source: https://eips.ethereum.org/EIPS/eip-4906
   assert:
-    - type: javascript
-      value: file://src/multiple_choice.js
+    - type: regex
+      value: 'ANSWER:\W*{{answer}}\b(?!\s*,\s*[A-H]\b)'
       metric: ercs
 
 - description: ercs/erc-3156-borrower-callback-return
@@ -783,8 +783,8 @@
     difficulty: recall
     source: https://eips.ethereum.org/EIPS/eip-3156
   assert:
-    - type: javascript
-      value: file://src/multiple_choice.js
+    - type: regex
+      value: 'ANSWER:\W*{{answer}}\b(?!\s*,\s*[A-H]\b)'
       metric: ercs
 
 - description: ercs/erc-721-self-transfer-clears-approval
@@ -806,8 +806,8 @@
     difficulty: understanding
     source: https://eips.ethereum.org/EIPS/eip-721
   assert:
-    - type: javascript
-      value: file://src/multiple_choice.js
+    - type: regex
+      value: 'ANSWER:\W*{{answer}}\b(?!\s*,\s*[A-H]\b)'
       metric: ercs
 
 - description: ercs/erc-1155-batch-callback-balance-order
@@ -879,8 +879,8 @@
     difficulty: understanding
     source: https://eips.ethereum.org/EIPS/eip-2535
   assert:
-    - type: javascript
-      value: file://src/multiple_choice.js
+    - type: regex
+      value: 'ANSWER:\W*{{answer}}\b(?!\s*,\s*[A-H]\b)'
       metric: ercs
 
 - description: ercs/erc-165-invalid-interface-probe
@@ -926,6 +926,6 @@
     difficulty: recall
     source: https://eips.ethereum.org/EIPS/eip-2309
   assert:
-    - type: javascript
-      value: file://src/multiple_choice.js
+    - type: regex
+      value: 'ANSWER:\W*{{answer}}\b(?!\s*,\s*[A-H]\b)'
       metric: ercs

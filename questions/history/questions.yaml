@@ -85,8 +85,8 @@
     difficulty: recall
     source: https://forkcast.org/upgrades/
   assert:
-    - type: javascript
-      value: file://src/multiple_choice.js
+    - type: regex
+      value: 'ANSWER:\W*{{answer}}\b(?!\s*,\s*[A-H]\b)'
       metric: history
 
 - description: history/history-eip-1559-upgrade
@@ -105,8 +105,8 @@
     difficulty: recall
     source: https://ethereum.org/en/history/
   assert:
-    - type: javascript
-      value: file://src/multiple_choice.js
+    - type: regex
+      value: 'ANSWER:\W*{{answer}}\b(?!\s*,\s*[A-H]\b)'
       metric: history
 
 - description: history/history-merge-date
@@ -127,8 +127,8 @@
     difficulty: recall
     source: https://ethereum.org/en/history/
   assert:
-    - type: javascript
-      value: file://src/multiple_choice.js
+    - type: regex
+      value: 'ANSWER:\W*{{answer}}\b(?!\s*,\s*[A-H]\b)'
       metric: history
 
 - description: history/history-withdrawals-upgrade
@@ -147,8 +147,8 @@
     difficulty: recall
     source: https://ethereum.org/en/history/
   assert:
-    - type: javascript
-      value: file://src/multiple_choice.js
+    - type: regex
+      value: 'ANSWER:\W*{{answer}}\b(?!\s*,\s*[A-H]\b)'
       metric: history
 
 - description: history/history-dao-fork
@@ -221,8 +221,8 @@
     difficulty: recall
     source: https://eips.ethereum.org/EIPS/eip-1234
   assert:
-    - type: javascript
-      value: file://src/multiple_choice.js
+    - type: regex
+      value: 'ANSWER:\W*{{answer}}\b(?!\s*,\s*[A-H]\b)'
       metric: history
 
 - description: history/history-merge-activation-trigger
@@ -243,8 +243,8 @@
     difficulty: understanding
     source: https://eips.ethereum.org/EIPS/eip-3675
   assert:
-    - type: javascript
-      value: file://src/multiple_choice.js
+    - type: regex
+      value: 'ANSWER:\W*{{answer}}\b(?!\s*,\s*[A-H]\b)'
       metric: history
 
 - description: history/history-upgrade-naming-conventions
@@ -293,8 +293,8 @@
     difficulty: recall
     source: https://blog.ethereum.org/2020/11/27/eth2-quick-update-no-21
   assert:
-    - type: javascript
-      value: file://src/multiple_choice.js
+    - type: regex
+      value: 'ANSWER:\W*{{answer}}\b(?!\s*,\s*[A-H]\b)'
       metric: history
 
 - description: history/history-2016-dos-attack-forks
@@ -400,8 +400,8 @@
     difficulty: understanding
     source: https://eips.ethereum.org/EIPS/eip-5133
   assert:
-    - type: javascript
-      value: file://src/multiple_choice.js
+    - type: regex
+      value: 'ANSWER:\W*{{answer}}\b(?!\s*,\s*[A-H]\b)'
       metric: history
 
 - description: history/history-block-1150000
@@ -420,8 +420,8 @@
     difficulty: recall
     source: https://eips.ethereum.org/EIPS/eip-606
   assert:
-    - type: javascript
-      value: file://src/multiple_choice.js
+    - type: regex
+      value: 'ANSWER:\W*{{answer}}\b(?!\s*,\s*[A-H]\b)'
       metric: history
 
 - description: history/history-halt-rollback
@@ -459,8 +459,8 @@
     difficulty: recall
     source: https://blog.ethereum.org/2015/08/04/the-thawing-frontier
   assert:
-    - type: javascript
-      value: file://src/multiple_choice.js
+    - type: regex
+      value: 'ANSWER:\W*{{answer}}\b(?!\s*,\s*[A-H]\b)'
       metric: history
 
 - description: history/history-byzantium-opcode
@@ -479,8 +479,8 @@
     difficulty: recall
     source: https://eips.ethereum.org/EIPS/eip-609
   assert:
-    - type: javascript
-      value: file://src/multiple_choice.js
+    - type: regex
+      value: 'ANSWER:\W*{{answer}}\b(?!\s*,\s*[A-H]\b)'
       metric: history
 
 - description: history/history-istanbul-eip-1884-repricing
@@ -527,8 +527,8 @@
     difficulty: recall
     source: https://eips.ethereum.org/EIPS/eip-2070
   assert:
-    - type: javascript
-      value: file://src/multiple_choice.js
+    - type: regex
+      value: 'ANSWER:\W*{{answer}}\b(?!\s*,\s*[A-H]\b)'
       metric: history
 
 - description: history/history-bellatrix-then-paris
@@ -581,8 +581,8 @@
     difficulty: recall
     source: https://eips.ethereum.org/EIPS/eip-7514
   assert:
-    - type: javascript
-      value: file://src/multiple_choice.js
+    - type: regex
+      value: 'ANSWER:\W*{{answer}}\b(?!\s*,\s*[A-H]\b)'
       metric: history
 
 - description: history/history-first-testnet-merge
@@ -603,8 +603,8 @@
     difficulty: recall
     source: https://blog.ethereum.org/2022/05/30/ropsten-merge-announcement
   assert:
-    - type: javascript
-      value: file://src/multiple_choice.js
+    - type: regex
+      value: 'ANSWER:\W*{{answer}}\b(?!\s*,\s*[A-H]\b)'
       metric: history
 
 - description: history/history-medalla-incident
@@ -685,8 +685,8 @@
     difficulty: recall
     source: https://blog.ethereum.org/2014/08/08/ether-sale-a-statistical-overview
   assert:
-    - type: javascript
-      value: file://src/multiple_choice.js
+    - type: regex
+      value: 'ANSWER:\W*{{answer}}\b(?!\s*,\s*[A-H]\b)'
       metric: history
 
 - description: history/history-homestead-code-deposit-failure
@@ -730,8 +730,8 @@
     difficulty: recall
     source: https://eips.ethereum.org/EIPS/eip-170
   assert:
-    - type: javascript
-      value: file://src/multiple_choice.js
+    - type: regex
+      value: 'ANSWER:\W*{{answer}}\b(?!\s*,\s*[A-H]\b)'
       metric: history
 
 - description: history/history-byzantium-receipt-status-scope
@@ -775,8 +775,8 @@
     difficulty: recall
     source: https://eips.ethereum.org/EIPS/eip-2384
   assert:
-    - type: javascript
-      value: file://src/multiple_choice.js
+    - type: regex
+      value: 'ANSWER:\W*{{answer}}\b(?!\s*,\s*[A-H]\b)'
       metric: history
 
 - description: history/history-altair-initial-slashing-quotient
@@ -799,8 +799,8 @@
     source: |-
       https://github.com/ethereum/consensus-specs/blob/v1.1.0/presets/mainnet/altair.yaml
   assert:
-    - type: javascript
-      value: file://src/multiple_choice.js
+    - type: regex
+      value: 'ANSWER:\W*{{answer}}\b(?!\s*,\s*[A-H]\b)'
       metric: history
 
 - description: history/history-istanbul-calldata-cost-reduction
@@ -847,6 +847,6 @@
     difficulty: reasoning
     source: https://eips.ethereum.org/EIPS/eip-2565
   assert:
-    - type: javascript
-      value: file://src/multiple_choice.js
+    - type: regex
+      value: 'ANSWER:\W*{{answer}}\b(?!\s*,\s*[A-H]\b)'
       metric: history

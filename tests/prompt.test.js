@@ -3,6 +3,19 @@ const { test } = require("node:test");
 
 const { bare, tools, FREE_TEXT_SYSTEM, MC_SYSTEM } = require("../src/prompt.js");
 
+// The prompt promises an `ANSWER: X` line and the question files grade it with a
+// regex. A model that follows the prompt must pass.
+const MC_REGEX = (answer) => new RegExp(`ANSWER:\\W*${answer}\\b(?!\\s*,\\s*[A-H]\\b)`);
+
+test("a reply in the requested format passes the multiple choice regex", () => {
+  assert.ok(MC_REGEX("C").test("ANSWER: C"));
+  assert.ok(MC_REGEX("C").test("ANSWER: C."));
+  assert.ok(MC_REGEX("C").test("Reasoning...\n\nANSWER: C"));
+  assert.ok(!MC_REGEX("C").test("ANSWER: D"));
+  assert.ok(!MC_REGEX("C").test("ANSWER: C, D"));
+  assert.ok(!MC_REGEX("C").test("ANSWER: CD"));
+});
+
 const mc = { type: "multiple_choice", question: "Which fork shipped PUSH0?", choices: ["Berlin", "London", "Shanghai", "Cancun"], answer: "C" };
 const open = { type: "open", question: "What does DELEGATECALL preserve?", answer: "msg.sender and storage" };
 

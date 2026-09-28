@@ -14,8 +14,8 @@
     difficulty: recall
     source: https://ethereum.github.io/yellowpaper/paper.pdf
   assert:
-    - type: javascript
-      value: file://src/multiple_choice.js
+    - type: regex
+      value: 'ANSWER:\W*{{answer}}\b(?!\s*,\s*[A-H]\b)'
       metric: execution
 
 - description: execution/evm-max-stack-depth
@@ -34,8 +34,8 @@
     difficulty: recall
     source: https://ethereum.github.io/yellowpaper/paper.pdf
   assert:
-    - type: javascript
-      value: file://src/multiple_choice.js
+    - type: regex
+      value: 'ANSWER:\W*{{answer}}\b(?!\s*,\s*[A-H]\b)'
       metric: execution
 
 - description: execution/evm-call-vs-delegatecall
@@ -78,8 +78,8 @@
     difficulty: understanding
     source: https://eips.ethereum.org/EIPS/eip-1559
   assert:
-    - type: javascript
-      value: file://src/multiple_choice.js
+    - type: regex
+      value: 'ANSWER:\W*{{answer}}\b(?!\s*,\s*[A-H]\b)'
       metric: execution
 
 - description: execution/execution-selfdestruct-after-cancun
@@ -147,8 +147,8 @@
     difficulty: recall
     source: https://eips.ethereum.org/EIPS/eip-1014
   assert:
-    - type: javascript
-      value: file://src/multiple_choice.js
+    - type: regex
+      value: 'ANSWER:\W*{{answer}}\b(?!\s*,\s*[A-H]\b)'
       metric: execution
 
 - description: execution/execution-63-64-gas-forwarding
@@ -170,8 +170,8 @@
     difficulty: understanding
     source: https://eips.ethereum.org/EIPS/eip-150
   assert:
-    - type: javascript
-      value: file://src/multiple_choice.js
+    - type: regex
+      value: 'ANSWER:\W*{{answer}}\b(?!\s*,\s*[A-H]\b)'
       metric: execution
 
 - description: execution/execution-max-fee-balance-requirement
@@ -219,8 +219,8 @@
     difficulty: recall
     source: https://eips.ethereum.org/EIPS/eip-161
   assert:
-    - type: javascript
-      value: file://src/multiple_choice.js
+    - type: regex
+      value: 'ANSWER:\W*{{answer}}\b(?!\s*,\s*[A-H]\b)'
       metric: execution
 
 - description: execution/execution-header-field-cancun
@@ -239,8 +239,8 @@
     difficulty: recall
     source: https://eips.ethereum.org/EIPS/eip-4788
   assert:
-    - type: javascript
-      value: file://src/multiple_choice.js
+    - type: regex
+      value: 'ANSWER:\W*{{answer}}\b(?!\s*,\s*[A-H]\b)'
       metric: execution
 
 - description: execution/execution-memory-expansion-cost
@@ -262,8 +262,8 @@
     difficulty: reasoning
     source: https://ethereum.github.io/yellowpaper/paper.pdf
   assert:
-    - type: javascript
-      value: file://src/multiple_choice.js
+    - type: regex
+      value: 'ANSWER:\W*{{answer}}\b(?!\s*,\s*[A-H]\b)'
       metric: execution
 
 - description: execution/execution-sstore-cold-then-dirty
@@ -311,8 +311,8 @@
     difficulty: recall
     source: https://eips.ethereum.org/EIPS/eip-4844
   assert:
-    - type: javascript
-      value: file://src/multiple_choice.js
+    - type: regex
+      value: 'ANSWER:\W*{{answer}}\b(?!\s*,\s*[A-H]\b)'
       metric: execution
 
 - description: execution/execution-blob-schedule-bpo2
@@ -333,8 +333,8 @@
     difficulty: recall
     source: https://eips.ethereum.org/EIPS/eip-7607
   assert:
-    - type: javascript
-      value: file://src/multiple_choice.js
+    - type: regex
+      value: 'ANSWER:\W*{{answer}}\b(?!\s*,\s*[A-H]\b)'
       metric: execution
 
 - description: execution/execution-revert-vs-exceptional-halt
@@ -382,8 +382,8 @@
     difficulty: recall
     source: https://eips.ethereum.org/EIPS/eip-2028
   assert:
-    - type: javascript
-      value: file://src/multiple_choice.js
+    - type: regex
+      value: 'ANSWER:\W*{{answer}}\b(?!\s*,\s*[A-H]\b)'
       metric: execution
 
 - description: execution/execution-extcodehash-nonexistent-vs-empty-code
@@ -428,8 +428,8 @@
     difficulty: recall
     source: https://ethereum.github.io/yellowpaper/paper.pdf
   assert:
-    - type: javascript
-      value: file://src/multiple_choice.js
+    - type: regex
+      value: 'ANSWER:\W*{{answer}}\b(?!\s*,\s*[A-H]\b)'
       metric: execution
 
 - description: execution/execution-warm-at-transaction-start
@@ -452,8 +452,8 @@
     difficulty: understanding
     source: https://eips.ethereum.org/EIPS/eip-2929
   assert:
-    - type: javascript
-      value: file://src/multiple_choice.js
+    - type: regex
+      value: 'ANSWER:\W*{{answer}}\b(?!\s*,\s*[A-H]\b)'
       metric: execution
 
 - description: execution/execution-jumpdest-analysis
@@ -500,8 +500,8 @@
     difficulty: reasoning
     source: https://eips.ethereum.org/EIPS/eip-155
   assert:
-    - type: javascript
-      value: file://src/multiple_choice.js
+    - type: regex
+      value: 'ANSWER:\W*{{answer}}\b(?!\s*,\s*[A-H]\b)'
       metric: execution
 
 - description: execution/execution-blob-base-fee-max-increase-cancun
@@ -523,8 +523,8 @@
     difficulty: reasoning
     source: https://eips.ethereum.org/EIPS/eip-4844
   assert:
-    - type: javascript
-      value: file://src/multiple_choice.js
+    - type: regex
+      value: 'ANSWER:\W*{{answer}}\b(?!\s*,\s*[A-H]\b)'
       metric: execution
 
 - description: execution/execution-blob-fee-destination
@@ -599,8 +599,8 @@
     difficulty: recall
     source: https://eips.ethereum.org/EIPS/eip-658
   assert:
-    - type: javascript
-      value: file://src/multiple_choice.js
+    - type: regex
+      value: 'ANSWER:\W*{{answer}}\b(?!\s*,\s*[A-H]\b)'
       metric: execution
 
 - description: execution/execution-creation-intrinsic-gas
@@ -622,8 +622,8 @@
     difficulty: reasoning
     source: https://eips.ethereum.org/EIPS/eip-3860
   assert:
-    - type: javascript
-      value: file://src/multiple_choice.js
+    - type: regex
+      value: 'ANSWER:\W*{{answer}}\b(?!\s*,\s*[A-H]\b)'
       metric: execution
 
 - description: execution/execution-post-merge-header-fields
@@ -645,8 +645,8 @@
     difficulty: recall
     source: https://eips.ethereum.org/EIPS/eip-3675
   assert:
-    - type: javascript
-      value: file://src/multiple_choice.js
+    - type: regex
+      value: 'ANSWER:\W*{{answer}}\b(?!\s*,\s*[A-H]\b)'
       metric: execution
 
 - description: execution/execution-staticcall-restrictions
@@ -691,8 +691,8 @@
     difficulty: recall
     source: https://eips.ethereum.org/EIPS/eip-4844
   assert:
-    - type: javascript
-      value: file://src/multiple_choice.js
+    - type: regex
+      value: 'ANSWER:\W*{{answer}}\b(?!\s*,\s*[A-H]\b)'
       metric: execution
 
 - description: execution/execution-withdrawals-processing
@@ -743,8 +743,8 @@
     difficulty: reasoning
     source: https://eips.ethereum.org/EIPS/eip-5656
   assert:
-    - type: javascript
-      value: file://src/multiple_choice.js
+    - type: regex
+      value: 'ANSWER:\W*{{answer}}\b(?!\s*,\s*[A-H]\b)'
       metric: execution
 
 - description: execution/execution-returndatacopy-empty-out-of-bounds
@@ -767,8 +767,8 @@
     difficulty: understanding
     source: https://eips.ethereum.org/EIPS/eip-211
   assert:
-    - type: javascript
-      value: file://src/multiple_choice.js
+    - type: regex
+      value: 'ANSWER:\W*{{answer}}\b(?!\s*,\s*[A-H]\b)'
       metric: execution
 
 - description: execution/execution-reverted-callee-access-warmth
@@ -844,8 +844,8 @@
     difficulty: reasoning
     source: https://eips.ethereum.org/EIPS/eip-2930
   assert:
-    - type: javascript
-      value: file://src/multiple_choice.js
+    - type: regex
+      value: 'ANSWER:\W*{{answer}}\b(?!\s*,\s*[A-H]\b)'
       metric: execution
 
 - description: execution/execution-beacon-root-ring-buffer-storage-index
@@ -868,8 +868,8 @@
     difficulty: reasoning
     source: https://eips.ethereum.org/EIPS/eip-4788
   assert:
-    - type: javascript
-      value: file://src/multiple_choice.js
+    - type: regex
+      value: 'ANSWER:\W*{{answer}}\b(?!\s*,\s*[A-H]\b)'
       metric: execution
 
 - description: execution/execution-tstore-gas-stipend-sentry

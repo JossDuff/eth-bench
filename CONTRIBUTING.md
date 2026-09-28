@@ -22,7 +22,7 @@ grades it. Only the `vars.type` and the assertion differ between types.
 ### Multiple choice
 
 The model sees the lettered options and must reply with a single `ANSWER: X` line.
-Graded by exact letter match, by `src/multiple_choice.js`.
+Graded by a regex that accepts `ANSWER: <the letter>` and rejects any other letter, or a list of letters.
 
 ```yaml
 - description: eips/eip-1559-base-fee-max-change
@@ -43,8 +43,8 @@ Graded by exact letter match, by `src/multiple_choice.js`.
     difficulty: recall
     source: https://eips.ethereum.org/EIPS/eip-1559
   assert:
-    - type: javascript
-      value: file://src/multiple_choice.js
+    - type: regex
+      value: 'ANSWER:\W*{{answer}}\b(?!\s*,\s*[A-H]\b)'
       metric: eips
 ```
 
@@ -52,8 +52,9 @@ Nothing reorders the choices at run time, so put the correct choice at a random
 position. The tests fail if any one letter is the answer to more than 40% of the
 multiple choice questions.
 
-When more than one option is right, set `multiple_correct: true` in `vars` and give
-`answer` as `"A, C"`. The model must name exactly that set; there is no partial credit.
+When more than one option is right, set `multiple_correct: true` in `vars`, give
+`answer` as `"A, C"`, and write a regex that accepts exactly that set in any order; see
+`crops/crops-rollup-stages` for the pattern. There is no partial credit.
 
 ### Open
 
@@ -127,7 +128,7 @@ prompt in `src/grading.yaml` switches on `vars.type`.
 | `metadata.difficulty`    | no       | `recall`, `understanding`, or `reasoning`. |
 | `metadata.source`        | no       | URL of the spec, EIP, or primary source that backs the answer. Strongly encouraged. |
 | `metadata.tags`          | no       | Free-form list, for filtering. |
-| `assert`                 | yes      | Exactly one assertion: `javascript` with `file://src/multiple_choice.js` for MC, `llm-rubric` with `'{{answer}}'` otherwise. `metric` is the section. |
+| `assert`                 | yes      | Exactly one assertion: `regex` for MC (see above; copy it as is, it reads the letter from `vars.answer`), `llm-rubric` with `'{{answer}}'` otherwise. `metric` is the section. |
 
 Anything else in `vars` or `metadata` is an error, so typos in field names are caught.
 

@@ -44,8 +44,8 @@
       - eth-evals
       - fundamentals
   assert:
-    - type: javascript
-      value: file://src/multiple_choice.js
+    - type: regex
+      value: 'ANSWER:\W*{{answer}}\b(?!\s*,\s*[A-H]\b)'
       metric: misc
 
 - description: misc/fundamentals-k-04
@@ -68,8 +68,8 @@
       - eth-evals
       - fundamentals
   assert:
-    - type: javascript
-      value: file://src/multiple_choice.js
+    - type: regex
+      value: 'ANSWER:\W*{{answer}}\b(?!\s*,\s*[A-H]\b)'
       metric: misc
 
 - description: misc/fundamentals-k-06
@@ -367,8 +367,8 @@
       - eth-evals
       - mev
   assert:
-    - type: javascript
-      value: file://src/multiple_choice.js
+    - type: regex
+      value: 'ANSWER:\W*{{answer}}\b(?!\s*,\s*[A-H]\b)'
       metric: misc
 
 - description: misc/mev-k-07
@@ -392,8 +392,8 @@
       - eth-evals
       - mev
   assert:
-    - type: javascript
-      value: file://src/multiple_choice.js
+    - type: regex
+      value: 'ANSWER:\W*{{answer}}\b(?!\s*,\s*[A-H]\b)'
       metric: misc
 
 - description: misc/mev-k-08
@@ -458,6 +458,6 @@
       - eth-evals
       - mev
   assert:
-    - type: javascript
-      value: file://src/multiple_choice.js
+    - type: regex
+      value: 'ANSWER:\W*{{answer}}\b(?!\s*,\s*[A-H]\b)'
       metric: misc
