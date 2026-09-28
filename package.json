@@ -1,0 +1,24 @@
+{
+  "name": "eth-bench",
+  "version": "0.2.0",
+  "private": true,
+  "description": "A benchmark that measures how much a language model knows about Ethereum, built on promptfoo.",
+  "license": "SEE LICENSE IN LICENSE",
+  "repository": {
+    "type": "git",
+    "url": "git+https://github.com/JossDuff/eth-bench.git"
+  },
+  "engines": {
+    "node": ">=22.22.0"
+  },
+  "scripts": {
+    "eval": "promptfoo eval",
+    "view": "promptfoo view",
+    "validate": "promptfoo validate",
+    "test": "node --test tests/*.test.js"
+  },
+  "devDependencies": {
+    "js-yaml": "^5.4.2",
+    "promptfoo": "^0.123.1"
+  }
+}

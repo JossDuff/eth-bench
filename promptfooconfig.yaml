@@ -1,0 +1,65 @@
+# yaml-language-server: $schema=https://promptfoo.dev/config-schema.json
+#
+# eth-bench: an LLM benchmark on Ethereum knowledge.
+#
+#   npx promptfoo eval --filter-providers 'Claude Sonnet 5'      # one configured model
+#   npx promptfoo eval -r openai:chat:my-model                   # any other model
+#   npx promptfoo eval --filter-pattern '^(eips|consensus)/'     # some sections
+#   npx promptfoo eval --filter-metadata type=multiple_choice    # no grader calls
+#   npx promptfoo eval --var cot=true                            # think before answering MC
+#   npx promptfoo view
+#
+# Assisted runs (the model gets tools or documents) are separate configs in assists/.
+# See README.md for the full list.
+
+description: eth-bench, an Ethereum knowledge benchmark
+
+sharing: false
+
+prompts:
+  - id: file://src/prompt.js:bare
+    label: bare
+
+# The models in the results table. Run one with --filter-providers, or any other
+# model with -r <provider>. Hosted APIs read their keys from the environment
+# (ANTHROPIC_API_KEY, OPENAI_API_KEY, ...).
+providers:
+  - id: anthropic:messages:claude-fable-5-1
+    label: Claude Fable 5.1
+  - id: anthropic:messages:claude-opus-5
+    label: Claude Opus 5
+  - id: anthropic:messages:claude-sonnet-5
+    label: Claude Sonnet 5
+  - id: openai:chat:gpt-6-astra
+    label: GPT-6 Astra
+  - id: openai:chat:gpt-5.6-sol
+    label: GPT-5.6 Sol
+  - id: openai:chat:gpt-5.6-terra
+    label: GPT-5.6 Terra
+
+  # Open-weight models served from an OpenAI-compatible endpoint. Set EF_BASE_URL and
+  # EF_API_KEY in the environment (or in .env and pass --env-file .env).
+  - id: openai:chat:qwen3.8-27b
+    label: Qwen3.8-27b
+    config:
+      apiBaseUrl: "{{ env.EF_BASE_URL }}"
+      apiKeyEnvar: EF_API_KEY
+      passthrough:
+        chat_template_kwargs: { enable_thinking: false }
+  - id: openai:chat:google/gemma-4-26B-A4B-it
+    label: Gemma 4 26B-A4B-it
+    config:
+      apiBaseUrl: "{{ env.EF_BASE_URL }}"
+      apiKeyEnvar: EF_API_KEY
+
+# The grader and its rubric.
+defaultTest: file://src/grading.yaml
+
+# One promptfoo test per question. The section is the directory name; each test tags
+# its assertion with the section as a named metric, which gives the per-section
+# breakdown in the results table and the web UI.
+tests:
+  - file://questions/**/*.yaml
+
+evaluateOptions:
+  maxConcurrency: 4

@@ -1,0 +1,46 @@
+# yaml-language-server: $schema=https://promptfoo.dev/config-schema.json
+#
+# Assisted run: the model gets search, constant-lookup and spec-function tools from
+# ethereum-mcp over a local index of the consensus specs and EIPs.
+# https://github.com/b17z/ethereum-mcp
+#
+#   uv tool install eth-mcp
+#   ethereum-mcp build              # clone and index the sources into ~/.ethereum-mcp
+#   npx promptfoo eval -c promptfooconfig.eth-mcp.yaml --filter-providers 'Claude Sonnet 5'
+#
+# promptfoo starts the server over stdio and runs the tool loop, up to `max_tool_calls`
+# calls per question. The grader never sees the tools, so an assisted run is scored
+# exactly like a bare one.
+#
+# Only promptfoo's Anthropic provider runs the tool loop (as of promptfoo 0.123). Its
+# OpenAI-compatible provider executes a single tool call and returns the tool result
+# as the answer, so this file lists Claude models only.
+
+description: eth-bench with eth-mcp tools
+
+sharing: false
+
+prompts:
+  - id: file://src/prompt.js:tools
+    label: tools
+
+providers:
+  - id: anthropic:messages:claude-sonnet-5
+    label: Claude Sonnet 5 + eth-mcp
+    config:
+      mcp: &eth-mcp
+        enabled: true
+        server: { command: eth-mcp, args: [] }
+        max_tool_calls: 10
+  - id: anthropic:messages:claude-opus-5
+    label: Claude Opus 5 + eth-mcp
+    config:
+      mcp: *eth-mcp
+
+defaultTest: file://src/grading.yaml
+
+tests:
+  - file://questions/**/*.yaml
+
+evaluateOptions:
+  maxConcurrency: 4

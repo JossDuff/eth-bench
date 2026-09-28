@@ -1,0 +1,52 @@
+# yaml-language-server: $schema=https://promptfoo.dev/config-schema.json
+#
+# Assisted run: the model gets search and spec-lookup tools over the wikipethia
+# corpus (EIPs, ERCs, consensus and execution specs, ethresear.ch, Ethereum Magicians,
+# EF and Vitalik blogs). https://github.com/JossDuff/wikipethia
+#
+#   npx promptfoo eval -c promptfooconfig.wikipethia.yaml --filter-providers 'Claude Sonnet 5'
+#
+# promptfoo connects to the MCP server and runs the tool loop, up to `max_tool_calls`
+# calls per question. The grader never sees the tools, so an assisted run is scored
+# exactly like a bare one. Runs take several times longer than bare runs.
+#
+# Only promptfoo's Anthropic provider runs the tool loop (as of promptfoo 0.123). Its
+# OpenAI-compatible provider executes a single tool call and returns the tool result
+# as the answer, so this file lists Claude models only.
+#
+# The hosted server rate-limits parallel requests. For a full run, install wikipethia
+# and a corpus locally, set WIKIPETHIA_DB, and swap `servers` for the stdio form below.
+
+description: eth-bench with wikipethia tools
+
+sharing: false
+
+prompts:
+  - id: file://src/prompt.js:tools
+    label: tools
+
+providers:
+  - id: anthropic:messages:claude-sonnet-5
+    label: Claude Sonnet 5 + wikipethia
+    config:
+      mcp: &wikipethia
+        enabled: true
+        servers:
+          - name: wikipethia
+            url: https://mcp.wikipethia.org/mcp
+        # Local corpus instead:
+        # server: { command: wikipethia, args: [mcp, --db, "{{ env.WIKIPETHIA_DB }}"] }
+        max_tool_calls: 10
+  - id: anthropic:messages:claude-opus-5
+    label: Claude Opus 5 + wikipethia
+    config:
+      mcp: *wikipethia
+
+defaultTest: file://src/grading.yaml
+
+tests:
+  - file://questions/**/*.yaml
+
+evaluateOptions:
+  # The hosted server rate-limits parallel requests.
+  maxConcurrency: 2

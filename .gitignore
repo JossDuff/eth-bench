@@ -1,11 +1,7 @@
-.venv/
-logs/
-__pycache__/
-*.pyc
-.pytest_cache/
-.ruff_cache/
-dist/
-.claude/settings.local.json
+node_modules/
+results/
 .env
-qwen-nothink.yaml
+.claude/settings.local.json
 drafts/
+logs/
+.venv/
