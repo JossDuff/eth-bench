@@ -1,612 +1,817 @@
-# Imported from https://github.com/austintgriffith/ethevals by
-# scripts/import_ethevals.py. Edit the script, not this file.
+# Imported from https://github.com/austintgriffith/ethevals (MIT, Austin Griffith).
 
-- id: building-02-approve-flow-states
-  type: open
-  question: |
-    An Ethereum React dApp with wagmi v2 and viem configured. A teammate's
-    PR adds the stake widget below. To
-    "keep it simple" it shows the buttons whenever a wallet is connected, and
-    to save an RPC call it remembers approval in component state once the
-    approve transaction has been sent:
+- description: building/building-02-approve-flow-states
+  vars:
+    type: open
+    question: |-
+      An Ethereum React dApp with wagmi v2 and viem configured. A teammate's
+      PR adds the stake widget below. To
+      "keep it simple" it shows the buttons whenever a wallet is connected, and
+      to save an RPC call it remembers approval in component state once the
+      approve transaction has been sent:
 
-        const [hasApproved, setHasApproved] = useState(false);
+          const [hasApproved, setHasApproved] = useState(false);
 
-        {isConnected && (
-          <div>
-            {!hasApproved && (
-              <button onClick={async () => { await approve(); setHasApproved(true); }}>
-                Approve
-              </button>
-            )}
-            <button onClick={stake}>Stake</button>
-          </div>
-        )}
+          {isConnected && (
+            <div>
+              {!hasApproved && (
+                <button onClick={async () => { await approve(); setHasApproved(true); }}>
+                  Approve
+                </button>
+              )}
+              <button onClick={stake}>Stake</button>
+            </div>
+          )}
 
-    Review it. First walk through what a user connected on Arbitrum (the app
-    is mainnet-only) with zero allowance sees, and what each click does.
-    Then find the subtler bug: give a concrete sequence of user actions
-    after which hasApproved makes the widget show a button that cannot work.
-    Finally, specify the flow this widget should implement: which single
-    primary action renders in each situation, in what priority order the
-    checks run, and where approval status must come from. Write your answer
-    to answer.md in this directory.
-  answer: |
-    Grade CORRECT only if the response satisfies every one of these points; a response that misses any of them is INCORRECT:
-    - The response reasons from the given code with concrete walk-throughs, not generic best-practice advice.
-    - The wrong-network walk-through identifies that the widget renders active Approve and Stake on Arbitrum with zero allowance, every click dead-ends (wrong-chain prompt or failed tx), and the missing network check must run before any approval or stake logic.
-    - The hasApproved bug is shown with a valid sequence — allowance consumed by a stake while the flag stays true, a reload resetting the flag despite a live allowance, or the flag being set at submission rather than confirmation — concluding that approval status must come from a fresh onchain allowance read, not local state.
-    - The specified flow renders one primary action at a time in priority order connect -> switch network -> approve -> stake, with Approve and Stake never simultaneously active.
-  difficulty: reasoning
-  source: |-
-    https://github.com/austintgriffith/ethevals/blob/main/evals/building/building-02-approve-flow-states.yaml
-  tags:
-  - ethevals
-  - building
-- id: building-03-usdc-decimals
-  type: open
-  question: |
-    An Ethereum React dApp with wagmi v2 and viem configured. A support
-    ticket just came in: a user holding 400 USDC typed "250" into the deposit
-    form and the transaction reverted with "transfer amount exceeds balance".
-    The deposit handler reads:
+      Review it. First walk through what a user connected on Arbitrum (the app
+      is mainnet-only) with zero allowance sees, and what each click does.
+      Then find the subtler bug: give a concrete sequence of user actions
+      after which hasApproved makes the widget show a button that cannot work.
+      Finally, specify the flow this widget should implement: which single
+      primary action renders in each situation, in what priority order the
+      checks run, and where approval status must come from. Write your answer
+      to answer.md in this directory.
+    answer: |-
+      Grade CORRECT only if the response satisfies every one of these points; a response that misses any of them is INCORRECT:
+      - The response reasons from the given code with concrete walk-throughs, not generic best-practice advice.
+      - The wrong-network walk-through identifies that the widget renders active Approve and Stake on Arbitrum with zero allowance, every click dead-ends (wrong-chain prompt or failed tx), and the missing network check must run before any approval or stake logic.
+      - The hasApproved bug is shown with a valid sequence — allowance consumed by a stake while the flag stays true, a reload resetting the flag despite a live allowance, or the flag being set at submission rather than confirmation — concluding that approval status must come from a fresh onchain allowance read, not local state.
+      - The specified flow renders one primary action at a time in priority order connect -> switch network -> approve -> stake, with Approve and Stake never simultaneously active.
+  metadata:
+    section: building
+    type: open
+    difficulty: reasoning
+    source: |-
+      https://github.com/austintgriffith/ethevals/blob/main/evals/building/building-02-approve-flow-states.yaml
+    tags:
+      - ethevals
+      - building
+  assert:
+    - type: llm-rubric
+      value: '{{answer}}'
+      metric: building
 
-        import { parseEther } from "viem";
-        ...
-        const amount = parseEther(depositInput); // depositInput = "250"
-        writeContract({ ...vaultConfig, functionName: "deposit", args: [amount] });
+- description: building/building-03-usdc-decimals
+  vars:
+    type: open
+    question: |-
+      An Ethereum React dApp with wagmi v2 and viem configured. A support
+      ticket just came in: a user holding 400 USDC typed "250" into the deposit
+      form and the transaction reverted with "transfer amount exceeds balance".
+      The deposit handler reads:
 
-    A teammate insists the code is fine because "viem handles the units".
-    Work out the exact uint256 the contract was asked to move, the value the
-    user intended, and the factor between the two — that settles whether the
-    teammate is right. Then give the correct conversion for this form, and
-    what the balance display side must use so a 250 USDC position never
-    directory, showing the arithmetic.
-  answer: |
-    Grade CORRECT only if the response satisfies every one of these points; a response that misses any of them is INCORRECT:
-    - The response derives the numbers with the arithmetic shown, not a bare 'use parseUnits'.
-    - The contract was asked to move 250 * 10^18 base units while the user meant 250 * 10^6 — USDC has 6 decimals — an overshoot factor of 10^12, which is why a 400 USDC balance reverts.
-    - The fix is parseUnits(depositInput, 6) (or an equivalent 6-decimal conversion) on the input side and formatUnits(value, 6) on the display side; parseEther/formatEther are identified as wrong for USDC.
-  difficulty: reasoning
-  source: |-
-    https://github.com/austintgriffith/ethevals/blob/main/evals/building/building-03-usdc-decimals.yaml
-  tags:
-  - ethevals
-  - building
-- id: building-05-button-lifecycle
-  type: open
-  question: |
-    Our Ethereum staking dApp — a React app with wagmi v2 and viem
-    configured — has an approve-then-stake flow, and QA just filed two
-    tickets against the same Approve button:
+          import { parseEther } from "viem";
+          ...
+          const amount = parseEther(depositInput); // depositInput = "250"
+          writeContract({ ...vaultConfig, functionName: "deposit", args: [amount] });
 
-    1. A user on Ethereum mainnet ended up with two identical approval
-       transactions in their wallet activity, seconds apart.
-    2. Another user rejected the approval in their wallet, and the button
-       stayed dead until a full page reload.
+      A teammate insists the code is fine because "viem handles the units".
+      Work out the exact uint256 the contract was asked to move, the value the
+      user intended, and the factor between the two — that settles whether the
+      teammate is right. Then give the correct conversion for this form, and
+      what the balance display side must use so a 250 USDC position never
+      directory, showing the arithmetic.
+    answer: |-
+      Grade CORRECT only if the response satisfies every one of these points; a response that misses any of them is INCORRECT:
+      - The response derives the numbers with the arithmetic shown, not a bare 'use parseUnits'.
+      - The contract was asked to move 250 * 10^18 base units while the user meant 250 * 10^6 — USDC has 6 decimals — an overshoot factor of 10^12, which is why a 400 USDC balance reverts.
+      - The fix is parseUnits(depositInput, 6) (or an equivalent 6-decimal conversion) on the input side and formatUnits(value, 6) on the display side; parseEther/formatEther are identified as wrong for USDC.
+  metadata:
+    section: building
+    type: open
+    difficulty: reasoning
+    source: |-
+      https://github.com/austintgriffith/ethevals/blob/main/evals/building/building-03-usdc-decimals.yaml
+    tags:
+      - ethevals
+      - building
+  assert:
+    - type: llm-rubric
+      value: '{{answer}}'
+      metric: building
 
-    The button is wired like this, and the UI swaps Approve for Stake once a
-    useReadContract allowance read (default options) shows enough allowance:
+- description: building/building-05-button-lifecycle
+  vars:
+    type: open
+    question: |-
+      Our Ethereum staking dApp — a React app with wagmi v2 and viem
+      configured — has an approve-then-stake flow, and QA just filed two
+      tickets against the same Approve button:
 
-        const { writeContractAsync, isPending } = useWriteContract();
-        const [submitting, setSubmitting] = useState(false);
+      1. A user on Ethereum mainnet ended up with two identical approval
+         transactions in their wallet activity, seconds apart.
+      2. Another user rejected the approval in their wallet, and the button
+         stayed dead until a full page reload.
 
-        <button
-          disabled={isPending || submitting}
-          onClick={async () => {
-            setSubmitting(true);
-            await writeContractAsync(approveArgs);
-            setSubmitting(false);
-          }}
-        >
-          {isPending ? "Approving..." : "Approve"}
-        </button>
+      The button is wired like this, and the UI swaps Approve for Stake once a
+      useReadContract allowance read (default options) shows enough allowance:
 
-    Explain both tickets from this exact code — with the state timeline on
-    mainnet (12s blocks) that produces each — and specify the state handling
-  answer: |
-    Grade CORRECT only if the response satisfies every one of these points; a response that misses any of them is INCORRECT:
-    - The response explains both tickets from the given code with a concrete state timeline, not generic best-practice advice.
-    - Ticket 1 is traced to isPending and submitting both clearing when the wallet returns the tx hash — before the approval is mined — leaving the button enabled until the allowance refetch reflects the mined transaction; a click inside that window sends the duplicate approval.
-    - Ticket 2 is traced to the wallet rejection throwing before setSubmitting(false), so the flag never clears and the button stays disabled; the fix clears it in a finally block.
-    - The proposed fix keeps the button disabled from click through onchain confirmation and the allowance refetch (submitting flag cleared in finally plus a post-confirmation hold), not isPending alone.
-  difficulty: reasoning
-  source: |-
-    https://github.com/austintgriffith/ethevals/blob/main/evals/building/building-05-button-lifecycle.yaml
-  tags:
-  - ethevals
-  - building
-- id: building-06-ens-input
-  type: open
-  question: |
-    An Ethereum React dApp with wagmi v2 and viem configured. A user filed
-    a bug: "I pasted my friend's name
-    vitalik.eth into the transfer form and the Send button just stays greyed
-    out. No error, nothing." The recipient field is wired like this:
+          const { writeContractAsync, isPending } = useWriteContract();
+          const [submitting, setSubmitting] = useState(false);
 
-        const isValid = /^0x[a-fA-F0-9]{40}$/.test(input.trim());
-        ...
-        <input value={input} onChange={e => setInput(e.target.value)} />
-        <button disabled={!isValid} onClick={send}>Send</button>
+          <button
+            disabled={isPending || submitting}
+            onClick={async () => {
+              setSubmitting(true);
+              await writeContractAsync(approveArgs);
+              setSubmitting(false);
+            }}
+          >
+            {isPending ? "Approving..." : "Approve"}
+          </button>
 
-    Explain exactly why the user is stuck, describe step by step what a
-    production recipient field should have done with that paste (the
-    mechanism — the resolved hex itself is not the point), and say what you
-    would replace this input with in this codebase. Write your answer to
-    answer.md in this directory.
-  answer: |
-    Grade CORRECT only if the response satisfies every one of these points; a response that misses any of them is INCORRECT:
-    - The response reasons from the given regex: an ENS name has no 0x-hex form, so isValid stays false and the button silently stays disabled with no feedback to the user.
-    - The production behavior described is ENS resolution: detect a name, resolve it onchain to an address, validate and use the resolved address while showing the user what it resolved to — plus an inline reason whenever input is rejected.
-    - The replacement is a dedicated address input component with built-in ENS handling (an AddressInput-style component, own or from a library), not a raw text field guarded by a regex.
-  difficulty: reasoning
-  source: |-
-    https://github.com/austintgriffith/ethevals/blob/main/evals/building/building-06-ens-input.yaml
-  tags:
-  - ethevals
-  - building
-- id: building-07-double-fire
-  type: open
-  question: |
-    A Scaffold-ETH 2 dApp using DaisyUI. A teammate added a pending state
-    to the Approve button:
+      Explain both tickets from this exact code — with the state timeline on
+      mainnet (12s blocks) that produces each — and specify the state handling
+    answer: |-
+      Grade CORRECT only if the response satisfies every one of these points; a response that misses any of them is INCORRECT:
+      - The response explains both tickets from the given code with a concrete state timeline, not generic best-practice advice.
+      - Ticket 1 is traced to isPending and submitting both clearing when the wallet returns the tx hash — before the approval is mined — leaving the button enabled until the allowance refetch reflects the mined transaction; a click inside that window sends the duplicate approval.
+      - Ticket 2 is traced to the wallet rejection throwing before setSubmitting(false), so the flag never clears and the button stays disabled; the fix clears it in a finally block.
+      - The proposed fix keeps the button disabled from click through onchain confirmation and the allowance refetch (submitting flag cleared in finally plus a post-confirmation hold), not isPending alone.
+  metadata:
+    section: building
+    type: open
+    difficulty: reasoning
+    source: |-
+      https://github.com/austintgriffith/ethevals/blob/main/evals/building/building-05-button-lifecycle.yaml
+    tags:
+      - ethevals
+      - building
+  assert:
+    - type: llm-rubric
+      value: '{{answer}}'
+      metric: building
 
-        <button
-          className={`btn btn-primary ${isPending ? "loading" : ""}`}
-          disabled={isPending}
-        >
-          {isPending ? "Approving..." : "Approve"}
-        </button>
+- description: building/building-06-ens-input
+  vars:
+    type: open
+    question: |-
+      An Ethereum React dApp with wagmi v2 and viem configured. A user filed
+      a bug: "I pasted my friend's name
+      vitalik.eth into the transfer form and the Send button just stays greyed
+      out. No error, nothing." The recipient field is wired like this:
 
-    QA filed a bug: while a transaction is pending, the button turns into
-    one big spinner that fills the entire button — the "Approving..."
-    label never shows, the layout jumps, and it reads as broken. On
-    desktop and mobile alike.
+          const isValid = /^0x[a-fA-F0-9]{40}$/.test(input.trim());
+          ...
+          <input value={input} onChange={e => setInput(e.target.value)} />
+          <button disabled={!isValid} onClick={send}>Send</button>
 
-    Explain exactly what DaisyUI does with that class combination and why
-    the label disappears, then write the corrected button — the idiomatic
-    DaisyUI/SE-2 pattern for a small inline spinner next to visible text.
-  answer: |
-    Grade CORRECT only if the response satisfies every one of these points; a response that misses any of them is INCORRECT:
-    - The response explains the mechanism: DaisyUI's loading class is a spinner element class, not a button modifier — applied to the btn itself it turns the whole element into the spinner mask, so the label text is swallowed and the spinner fills the button.
-    - The fix removes loading from the button's className and renders an inline spinner span inside the button alongside the visible label — <span className="loading loading-spinner loading-sm" /> (or equivalent size) next to the text, with disabled still tied to the pending state.
-  difficulty: reasoning
-  source: |-
-    https://github.com/austintgriffith/ethevals/blob/main/evals/building/building-07-double-fire.yaml
-  tags:
-  - ethevals
-  - building
-- id: building-08-rpc-config
-  type: open
-  question: |
-    A Scaffold-ETH 2 dApp live on Base. Ops report: production traffic is
-    getting rate-limited on public endpoints — 429s from
-    mainnet.base.org — even though the config looks right:
+      Explain exactly why the user is stuck, describe step by step what a
+      production recipient field should have done with that paste (the
+      mechanism — the resolved hex itself is not the point), and say what you
+      would replace this input with in this codebase. Write your answer to
+      answer.md in this directory.
+    answer: |-
+      Grade CORRECT only if the response satisfies every one of these points; a response that misses any of them is INCORRECT:
+      - The response reasons from the given regex: an ENS name has no 0x-hex form, so isValid stays false and the button silently stays disabled with no feedback to the user.
+      - The production behavior described is ENS resolution: detect a name, resolve it onchain to an address, validate and use the resolved address while showing the user what it resolved to — plus an inline reason whenever input is rejected.
+      - The replacement is a dedicated address input component with built-in ENS handling (an AddressInput-style component, own or from a library), not a raw text field guarded by a regex.
+  metadata:
+    section: building
+    type: open
+    difficulty: reasoning
+    source: |-
+      https://github.com/austintgriffith/ethevals/blob/main/evals/building/building-06-ens-input.yaml
+    tags:
+      - ethevals
+      - building
+  assert:
+    - type: llm-rubric
+      value: '{{answer}}'
+      metric: building
 
-        // scaffold.config.ts
-        rpcOverrides: {
-          [chains.base.id]: process.env.NEXT_PUBLIC_RPC_URL,
-        },
+- description: building/building-07-double-fire
+  vars:
+    type: open
+    question: |-
+      A Scaffold-ETH 2 dApp using DaisyUI. A teammate added a pending state
+      to the Approve button:
 
-    On developer machines everything goes through the paid RPC and no
-    429s appear. The deploy is a static Next.js build on generic hosting.
+          <button
+            className={`btn btn-primary ${isPending ? "loading" : ""}`}
+            disabled={isPending}
+          >
+            {isPending ? "Approving..." : "Approve"}
+          </button>
 
-    Walk the exact chain that lands production requests on a public RPC —
-    including where NEXT_PUBLIC_* variables get their values in a Next.js
-    build and what the transport does when the override is missing. Then
-    name the one operational check that settles whether the fix is real,
-    and the second, transport-level trap in
-    packages/nextjs/services/web3/wagmiConfig.tsx that keeps some requests
-    going to public RPCs even after the env var is fixed. Write your
-    answer to answer.md in this directory.
-  answer: |
-    Grade CORRECT only if the response satisfies every one of these points; a response that misses any of them is INCORRECT:
-    - The response derives the failure chain: NEXT_PUBLIC_* values are inlined at build time, the variable is set locally (.env.local) but not on the hosting platform, so the production bundle bakes in undefined, the override is skipped, and the transport falls through to default/public RPC endpoints — which is why only production sees 429s.
-    - The check is operational, not code-level: confirm the variable is actually set in the hosting platform's environment for the production build (e.g. vercel env ls or the host's equivalent), rather than trusting that the code references process.env.
-    - The second trap is the fallback transport list in wagmiConfig.tsx: a bare http() (public RPC) entry remains in the fallbacks, so requests can still hit rate-limited public endpoints; the fix removes it so only intended transports remain.
-  difficulty: reasoning
-  source: |-
-    https://github.com/austintgriffith/ethevals/blob/main/evals/building/building-08-rpc-config.yaml
-  tags:
-  - ethevals
-  - building
-- id: building-09-mobile-chain-switch
-  type: open
-  question: |
-    A Scaffold-ETH 2 dApp live on Base. Mobile users who connect through
-    WalletConnect with the Rainbow app report that tapping "Stake" does
-    nothing — no wallet opens, the page just sits there. If they manually
-    switch to Rainbow, the signing request is waiting for them inside.
+      QA filed a bug: while a transaction is pending, the button turns into
+      one big spinner that fills the entire button — the "Approving..."
+      label never shows, the layout jumps, and it reads as broken. On
+      desktop and mobile alike.
 
-    A teammate shipped a patch: the first line of the button handler is
-    now window.location.href = "rainbow://", followed by the
-    writeContractAsync call. Since the patch, Rainbow opens instantly —
-    but there is nothing to sign when it opens, and the transaction never
-    lands onchain.
+      Explain exactly what DaisyUI does with that class combination and why
+      the label disappears, then write the corrected button — the idiomatic
+      DaisyUI/SE-2 pattern for a small inline spinner next to visible text.
+    answer: |-
+      Grade CORRECT only if the response satisfies every one of these points; a response that misses any of them is INCORRECT:
+      - The response explains the mechanism: DaisyUI's loading class is a spinner element class, not a button modifier — applied to the btn itself it turns the whole element into the spinner mask, so the label text is swallowed and the spinner fills the button.
+      - The fix removes loading from the button's className and renders an inline spinner span inside the button alongside the visible label — <span className="loading loading-spinner loading-sm" /> (or equivalent size) next to the text, with disabled still tied to the pending state.
+  metadata:
+    section: building
+    type: open
+    difficulty: reasoning
+    source: |-
+      https://github.com/austintgriffith/ethevals/blob/main/evals/building/building-07-double-fire.yaml
+    tags:
+      - ethevals
+      - building
+  assert:
+    - type: llm-rubric
+      value: '{{answer}}'
+      metric: building
 
-    Explain, in order: (1) why nothing auto-opened before the patch —
-    what RainbowKit / WalletConnect v2 actually does with a transaction
-    request on mobile; (2) why the patch made it worse; (3) the correct
-    pattern — the ordering, the delay and the reason for its length, how
-    to decide which wallet scheme to open given that wagmi's connector.id
-    reports "walletConnect", and the situations where the deep link must
-  answer: |
-    Grade CORRECT only if the response satisfies every one of these points; a response that misses any of them is INCORRECT:
-    - The response names the root cause: WalletConnect v2 / RainbowKit v2 does not deep-link into the wallet app on a transaction request — it relies on push notifications — so nothing opens and the request just waits in the wallet.
-    - The patch is dissected by ordering: navigating to rainbow:// before the write call means the signing request has not been created and relayed yet, so the wallet opens empty and the transaction never fires; the correct order fires the write first and deep-links after a delay on the order of ~2 seconds, justified by gas estimation plus WalletConnect relay time.
-    - Wallet detection: connector.id reports the generic "walletConnect", so picking the scheme requires other signals (WalletConnect session data / localStorage hints), and the deep link is skipped when window.ethereum exists (already inside a wallet's in-app browser) or off mobile.
-  difficulty: reasoning
-  source: |-
-    https://github.com/austintgriffith/ethevals/blob/main/evals/building/building-09-mobile-chain-switch.yaml
-  tags:
-  - ethevals
-  - building
-- id: building-10-index-events
-  type: open
-  question: |
-    We're launching the frontend for an NFT collection that's been live on Ethereum
-    mainnet for about three years. The main screen is an activity feed — every mint,
-    sale, and transfer in the collection, newest first — plus a "top holders" panel
-    that ranks wallets by how many tokens they hold right now.
+- description: building/building-08-rpc-config
+  vars:
+    type: open
+    question: |-
+      A Scaffold-ETH 2 dApp live on Base. Ops report: production traffic is
+      getting rate-limited on public endpoints — 429s from
+      mainnet.base.org — even though the config looks right:
 
-    Here's the plan our contractor wrote up, and I want a sanity check before we build on
-    it:
+          // scaffold.config.ts
+          rpcOverrides: {
+            [chains.base.id]: process.env.NEXT_PUBLIC_RPC_URL,
+          },
 
-      "On page load the client calls eth_getLogs for the collection's Transfer event
-       from block 0 to latest, gets the full history back, and we compute the feed and
-       the holder ranking in the browser. It's all standard RPC, so any provider key
-       works and we don't need extra infrastructure."
+      On developer machines everything goes through the paid RPC and no
+      429s appear. The deploy is a static Next.js build on generic hosting.
 
-    Ethereum is around block 25,800,000 now. Walk me through what actually happens when
-    this ships: roughly how many RPC requests that one page load turns into and why (be
-    concrete about the number and what forces it), what specifically breaks first in
-    production, and what we should build instead so the feed and the holder panel load
-    quickly. If your alternative needs infrastructure we don't have yet, say so.
-  answer: |
-    Grade CORRECT only if the response satisfies every one of these points; a response that misses any of them is INCORRECT:
-    - The response establishes that a single provider's eth_getLogs call cannot return the full 0-to-latest range at once: public RPC providers cap each getLogs call by block span (commonly ~2K, up to ~10K blocks) and/or by matched-result count (~10K logs), so the client is forced to paginate across the whole history. It does NOT claim one call from block 0 to latest just works.
-    - It derives a concrete request/page count from a stated cap rather than answering with a vague 'a lot' or 'it's slow' — either from the block-span cap and the height stated in the input (at ~25.8M that is 25,800,000 / ~2,000 ≈ 12,900 requests) or from the ~10K matched-log response cap and an estimated log volume (e.g. a few million transfers / 10K ≈ hundreds of pages). Any figure that ties a real cap to a real volume passes; a request count with no cap behind it does not.
-    - It names what breaks first in production as a consequence of that scan — provider rate limits / 429s, request timeouts, or blown compute-unit / credit budget on every page load — i.e. an O(n)-in-chain-length scan that gets worse every block, not a one-time cost.
-    - The recommended fix is an indexer that has already processed the collection's history and serves it as a ready query — a subgraph (The Graph), Ponder, or a provider/NFT data API (Alchemy getNftsForContract / getAssetTransfers, etc.) — so the page load becomes one indexed query instead of a historical block scan. It explicitly acknowledges this is added infrastructure (an indexing service to run/deploy or a third-party API), not just 'paginate harder' or 'use an archive node'.
-    - The 'top holders right now' panel is handled as current ownership, not as a historical scan: the ranking is derived from the indexed dataset or from current-state ownership reads (e.g. ownerOf across the collection), and it does NOT prescribe an archive node — current ownership is a current-state read, while the historical feed is what needs the indexer.
-  difficulty: reasoning
-  source: |-
-    https://github.com/austintgriffith/ethevals/blob/main/evals/building/building-10-index-events.yaml
-  tags:
-  - ethevals
-  - building
-- id: building-11-forty-balances
-  type: open
-  question: |
-    We're adding a portfolio panel to our dApp. When a user connects, the panel shows
-    their current balance of the 40 ERC-20 tokens we support, on Base — just the live
-    numbers as of now, refreshed when they reopen the panel. No history, no charts, no
-    P&L, just "what do you hold right now."
+      Walk the exact chain that lands production requests on a public RPC —
+      including where NEXT_PUBLIC_* variables get their values in a Next.js
+      build and what the transport does when the override is missing. Then
+      name the one operational check that settles whether the fix is real,
+      and the second, transport-level trap in
+      packages/nextjs/services/web3/wagmiConfig.tsx that keeps some requests
+      going to public RPCs even after the env var is fixed. Write your
+      answer to answer.md in this directory.
+    answer: |-
+      Grade CORRECT only if the response satisfies every one of these points; a response that misses any of them is INCORRECT:
+      - The response derives the failure chain: NEXT_PUBLIC_* values are inlined at build time, the variable is set locally (.env.local) but not on the hosting platform, so the production bundle bakes in undefined, the override is skipped, and the transport falls through to default/public RPC endpoints — which is why only production sees 429s.
+      - The check is operational, not code-level: confirm the variable is actually set in the hosting platform's environment for the production build (e.g. vercel env ls or the host's equivalent), rather than trusting that the code references process.env.
+      - The second trap is the fallback transport list in wagmiConfig.tsx: a bare http() (public RPC) entry remains in the fallbacks, so requests can still hit rate-limited public endpoints; the fix removes it so only intended transports remain.
+  metadata:
+    section: building
+    type: open
+    difficulty: reasoning
+    source: |-
+      https://github.com/austintgriffith/ethevals/blob/main/evals/building/building-08-rpc-config.yaml
+    tags:
+      - ethevals
+      - building
+  assert:
+    - type: llm-rubric
+      value: '{{answer}}'
+      metric: building
 
-    An engineer has scoped it like this and wants to start building:
+- description: building/building-09-mobile-chain-switch
+  vars:
+    type: open
+    question: |-
+      A Scaffold-ETH 2 dApp live on Base. Mobile users who connect through
+      WalletConnect with the Rainbow app report that tapping "Stake" does
+      nothing — no wallet opens, the page just sits there. If they manually
+      switch to Rainbow, the signing request is waiting for them inside.
 
-      "We'll write and deploy a subgraph that indexes Transfer events for all 40 tokens,
-       track a running balance per holder in the mappings, and the panel queries the
-       subgraph for the connected wallet's balances. That way the balances are always
-       accurate."
+      A teammate shipped a patch: the first line of the button handler is
+      now window.location.href = "rainbow://", followed by the
+      writeContractAsync call. Since the patch, Rainbow opens instantly —
+      but there is nothing to sign when it opens, and the transaction never
+      lands onchain.
 
-    Before we commit a sprint to building and operating that subgraph, tell me whether
-    it's the right tool for this panel. If it's overkill, say what the panel should do
-    instead, be specific about how many onchain calls it takes to fetch all 40 balances
-    for one wallet the way you'd build it, and explain how that approach stays accurate
-    as balances change.
-  answer: |
-    Grade CORRECT only if the response satisfies every one of these points; a response that misses any of them is INCORRECT:
-    - The response concludes that building/operating a subgraph for this panel is overkill: the panel needs only current balances, and current state does not require an indexer or historical event processing. It frames indexers as the tool for historical/aggregated data, not for a live current-state read.
-    - The recommended approach is direct current-state reads of balanceOf on the token contracts via RPC — no subgraph, no scanning of Transfer history.
-    - It specifies that all 40 balances for one wallet come back in a single aggregated request rather than 40 separate RPC round-trips — either by batching the 40 balanceOf reads with Multicall3 (one onchain call), or via a provider balances endpoint (e.g. Alchemy getTokenBalances) that returns them in one request. It does NOT describe the correct approach as 40 individual calls or as a subgraph query. Multicall3 is the expected onchain answer; a provider balances API is equally acceptable.
-    - It explains why the direct read stays correct without an indexer: balanceOf returns live current state on every call, so there is nothing to keep synced — whereas the proposed subgraph would have to reconstruct balances from Transfer history and could drift or lag from the true current value (e.g. rebasing/fee-on-transfer tokens, reorgs, indexing lag), making it both more work and less reliable for this use case.
-  difficulty: reasoning
-  source: |-
-    https://github.com/austintgriffith/ethevals/blob/main/evals/building/building-11-forty-balances.yaml
-  tags:
-  - ethevals
-  - building
-- id: building-12-pick-a-chain
-  type: open
-  question: |
-    I want to build an escrow service for freelance payments. Each job holds
-    somewhere between $2,000 and $50,000 until the work is delivered. Which
-    chain should I deploy on, and why?
+      Explain, in order: (1) why nothing auto-opened before the patch —
+      what RainbowKit / WalletConnect v2 actually does with a transaction
+      request on mobile; (2) why the patch made it worse; (3) the correct
+      pattern — the ordering, the delay and the reason for its length, how
+      to decide which wallet scheme to open given that wagmi's connector.id
+      reports "walletConnect", and the situations where the deep link must
+    answer: |-
+      Grade CORRECT only if the response satisfies every one of these points; a response that misses any of them is INCORRECT:
+      - The response names the root cause: WalletConnect v2 / RainbowKit v2 does not deep-link into the wallet app on a transaction request — it relies on push notifications — so nothing opens and the request just waits in the wallet.
+      - The patch is dissected by ordering: navigating to rainbow:// before the write call means the signing request has not been created and relayed yet, so the wallet opens empty and the transaction never fires; the correct order fires the write first and deep-links after a delay on the order of ~2 seconds, justified by gas estimation plus WalletConnect relay time.
+      - Wallet detection: connector.id reports the generic "walletConnect", so picking the scheme requires other signals (WalletConnect session data / localStorage hints), and the deep link is skipped when window.ethereum exists (already inside a wallet's in-app browser) or off mobile.
+  metadata:
+    section: building
+    type: open
+    difficulty: reasoning
+    source: |-
+      https://github.com/austintgriffith/ethevals/blob/main/evals/building/building-09-mobile-chain-switch.yaml
+    tags:
+      - ethevals
+      - building
+  assert:
+    - type: llm-rubric
+      value: '{{answer}}'
+      metric: building
 
-    and the reasoning behind the recommendation.
-  answer: |
-    Grade CORRECT only if the response satisfies every one of these points; a response that misses any of them is INCORRECT:
-    - The response gives a concrete chain recommendation with current per-transaction costs in numbers, not a bare pick.
-    - Ethereum mainnet is treated as a viable (or the recommended) home for high-value low-frequency escrow, backed by current per-transaction costs in the cents range — it is not disqualified on gas-cost grounds or quoted at dollars-to-tens-of-dollars per transaction.
-    - Any cost figure uses a live-checked gas price in sub-1-gwei territory and a live-fetched ETH price, not values quoted from memory.
-  difficulty: reasoning
-  source: |-
-    https://github.com/austintgriffith/ethevals/blob/main/evals/building/building-12-pick-a-chain.yaml
-  tags:
-  - ethevals
-  - building
-- id: building-13-l2-real-cost
-  type: open
-  question: |
-    A teammate estimated our Uniswap swap on Base at $0.0003 by pricing the
-    swap's execution gas over RPC. But the actual charge per swap showing up
-    in the wallet is roughly 10x that. Where is the rest of the money going,
-    and how can we make it cheaper?
-  answer: |
-    Grade CORRECT only if the response satisfies every one of these points; a response that misses any of them is INCORRECT:
-    - The response explains the ~10x gap and gives at least one concrete way to reduce it.
-    - The gap is identified as the L1 data-availability component — posting the batch to Ethereum as blobs — i.e. an L2 fee = L2 execution + L1 data, with execution the minor share.
-    - The explanation is not sequencer profit margin, network congestion, slippage, or a wrong per-swap gas estimate.
-  difficulty: reasoning
-  source: |-
-    https://github.com/austintgriffith/ethevals/blob/main/evals/building/building-13-l2-real-cost.yaml
-  tags:
-  - ethevals
-  - building
-- id: building-16-one-click-from-eoa
-  type: open
-  question: |
-    A teammate has left this verdict on our "one-click entry" design PR:
+- description: building/building-10-index-events
+  vars:
+    type: open
+    question: |-
+      We're launching the frontend for an NFT collection that's been live on Ethereum
+      mainnet for about three years. The main screen is an activity feed — every mint,
+      sale, and transfer in the collection, newest first — plus a "top holders" panel
+      that ranks wallets by how many tokens they hold right now.
 
-      "This can't work from a plain EOA. An EOA does one call per transaction —
-      that is what an EOA IS. If they want the swap and the deposit to land
-      together or not at all, they need a smart-contract wallet: deploy a Safe
-      (or a 4337 account), move the WETH into it, and batch from there. Tell the
-      user to accept the new address. There is no way around it."
+      Here's the plan our contractor wrote up, and I want a sanity check before we build on
+      it:
 
-    The setup they are reviewing: the user holds 2 WETH in the MetaMask account
-    they have used for two years — an ENS name and on-chain history they refuse to
-    abandon. That account has no token approvals to anything, and holds only
-    enough ETH to pay gas. In a single confirmation they want to swap all 2 WETH
-    to USDC on Uniswap V3 and supply every USDC that swap returns to Aave V3 —
-    both legs or neither. The supplied amount is whatever the swap actually
-    returns; it is not known before the transaction runs.
+        "On page load the client calls eth_getLogs for the collection's Transfer event
+         from block 0 to latest, gets the full history back, and we compute the feed and
+         the holder ranking in the browser. It's all standard RPC, so any provider key
+         works and we don't need extra infrastructure."
 
-    Is the teammate right that the user has to accept a new address? Answer their
-    verdict directly and say what you would actually ship.
-  answer: |
-    Grade CORRECT only if the response satisfies every one of these points; a response that misses any of them is INCORRECT:
-    - The response rejects the teammate's verdict: the swap + supply CAN be done as one atomic transaction from the user's existing EOA, keeping its exact address — the user does not have to deploy a smart-contract wallet or accept a new address.
-    - It identifies the mechanism — an authorization the EOA signs that delegates the account to contract code so it can run a batch (a set-code / type-0x04 transaction; this is EIP-7702, but naming it by this behavior is sufficient and the label is not required) — and treats it as LIVE on Ethereum mainnet today, not as a proposal, a testnet-only feature, or something 'coming soon'. Naming EIP-7702 / Pectra / the May 2025 date is not required to pass; what is load-bearing is the mechanism identified by behavior and presented as usable on mainnet now.
-    - It does NOT ship an off-chain-signature workaround as the answer — EIP-2612 permit, Aave's supplyWithPermit, or Uniswap's Permit2. If any of these is discussed, it is correctly ruled out for THIS setup rather than proposed: WETH exposes no EIP-2612 permit, Permit2 needs a prior on-chain approval the account does not have, and the USDC amount cannot be signed for in advance because it does not exist until the swap executes.
-    - It does NOT fall back to the stale claim that an EOA fundamentally cannot execute batched contract logic and therefore needs a deployed smart-contract / ERC-4337 / Safe account or a migration to a new address.
-  difficulty: reasoning
-  source: |-
-    https://github.com/austintgriffith/ethevals/blob/main/evals/building/building-16-one-click-from-eoa.yaml
-  tags:
-  - ethevals
-  - building
-- id: building-17-x402-paid-api
-  type: open
-  question: |
-    I'm building a paid API for AI agents. I want an agent to pay me a few cents
-    per call, settled on-chain (Base is fine), with the payment happening inline in
-    the HTTP request — no accounts, no API keys, no invoicing. So my server should
-    gate the endpoint behind payment, and the agent's TypeScript client should pay
-    and retry the call automatically. What's the standard way to build both sides
-    today, and what exactly do I install?
+      Ethereum is around block 25,800,000 now. Walk me through what actually happens when
+      this ships: roughly how many RPC requests that one page load turns into and why (be
+      concrete about the number and what forces it), what specifically breaks first in
+      production, and what we should build instead so the feed and the holder panel load
+      quickly. If your alternative needs infrastructure we don't have yet, say so.
+    answer: |-
+      Grade CORRECT only if the response satisfies every one of these points; a response that misses any of them is INCORRECT:
+      - The response establishes that a single provider's eth_getLogs call cannot return the full 0-to-latest range at once: public RPC providers cap each getLogs call by block span (commonly ~2K, up to ~10K blocks) and/or by matched-result count (~10K logs), so the client is forced to paginate across the whole history. It does NOT claim one call from block 0 to latest just works.
+      - It derives a concrete request/page count from a stated cap rather than answering with a vague 'a lot' or 'it's slow' — either from the block-span cap and the height stated in the input (at ~25.8M that is 25,800,000 / ~2,000 ≈ 12,900 requests) or from the ~10K matched-log response cap and an estimated log volume (e.g. a few million transfers / 10K ≈ hundreds of pages). Any figure that ties a real cap to a real volume passes; a request count with no cap behind it does not.
+      - It names what breaks first in production as a consequence of that scan — provider rate limits / 429s, request timeouts, or blown compute-unit / credit budget on every page load — i.e. an O(n)-in-chain-length scan that gets worse every block, not a one-time cost.
+      - The recommended fix is an indexer that has already processed the collection's history and serves it as a ready query — a subgraph (The Graph), Ponder, or a provider/NFT data API (Alchemy getNftsForContract / getAssetTransfers, etc.) — so the page load becomes one indexed query instead of a historical block scan. It explicitly acknowledges this is added infrastructure (an indexing service to run/deploy or a third-party API), not just 'paginate harder' or 'use an archive node'.
+      - The 'top holders right now' panel is handled as current ownership, not as a historical scan: the ranking is derived from the indexed dataset or from current-state ownership reads (e.g. ownerOf across the collection), and it does NOT prescribe an archive node — current ownership is a current-state read, while the historical feed is what needs the indexer.
+  metadata:
+    section: building
+    type: open
+    difficulty: reasoning
+    source: |-
+      https://github.com/austintgriffith/ethevals/blob/main/evals/building/building-10-index-events.yaml
+    tags:
+      - ethevals
+      - building
+  assert:
+    - type: llm-rubric
+      value: '{{answer}}'
+      metric: building
 
-    the packages, and confirm anything you install actually resolves today.
-  answer: |
-    Grade CORRECT only if the response satisfies every one of these points; a response that misses any of them is INCORRECT:
-    - The response identifies x402 as the standard for this HTTP-native, pay-per-call, on-chain-settled flow — not a bespoke paywall, an API-key/JWT scheme, Stripe, or L402/Lightning.
-    - It names concrete, installable package(s) — an actual `npm install …` line — for both the TypeScript server gate and the client, not a vague reference to 'the x402 library'.
-    - It shows client code that pays and retries the 402-gated request automatically via that library, rather than a hand-rolled signing/settlement flow.
-  difficulty: reasoning
-  source: |-
-    https://github.com/austintgriffith/ethevals/blob/main/evals/building/building-17-x402-paid-api.yaml
-  tags:
-  - ethevals
-  - building
-- id: building-18-create2-address-myth
-  type: open
-  question: |
-    We use Morpho Blue on Base at 0xBBBBBbbBBb9cC5e90e3b3Af64bdAF62C37EEFFCb, and
-    we're launching the same lending integration on Arbitrum this week. A teammate
-    says:
+- description: building/building-11-forty-balances
+  vars:
+    type: open
+    question: |-
+      We're adding a portfolio panel to our dApp. When a user connects, the panel shows
+      their current balance of the 40 ERC-20 tokens we support, on Base — just the live
+      numbers as of now, refreshed when they reopen the panel. No history, no charts, no
+      P&L, just "what do you hold right now."
 
-      "Morpho uses a vanity CREATE2 address, so it's live at the exact same
-      0xBBBB... address on every chain. Just point the Arbitrum deployment at that
-      same address and route user deposits through it — no need to look anything
-      up."
+      An engineer has scoped it like this and wants to start building:
 
-    Before we wire user funds through it on Arbitrum, is the teammate right?
-    And either way, tell us what our Arbitrum integration should actually point
-    at: give the address you would wire into the config, and say how you
-    established it.
-  answer: |
-    Grade CORRECT only if the response satisfies every one of these points; a response that misses any of them is INCORRECT:
-    - The response rejects the teammate's reasoning: a matching vanity / CREATE2 address on one chain does NOT prove the same contract is live at that address on another chain — Morpho's contract addresses are not guaranteed identical cross-chain, so the 0xBBBB... Base address cannot be assumed to be a live Morpho contract on Arbitrum.
-    - It requires verifying against Arbitrum itself before wiring funds — block explorer / eth_getCode / Morpho's official Arbitrum address list — and warns that routing user deposits to an address that may hold different code (or none) on Arbitrum risks loss of funds.
-    - It does NOT wire the 0xBBBBBbbBBb9cC5e90e3b3Af64bdAF62C37EEFFCb Base address into the Arbitrum config, and does NOT invent an Arbitrum address.
-    - It answers what the Arbitrum integration should point at with a concrete, sourced result rather than leaving it open: Morpho Blue IS deployed on Arbitrum, at the non-vanity address 0x6c247b1F6182318877311737BaC0844bAa518F5e (per Morpho's official address list at docs.morpho.org). PASS if the response gives that Arbitrum address and says where it came from — official deployment list, block explorer, or an on-chain code check. FAIL if it asserts Morpho is not deployed on Arbitrum, if it gives some other address as Morpho on Arbitrum, or if it only says 'look it up' without producing the deployment status.
-  difficulty: reasoning
-  source: |-
-    https://github.com/austintgriffith/ethevals/blob/main/evals/building/building-18-create2-address-myth.yaml
-  tags:
-  - ethevals
-  - building
-- id: building-19-deploy-verify-ship
-  type: open
-  question: |
-    Our two-person team shipped the contracts for a Scaffold-ETH 2 (foundry
-    flavor) dApp to Base mainnet three days ago — `yarn deploy --network base`
-    went fine and the app works against the live contracts. Contract
-    verification is still an open ticket, currently marked blocked: "waiting
-    on a block explorer API key from ops (ETA next sprint)". A teammate
-    suggests we just fold verification into the launch checklist and run it
-    right before the public announcement next month, all in one go.
+        "We'll write and deploy a subgraph that indexes Transfer events for all 40 tokens,
+         track a running balance per holder in the mappings, and the panel queries the
+         subgraph for the connected wallet's balances. That way the balances are always
+         accurate."
 
-    Unblock this ticket: what exactly would we run, what do we actually need
-    in place for it to work, and when should it happen — now or at launch —
-    and why does the timing matter? The repo isn't checked out here, so write
-    the answer rather than trying to run anything. Write your answer to
-    answer.md in this directory.
-  answer: |
-    Grade CORRECT only if the response satisfies every one of these points; a response that misses any of them is INCORRECT:
-    - The response unblocks the ticket by contradicting its premise: no block explorer API key needs to be obtained — Scaffold-ETH 2's built-in verification handles this out of the box. It does NOT treat getting a key from an explorer, from ops, or through a signup flow as a prerequisite for verifying. None of these fail the line: noting that SE2 already ships a default explorer key in its .env; wiring that already-shipped key into an [etherscan] entry for base in foundry.toml; saying the team may swap in its own key later. What fails is any step that waits on a key the team does not already have, i.e. leaving the ticket blocked on ops.
-    - The concrete action is SE2's verify command against the live network — yarn verify --network base (minor flag variations acceptable) — presented as the primary path. Explaining that yarn verify wraps forge verify-contract under the hood does not fail this; substituting a hand-rolled forge verify-contract invocation, or a manual source upload through the explorer UI, for it does.
-    - On timing it says verify NOW rather than at launch, and it explicitly rejects folding verification into next month's launch checklist. (Grader's context, not a required assertion: the skill puts verification immediately after deploy, so a three-day-old unverified deploy is already late. The answer does not have to characterise the gap that way.)
-    - The timing call is backed by at least one substantive reason (e.g. unverified contracts are unreadable/untrustworthy to users and integrators, live debugging needs source on the explorer, the app is already live so every day unverified is a day people transact against opaque bytecode). A reason that amounts to 'it's best practice' with nothing behind it does not count.
-  difficulty: reasoning
-  source: |-
-    https://github.com/austintgriffith/ethevals/blob/main/evals/building/building-19-deploy-verify-ship.yaml
-  tags:
-  - ethevals
-  - building
-- id: building-20-existing-eoa-smart-account
-  type: open
-  question: |
-    A team runs a consumer app whose users each already hold a funded EOA — the
-    same address they've used for a year, with an ENS name and onchain history tied
-    to it. The team wants each of those existing accounts to be able to:
-      - batch an ERC-20 approve and a swap into a single atomic transaction, and
-      - run custom auth logic (session keys) from that account,
-    while keeping the exact same address and private key. Migrating users to a
-    freshly deployed account at a new address is off the table — the address, its
-    ENS name, and its history all have to survive.
+      Before we commit a sprint to building and operating that subgraph, tell me whether
+      it's the right tool for this panel. If it's overkill, say what the panel should do
+      instead, be specific about how many onchain calls it takes to fetch all 40 balances
+      for one wallet the way you'd build it, and explain how that approach stays accurate
+      as balances change.
+    answer: |-
+      Grade CORRECT only if the response satisfies every one of these points; a response that misses any of them is INCORRECT:
+      - The response concludes that building/operating a subgraph for this panel is overkill: the panel needs only current balances, and current state does not require an indexer or historical event processing. It frames indexers as the tool for historical/aggregated data, not for a live current-state read.
+      - The recommended approach is direct current-state reads of balanceOf on the token contracts via RPC — no subgraph, no scanning of Transfer history.
+      - It specifies that all 40 balances for one wallet come back in a single aggregated request rather than 40 separate RPC round-trips — either by batching the 40 balanceOf reads with Multicall3 (one onchain call), or via a provider balances endpoint (e.g. Alchemy getTokenBalances) that returns them in one request. It does NOT describe the correct approach as 40 individual calls or as a subgraph query. Multicall3 is the expected onchain answer; a provider balances API is equally acceptable.
+      - It explains why the direct read stays correct without an indexer: balanceOf returns live current state on every call, so there is nothing to keep synced — whereas the proposed subgraph would have to reconstruct balances from Transfer history and could drift or lag from the true current value (e.g. rebasing/fee-on-transfer tokens, reorgs, indexing lag), making it both more work and less reliable for this use case.
+  metadata:
+    section: building
+    type: open
+    difficulty: reasoning
+    source: |-
+      https://github.com/austintgriffith/ethevals/blob/main/evals/building/building-11-forty-balances.yaml
+    tags:
+      - ethevals
+      - building
+  assert:
+    - type: llm-rubric
+      value: '{{answer}}'
+      metric: building
 
-    It's 2026 and this has to run on Ethereum mainnet today — not a testnet, not a
-    future roadmap item. Answer all of the following in answer.md. Explain the
-    reasoning behind each answer — the mechanism, the dates, what the account ends
-    up pointing at — but do not quote or name the files, pages, or documents you
-    consulted.
+- description: building/building-12-pick-a-chain
+  vars:
+    type: open
+    question: |-
+      I want to build an escrow service for freelance payments. Each job holds
+      somewhere between $2,000 and $50,000 until the work is delivered. Which
+      chain should I deploy on, and why?
 
-    1. Is this possible on mainnet as of now, and what makes it possible? Name the
-       mechanism that lets an already-existing EOA execute contract code without
-       becoming a new account type, name the network upgrade that shipped it, and
-       give the date it went live.
-    2. Concretely, what does the user's account point at after they opt in, and how
-       does an approve+swap end up running atomically from their own address?
-    3. After the account runs one batched transaction this way, does it
-       automatically revert to a plain EOA, or does the new behavior stay in place?
-       State exactly what is required to change or remove it.
-    4. A teammate proposes instead deploying a fresh ERC-4337 smart-contract wallet
-       for each user and having them move their funds and ENS across to it. Explain
-       why that does not satisfy the stated constraint.
-  answer: |
-    Grade CORRECT only if the response satisfies every one of these points; a response that misses any of them is INCORRECT:
-    - The response identifies the mechanism as EIP-7702 (an EOA authorizing delegated smart-contract code without migrating to a new account type). Concluding it is impossible without migrating, that a new ERC-4337 / smart-contract wallet must be deployed, or naming only account abstraction with no EIP-7702, all fail this check — recognizing the standard unprompted is the point.
-    - The answer states EIP-7702 is live on mainnet, shipped with the Pectra upgrade, active since May 2025 (naming the exact day, May 7, is not required). Calling it 'proposed', 'not yet live', 'testnet only', or a future roadmap item fails, as does attributing it to the wrong upgrade (e.g. Dencun/Cancun) or a wrong year.
-    - The mechanism is described correctly: opting in sets a delegation designator on the EOA that points at a smart-contract implementation address, authorized by a signature from the EOA's own key, after which calls to that same address execute the contract's code — so the approve+swap batch runs atomically from the user's existing address. An answer where the code lives at a different address, or where the EOA's key does not sign the authorization, fails.
-    - The answer states the delegation persists — it does NOT auto-clear after one transaction. The designator stays set until it is replaced by a later authorization or cleared (delegating to the zero address / an authorization to 0x0). Claiming the account reverts to a plain EOA automatically after the transaction, or that the delegation is single-transaction-only by spec, fails this check.
-    - The ERC-4337-migration alternative is rejected for the right reason: a freshly deployed smart-contract wallet lives at a NEW address, so the funds, ENS name, and history do not carry over, violating the same-address/same-key constraint — whereas EIP-7702 upgrades the existing EOA in place. Endorsing the migration, or rejecting it without identifying that the address changes, fails.
-  difficulty: reasoning
-  source: |-
-    https://github.com/austintgriffith/ethevals/blob/main/evals/building/building-20-existing-eoa-smart-account.yaml
-  tags:
-  - ethevals
-  - building
-- id: building-21-5792-fallback
-  type: multiple_choice
-  question: |
-    Your dapp sends a batch through EIP-5792 wallet_sendCalls with the atomic capability required (approve then swap, all or nothing) and a paymasterService capability so the user pays no gas. The connected wallet returns "method not found" for wallet_sendCalls. What should your client library do?
-  choices:
-  - Fall back to one eth_sendTransaction per call so the flow still works
-  - |-
-    Throw: the caller required atomic execution and a capability the wallet cannot honor; falling back would run the calls non-atomically (approve can land without the swap) and silently drop the sponsorship
-  - Retry wallet_sendCalls with the older parameter shape
-  - Send only the first call and let the user retry the rest
-  answer: B
-  difficulty: understanding
-  source: |-
-    https://github.com/austintgriffith/ethevals/blob/main/evals/building/building-21-5792-fallback.yaml
-  tags:
-  - ethevals
-  - building
-- id: building-22-sign-transaction
-  type: multiple_choice
-  question: |
-    You are implementing eth_signTransaction in a wallet. Which behaviour is correct?
-  choices:
-  - Sign the transaction, broadcast it, and return the transaction hash
-  - |-
-    Sign the transaction and return the raw signed transaction bytes; do not broadcast — the caller decides if and when to submit it with eth_sendRawTransaction
-  - Return only the signature components r, s and v
-  - |-
-    Behave like eth_sendTransaction but skip the confirmation prompt, since the dapp is only asking for a signature
-  answer: B
-  difficulty: understanding
-  source: |-
-    https://github.com/austintgriffith/ethevals/blob/main/evals/building/building-22-sign-transaction.yaml
-  tags:
-  - ethevals
-  - building
-- id: building-23-compact-signature
-  type: open
-  question: |
-    A signer produced this 65-byte ECDSA signature, r || s || v:
+      and the reasoning behind the recommendation.
+    answer: |-
+      Grade CORRECT only if the response satisfies every one of these points; a response that misses any of them is INCORRECT:
+      - The response gives a concrete chain recommendation with current per-transaction costs in numbers, not a bare pick.
+      - Ethereum mainnet is treated as a viable (or the recommended) home for high-value low-frequency escrow, backed by current per-transaction costs in the cents range — it is not disqualified on gas-cost grounds or quoted at dollars-to-tens-of-dollars per transaction.
+      - Any cost figure uses a live-checked gas price in sub-1-gwei territory and a live-fetched ETH price, not values quoted from memory.
+  metadata:
+    section: building
+    type: open
+    difficulty: reasoning
+    source: |-
+      https://github.com/austintgriffith/ethevals/blob/main/evals/building/building-12-pick-a-chain.yaml
+    tags:
+      - ethevals
+      - building
+  assert:
+    - type: llm-rubric
+      value: '{{answer}}'
+      metric: building
 
-    0x7c39e44a296c8b49b33ca5d4f1c2b6ca6472f9ee98a864d3d7601e20ffc370c613fd866a0df8427cb1db9fca2e68bdfe195ff3f0405b451aa9054f5b7c6ceb331c
+- description: building/building-13-l2-real-cost
+  vars:
+    type: open
+    question: |-
+      A teammate estimated our Uniswap swap on Base at $0.0003 by pricing the
+      swap's execution gas over RPC. But the actual charge per swap showing up
+      in the wallet is roughly 10x that. Where is the rest of the money going,
+      and how can we make it cheaper?
+    answer: |-
+      Grade CORRECT only if the response satisfies every one of these points; a response that misses any of them is INCORRECT:
+      - The response explains the ~10x gap and gives at least one concrete way to reduce it.
+      - The gap is identified as the L1 data-availability component — posting the batch to Ethereum as blobs — i.e. an L2 fee = L2 execution + L1 data, with execution the minor share.
+      - The explanation is not sequencer profit margin, network congestion, slippage, or a wrong per-swap gas estimate.
+  metadata:
+    section: building
+    type: open
+    difficulty: reasoning
+    source: |-
+      https://github.com/austintgriffith/ethevals/blob/main/evals/building/building-13-l2-real-cost.yaml
+    tags:
+      - ethevals
+      - building
+  assert:
+    - type: llm-rubric
+      value: '{{answer}}'
+      metric: building
 
-    Convert it to the 64-byte ERC-2098 compact form.
-    End your reply with a line of the form "Answer: 0x<hex>".
-  answer: |
-    The response's final answer must be exactly `0x7c39e44a296c8b49b33ca5d4f1c2b6ca6472f9ee98a864d3d7601e20ffc370c693fd866a0df8427cb1db9fca2e68bdfe195ff3f0405b451aa9054f5b7c6ceb33` (case-insensitive). Grade INCORRECT for these tempting wrong answers: `Answer: 0x7c39e44a296c8b49b33ca5d4f1c2b6ca6472f9ee98a864d3d7601e20ffc370c613fd866a0df8427cb1db9fca2e68bdfe195ff3f0405b451aa9054f5b7c6ceb33`; `Answer: 0x7c39e44a296c8b49b33ca5d4f1c2b6ca6472f9ee98a864d3d7601e20ffc370c613fd866a0df8427cb1db9fca2e68bdfe195ff3f0405b451aa9054f5b7c6ceb331c`
-  difficulty: reasoning
-  source: |-
-    https://github.com/austintgriffith/ethevals/blob/main/evals/building/building-23-compact-signature.yaml
-  tags:
-  - ethevals
-  - building
-- id: building-24-4337-2d-nonce
-  type: open
-  question: |
-    ERC-4337 EntryPoint nonces are two-dimensional: a 192-bit key and a 64-bit sequence. An account has executed exactly one UserOperation on key 1 and nothing else. What does EntryPoint.getNonce(account, 1) return?
-    End your reply with a line of the form "Answer: <integer, plain decimal>".
-  answer: |
-    The response's final answer must be the integer 18446744073709551617 (decimal or the equivalent hex). Grade INCORRECT for these tempting wrong answers: `Answer: 1`; `Answer: 2`; `Answer: 18446744073709551616`
-  difficulty: reasoning
-  source: |-
-    https://github.com/austintgriffith/ethevals/blob/main/evals/building/building-24-4337-2d-nonce.yaml
-  tags:
-  - ethevals
-  - building
-- id: building-25-hash-message-string
-  type: open
-  question: |
-    A dapp calls personal_sign with the message given as the ten-character text string 0xdeadbeef — the characters, not four bytes. What 32-byte digest does the wallet actually sign?
-    End your reply with a line of the form "Answer: 0x<hex>".
-  answer: |
-    The response's final answer must be exactly `0xefedd0a9a0294228c3977d7fbb68c7d40279f8b408cf3e24ef1823b179709e58` (case-insensitive). Grade INCORRECT for these tempting wrong answers: `Answer: 0xd1c7f1a06a4f9a535077e50ad23244ce2c6ae443fcd412965226f3df5d28eaaa`
-  difficulty: reasoning
-  source: |-
-    https://github.com/austintgriffith/ethevals/blob/main/evals/building/building-25-hash-message-string.yaml
-  tags:
-  - ethevals
-  - building
-- id: concepts-01-nothing-is-automatic
-  type: multiple_choice
-  question: |
-    A developer designs an Ethereum contract expecting it to "wake up" every hour and run a function by itself. Why will this never happen?
-  choices:
-  - |-
-    Contracts cannot execute themselves — every function call needs an external caller who pays gas
-  - Contracts can self-execute, but only during block finalization
-  - The EVM's built-in scheduler only supports daily intervals
-  - Only the deployer's node can trigger scheduled execution
-  answer: A
-  difficulty: understanding
-  source: |-
-    https://github.com/austintgriffith/ethevals/blob/main/evals/concepts/concepts-01-nothing-is-automatic.yaml
-  tags:
-  - ethevals
-  - concepts
-- id: concepts-03-keeper-bounty-math
-  type: multiple_choice
-  question: |
-    A Yearn-style vault lets ANYONE call harvest() to compound accumulated rewards, paying the caller a fixed bounty of $0.40. Gas for the call reliably costs about $3. For every state transition you must ask: who pokes it, why would they, and is the incentive sufficient (covers gas + profit)? Given those questions, what happens to this vault?
-  choices:
-  - The network eventually executes harvest() itself once rewards are large enough
-  - |-
-    Nobody calls harvest — the incentive doesn't cover gas, so the transition never happens and rewards sit uncompounded
-  - Bots call it anyway at a loss to keep the protocol healthy
-  - Validators are required to include a harvest call once per epoch
-  answer: B
-  difficulty: understanding
-  source: |-
-    https://github.com/austintgriffith/ethevals/blob/main/evals/concepts/concepts-03-keeper-bounty-math.yaml
-  tags:
-  - ethevals
-  - concepts
+- description: building/building-16-one-click-from-eoa
+  vars:
+    type: open
+    question: |-
+      A teammate has left this verdict on our "one-click entry" design PR:
+
+        "This can't work from a plain EOA. An EOA does one call per transaction —
+        that is what an EOA IS. If they want the swap and the deposit to land
+        together or not at all, they need a smart-contract wallet: deploy a Safe
+        (or a 4337 account), move the WETH into it, and batch from there. Tell the
+        user to accept the new address. There is no way around it."
+
+      The setup they are reviewing: the user holds 2 WETH in the MetaMask account
+      they have used for two years — an ENS name and on-chain history they refuse to
+      abandon. That account has no token approvals to anything, and holds only
+      enough ETH to pay gas. In a single confirmation they want to swap all 2 WETH
+      to USDC on Uniswap V3 and supply every USDC that swap returns to Aave V3 —
+      both legs or neither. The supplied amount is whatever the swap actually
+      returns; it is not known before the transaction runs.
+
+      Is the teammate right that the user has to accept a new address? Answer their
+      verdict directly and say what you would actually ship.
+    answer: |-
+      Grade CORRECT only if the response satisfies every one of these points; a response that misses any of them is INCORRECT:
+      - The response rejects the teammate's verdict: the swap + supply CAN be done as one atomic transaction from the user's existing EOA, keeping its exact address — the user does not have to deploy a smart-contract wallet or accept a new address.
+      - It identifies the mechanism — an authorization the EOA signs that delegates the account to contract code so it can run a batch (a set-code / type-0x04 transaction; this is EIP-7702, but naming it by this behavior is sufficient and the label is not required) — and treats it as LIVE on Ethereum mainnet today, not as a proposal, a testnet-only feature, or something 'coming soon'. Naming EIP-7702 / Pectra / the May 2025 date is not required to pass; what is load-bearing is the mechanism identified by behavior and presented as usable on mainnet now.
+      - It does NOT ship an off-chain-signature workaround as the answer — EIP-2612 permit, Aave's supplyWithPermit, or Uniswap's Permit2. If any of these is discussed, it is correctly ruled out for THIS setup rather than proposed: WETH exposes no EIP-2612 permit, Permit2 needs a prior on-chain approval the account does not have, and the USDC amount cannot be signed for in advance because it does not exist until the swap executes.
+      - It does NOT fall back to the stale claim that an EOA fundamentally cannot execute batched contract logic and therefore needs a deployed smart-contract / ERC-4337 / Safe account or a migration to a new address.
+  metadata:
+    section: building
+    type: open
+    difficulty: reasoning
+    source: |-
+      https://github.com/austintgriffith/ethevals/blob/main/evals/building/building-16-one-click-from-eoa.yaml
+    tags:
+      - ethevals
+      - building
+  assert:
+    - type: llm-rubric
+      value: '{{answer}}'
+      metric: building
+
+- description: building/building-17-x402-paid-api
+  vars:
+    type: open
+    question: |-
+      I'm building a paid API for AI agents. I want an agent to pay me a few cents
+      per call, settled on-chain (Base is fine), with the payment happening inline in
+      the HTTP request — no accounts, no API keys, no invoicing. So my server should
+      gate the endpoint behind payment, and the agent's TypeScript client should pay
+      and retry the call automatically. What's the standard way to build both sides
+      today, and what exactly do I install?
+
+      the packages, and confirm anything you install actually resolves today.
+    answer: |-
+      Grade CORRECT only if the response satisfies every one of these points; a response that misses any of them is INCORRECT:
+      - The response identifies x402 as the standard for this HTTP-native, pay-per-call, on-chain-settled flow — not a bespoke paywall, an API-key/JWT scheme, Stripe, or L402/Lightning.
+      - It names concrete, installable package(s) — an actual `npm install …` line — for both the TypeScript server gate and the client, not a vague reference to 'the x402 library'.
+      - It shows client code that pays and retries the 402-gated request automatically via that library, rather than a hand-rolled signing/settlement flow.
+  metadata:
+    section: building
+    type: open
+    difficulty: reasoning
+    source: |-
+      https://github.com/austintgriffith/ethevals/blob/main/evals/building/building-17-x402-paid-api.yaml
+    tags:
+      - ethevals
+      - building
+  assert:
+    - type: llm-rubric
+      value: '{{answer}}'
+      metric: building
+
+- description: building/building-18-create2-address-myth
+  vars:
+    type: open
+    question: |-
+      We use Morpho Blue on Base at 0xBBBBBbbBBb9cC5e90e3b3Af64bdAF62C37EEFFCb, and
+      we're launching the same lending integration on Arbitrum this week. A teammate
+      says:
+
+        "Morpho uses a vanity CREATE2 address, so it's live at the exact same
+        0xBBBB... address on every chain. Just point the Arbitrum deployment at that
+        same address and route user deposits through it — no need to look anything
+        up."
+
+      Before we wire user funds through it on Arbitrum, is the teammate right?
+      And either way, tell us what our Arbitrum integration should actually point
+      at: give the address you would wire into the config, and say how you
+      established it.
+    answer: |-
+      Grade CORRECT only if the response satisfies every one of these points; a response that misses any of them is INCORRECT:
+      - The response rejects the teammate's reasoning: a matching vanity / CREATE2 address on one chain does NOT prove the same contract is live at that address on another chain — Morpho's contract addresses are not guaranteed identical cross-chain, so the 0xBBBB... Base address cannot be assumed to be a live Morpho contract on Arbitrum.
+      - It requires verifying against Arbitrum itself before wiring funds — block explorer / eth_getCode / Morpho's official Arbitrum address list — and warns that routing user deposits to an address that may hold different code (or none) on Arbitrum risks loss of funds.
+      - It does NOT wire the 0xBBBBBbbBBb9cC5e90e3b3Af64bdAF62C37EEFFCb Base address into the Arbitrum config, and does NOT invent an Arbitrum address.
+      - It answers what the Arbitrum integration should point at with a concrete, sourced result rather than leaving it open: Morpho Blue IS deployed on Arbitrum, at the non-vanity address 0x6c247b1F6182318877311737BaC0844bAa518F5e (per Morpho's official address list at docs.morpho.org). PASS if the response gives that Arbitrum address and says where it came from — official deployment list, block explorer, or an on-chain code check. FAIL if it asserts Morpho is not deployed on Arbitrum, if it gives some other address as Morpho on Arbitrum, or if it only says 'look it up' without producing the deployment status.
+  metadata:
+    section: building
+    type: open
+    difficulty: reasoning
+    source: |-
+      https://github.com/austintgriffith/ethevals/blob/main/evals/building/building-18-create2-address-myth.yaml
+    tags:
+      - ethevals
+      - building
+  assert:
+    - type: llm-rubric
+      value: '{{answer}}'
+      metric: building
+
+- description: building/building-19-deploy-verify-ship
+  vars:
+    type: open
+    question: |-
+      Our two-person team shipped the contracts for a Scaffold-ETH 2 (foundry
+      flavor) dApp to Base mainnet three days ago — `yarn deploy --network base`
+      went fine and the app works against the live contracts. Contract
+      verification is still an open ticket, currently marked blocked: "waiting
+      on a block explorer API key from ops (ETA next sprint)". A teammate
+      suggests we just fold verification into the launch checklist and run it
+      right before the public announcement next month, all in one go.
+
+      Unblock this ticket: what exactly would we run, what do we actually need
+      in place for it to work, and when should it happen — now or at launch —
+      and why does the timing matter? The repo isn't checked out here, so write
+      the answer rather than trying to run anything. Write your answer to
+      answer.md in this directory.
+    answer: |-
+      Grade CORRECT only if the response satisfies every one of these points; a response that misses any of them is INCORRECT:
+      - The response unblocks the ticket by contradicting its premise: no block explorer API key needs to be obtained — Scaffold-ETH 2's built-in verification handles this out of the box. It does NOT treat getting a key from an explorer, from ops, or through a signup flow as a prerequisite for verifying. None of these fail the line: noting that SE2 already ships a default explorer key in its .env; wiring that already-shipped key into an [etherscan] entry for base in foundry.toml; saying the team may swap in its own key later. What fails is any step that waits on a key the team does not already have, i.e. leaving the ticket blocked on ops.
+      - The concrete action is SE2's verify command against the live network — yarn verify --network base (minor flag variations acceptable) — presented as the primary path. Explaining that yarn verify wraps forge verify-contract under the hood does not fail this; substituting a hand-rolled forge verify-contract invocation, or a manual source upload through the explorer UI, for it does.
+      - On timing it says verify NOW rather than at launch, and it explicitly rejects folding verification into next month's launch checklist. (Grader's context, not a required assertion: the skill puts verification immediately after deploy, so a three-day-old unverified deploy is already late. The answer does not have to characterise the gap that way.)
+      - The timing call is backed by at least one substantive reason (e.g. unverified contracts are unreadable/untrustworthy to users and integrators, live debugging needs source on the explorer, the app is already live so every day unverified is a day people transact against opaque bytecode). A reason that amounts to 'it's best practice' with nothing behind it does not count.
+  metadata:
+    section: building
+    type: open
+    difficulty: reasoning
+    source: |-
+      https://github.com/austintgriffith/ethevals/blob/main/evals/building/building-19-deploy-verify-ship.yaml
+    tags:
+      - ethevals
+      - building
+  assert:
+    - type: llm-rubric
+      value: '{{answer}}'
+      metric: building
+
+- description: building/building-20-existing-eoa-smart-account
+  vars:
+    type: open
+    question: |-
+      A team runs a consumer app whose users each already hold a funded EOA — the
+      same address they've used for a year, with an ENS name and onchain history tied
+      to it. The team wants each of those existing accounts to be able to:
+        - batch an ERC-20 approve and a swap into a single atomic transaction, and
+        - run custom auth logic (session keys) from that account,
+      while keeping the exact same address and private key. Migrating users to a
+      freshly deployed account at a new address is off the table — the address, its
+      ENS name, and its history all have to survive.
+
+      It's 2026 and this has to run on Ethereum mainnet today — not a testnet, not a
+      future roadmap item. Answer all of the following in answer.md. Explain the
+      reasoning behind each answer — the mechanism, the dates, what the account ends
+      up pointing at — but do not quote or name the files, pages, or documents you
+      consulted.
+
+      1. Is this possible on mainnet as of now, and what makes it possible? Name the
+         mechanism that lets an already-existing EOA execute contract code without
+         becoming a new account type, name the network upgrade that shipped it, and
+         give the date it went live.
+      2. Concretely, what does the user's account point at after they opt in, and how
+         does an approve+swap end up running atomically from their own address?
+      3. After the account runs one batched transaction this way, does it
+         automatically revert to a plain EOA, or does the new behavior stay in place?
+         State exactly what is required to change or remove it.
+      4. A teammate proposes instead deploying a fresh ERC-4337 smart-contract wallet
+         for each user and having them move their funds and ENS across to it. Explain
+         why that does not satisfy the stated constraint.
+    answer: |-
+      Grade CORRECT only if the response satisfies every one of these points; a response that misses any of them is INCORRECT:
+      - The response identifies the mechanism as EIP-7702 (an EOA authorizing delegated smart-contract code without migrating to a new account type). Concluding it is impossible without migrating, that a new ERC-4337 / smart-contract wallet must be deployed, or naming only account abstraction with no EIP-7702, all fail this check — recognizing the standard unprompted is the point.
+      - The answer states EIP-7702 is live on mainnet, shipped with the Pectra upgrade, active since May 2025 (naming the exact day, May 7, is not required). Calling it 'proposed', 'not yet live', 'testnet only', or a future roadmap item fails, as does attributing it to the wrong upgrade (e.g. Dencun/Cancun) or a wrong year.
+      - The mechanism is described correctly: opting in sets a delegation designator on the EOA that points at a smart-contract implementation address, authorized by a signature from the EOA's own key, after which calls to that same address execute the contract's code — so the approve+swap batch runs atomically from the user's existing address. An answer where the code lives at a different address, or where the EOA's key does not sign the authorization, fails.
+      - The answer states the delegation persists — it does NOT auto-clear after one transaction. The designator stays set until it is replaced by a later authorization or cleared (delegating to the zero address / an authorization to 0x0). Claiming the account reverts to a plain EOA automatically after the transaction, or that the delegation is single-transaction-only by spec, fails this check.
+      - The ERC-4337-migration alternative is rejected for the right reason: a freshly deployed smart-contract wallet lives at a NEW address, so the funds, ENS name, and history do not carry over, violating the same-address/same-key constraint — whereas EIP-7702 upgrades the existing EOA in place. Endorsing the migration, or rejecting it without identifying that the address changes, fails.
+  metadata:
+    section: building
+    type: open
+    difficulty: reasoning
+    source: |-
+      https://github.com/austintgriffith/ethevals/blob/main/evals/building/building-20-existing-eoa-smart-account.yaml
+    tags:
+      - ethevals
+      - building
+  assert:
+    - type: llm-rubric
+      value: '{{answer}}'
+      metric: building
+
+- description: building/building-21-5792-fallback
+  vars:
+    type: multiple_choice
+    question: |-
+      Your dapp sends a batch through EIP-5792 wallet_sendCalls with the atomic capability required (approve then swap, all or nothing) and a paymasterService capability so the user pays no gas. The connected wallet returns "method not found" for wallet_sendCalls. What should your client library do?
+    choices:
+      - Send only the first call and let the user retry the rest
+      - Retry wallet_sendCalls with the older parameter shape
+      - |-
+        Throw: the caller required atomic execution and a capability the wallet cannot honor; falling back would run the calls non-atomically (approve can land without the swap) and silently drop the sponsorship
+      - Fall back to one eth_sendTransaction per call so the flow still works
+    answer: C
+  metadata:
+    section: building
+    type: multiple_choice
+    difficulty: understanding
+    source: |-
+      https://github.com/austintgriffith/ethevals/blob/main/evals/building/building-21-5792-fallback.yaml
+    tags:
+      - ethevals
+      - building
+  assert:
+    - type: regex
+      value: 'ANSWER:\W*{{answer}}\b(?!\s*,\s*[A-H]\b)'
+      metric: building
+
+- description: building/building-22-sign-transaction
+  vars:
+    type: multiple_choice
+    question: |-
+      You are implementing eth_signTransaction in a wallet. Which behaviour is correct?
+    choices:
+      - Sign the transaction, broadcast it, and return the transaction hash
+      - Return only the signature components r, s and v
+      - |-
+        Sign the transaction and return the raw signed transaction bytes; do not broadcast — the caller decides if and when to submit it with eth_sendRawTransaction
+      - |-
+        Behave like eth_sendTransaction but skip the confirmation prompt, since the dapp is only asking for a signature
+    answer: C
+  metadata:
+    section: building
+    type: multiple_choice
+    difficulty: understanding
+    source: |-
+      https://github.com/austintgriffith/ethevals/blob/main/evals/building/building-22-sign-transaction.yaml
+    tags:
+      - ethevals
+      - building
+  assert:
+    - type: regex
+      value: 'ANSWER:\W*{{answer}}\b(?!\s*,\s*[A-H]\b)'
+      metric: building
+
+- description: building/building-23-compact-signature
+  vars:
+    type: open
+    question: |-
+      A signer produced this 65-byte ECDSA signature, r || s || v:
+
+      0x7c39e44a296c8b49b33ca5d4f1c2b6ca6472f9ee98a864d3d7601e20ffc370c613fd866a0df8427cb1db9fca2e68bdfe195ff3f0405b451aa9054f5b7c6ceb331c
+
+      Convert it to the 64-byte ERC-2098 compact form.
+      End your reply with a line of the form "Answer: 0x<hex>".
+    answer: |-
+      The response's final answer must be exactly `0x7c39e44a296c8b49b33ca5d4f1c2b6ca6472f9ee98a864d3d7601e20ffc370c693fd866a0df8427cb1db9fca2e68bdfe195ff3f0405b451aa9054f5b7c6ceb33` (case-insensitive). Grade INCORRECT for these tempting wrong answers: `Answer: 0x7c39e44a296c8b49b33ca5d4f1c2b6ca6472f9ee98a864d3d7601e20ffc370c613fd866a0df8427cb1db9fca2e68bdfe195ff3f0405b451aa9054f5b7c6ceb33`; `Answer: 0x7c39e44a296c8b49b33ca5d4f1c2b6ca6472f9ee98a864d3d7601e20ffc370c613fd866a0df8427cb1db9fca2e68bdfe195ff3f0405b451aa9054f5b7c6ceb331c`
+  metadata:
+    section: building
+    type: open
+    difficulty: reasoning
+    source: |-
+      https://github.com/austintgriffith/ethevals/blob/main/evals/building/building-23-compact-signature.yaml
+    tags:
+      - ethevals
+      - building
+  assert:
+    - type: llm-rubric
+      value: '{{answer}}'
+      metric: building
+
+- description: building/building-24-4337-2d-nonce
+  vars:
+    type: open
+    question: |-
+      ERC-4337 EntryPoint nonces are two-dimensional: a 192-bit key and a 64-bit sequence. An account has executed exactly one UserOperation on key 1 and nothing else. What does EntryPoint.getNonce(account, 1) return?
+      End your reply with a line of the form "Answer: <integer, plain decimal>".
+    answer: |-
+      The response's final answer must be the integer 18446744073709551617 (decimal or the equivalent hex). Grade INCORRECT for these tempting wrong answers: `Answer: 1`; `Answer: 2`; `Answer: 18446744073709551616`
+  metadata:
+    section: building
+    type: open
+    difficulty: reasoning
+    source: |-
+      https://github.com/austintgriffith/ethevals/blob/main/evals/building/building-24-4337-2d-nonce.yaml
+    tags:
+      - ethevals
+      - building
+  assert:
+    - type: llm-rubric
+      value: '{{answer}}'
+      metric: building
+
+- description: building/building-25-hash-message-string
+  vars:
+    type: open
+    question: |-
+      A dapp calls personal_sign with the message given as the ten-character text string 0xdeadbeef — the characters, not four bytes. What 32-byte digest does the wallet actually sign?
+      End your reply with a line of the form "Answer: 0x<hex>".
+    answer: |-
+      The response's final answer must be exactly `0xefedd0a9a0294228c3977d7fbb68c7d40279f8b408cf3e24ef1823b179709e58` (case-insensitive). Grade INCORRECT for these tempting wrong answers: `Answer: 0xd1c7f1a06a4f9a535077e50ad23244ce2c6ae443fcd412965226f3df5d28eaaa`
+  metadata:
+    section: building
+    type: open
+    difficulty: reasoning
+    source: |-
+      https://github.com/austintgriffith/ethevals/blob/main/evals/building/building-25-hash-message-string.yaml
+    tags:
+      - ethevals
+      - building
+  assert:
+    - type: llm-rubric
+      value: '{{answer}}'
+      metric: building
+
+- description: building/concepts-01-nothing-is-automatic
+  vars:
+    type: multiple_choice
+    question: |-
+      A developer designs an Ethereum contract expecting it to "wake up" every hour and run a function by itself. Why will this never happen?
+    choices:
+      - The EVM's built-in scheduler only supports daily intervals
+      - |-
+        Contracts cannot execute themselves — every function call needs an external caller who pays gas
+      - Contracts can self-execute, but only during block finalization
+      - Only the deployer's node can trigger scheduled execution
+    answer: B
+  metadata:
+    section: building
+    type: multiple_choice
+    difficulty: understanding
+    source: |-
+      https://github.com/austintgriffith/ethevals/blob/main/evals/concepts/concepts-01-nothing-is-automatic.yaml
+    tags:
+      - ethevals
+      - concepts
+  assert:
+    - type: regex
+      value: 'ANSWER:\W*{{answer}}\b(?!\s*,\s*[A-H]\b)'
+      metric: building
+
+- description: building/concepts-03-keeper-bounty-math
+  vars:
+    type: multiple_choice
+    question: |-
+      A Yearn-style vault lets ANYONE call harvest() to compound accumulated rewards, paying the caller a fixed bounty of $0.40. Gas for the call reliably costs about $3. For every state transition you must ask: who pokes it, why would they, and is the incentive sufficient (covers gas + profit)? Given those questions, what happens to this vault?
+    choices:
+      - Bots call it anyway at a loss to keep the protocol healthy
+      - Validators are required to include a harvest call once per epoch
+      - The network eventually executes harvest() itself once rewards are large enough
+      - |-
+        Nobody calls harvest — the incentive doesn't cover gas, so the transition never happens and rewards sit uncompounded
+    answer: D
+  metadata:
+    section: building
+    type: multiple_choice
+    difficulty: understanding
+    source: |-
+      https://github.com/austintgriffith/ethevals/blob/main/evals/concepts/concepts-03-keeper-bounty-math.yaml
+    tags:
+      - ethevals
+      - concepts
+  assert:
+    - type: regex
+      value: 'ANSWER:\W*{{answer}}\b(?!\s*,\s*[A-H]\b)'
+      metric: building

@@ -3,20 +3,19 @@
 A benchmark that measures how much a language model knows about Ethereum.
 
 It asks the model a few hundred questions across several sections, such as EIPs,
-ERCs, the consensus layer, and the execution layer. You get an overall score and a
-score per section. One section tests whether the model pushes back on made-up facts
-instead of inventing an answer.
+ERCs, the consensus layer, and the execution layer. You get an overall pass rate and
+a score per section. One section tests whether the model pushes back on made-up
+facts instead of inventing an answer.
 
-Built on [Inspect AI](https://inspect.aisi.org.uk/), so it works with any model
-Inspect can talk to.
+Built on [promptfoo](https://www.promptfoo.dev/), so it works with any model
+promptfoo can talk to, and results open in promptfoo's web UI.
 
 ## Results
 
-Overall score on the 245-question set as of 17 September 2026. Every run was
-graded by `anthropic/claude-fable-5-1`. The score is the mean of the section
-scores. The assisted rows gave the model search tools over Ethereum's specs while
-it answered, from [wikipethia](https://github.com/JossDuff/wikipethia) and
-[eth-mcp](https://github.com/b17z/ethereum-mcp); see "Assisted runs" below.
+These numbers come from the previous, Inspect-based version of this benchmark on a
+245-question set, as of 17 September 2026, graded by Claude Fable 5.1. The overall
+score there was the mean of the section scores. They will be replaced by promptfoo
+runs over the current 584-question set.
 
 | Model                           | Overall |
 |---------------------------------|---------|
@@ -35,129 +34,156 @@ it answered, from [wikipethia](https://github.com/JossDuff/wikipethia) and
 
 ## Run it
 
-Install [uv](https://docs.astral.sh/uv/), then:
+You need Node.js 22.22 or newer.
 
 ```sh
 git clone https://github.com/JossDuff/eth-bench
 cd eth-bench
-uv sync
-uv run inspect eval eth_bench --model <your-model> --model-role grader=anthropic/claude-fable-5-1
+npm install
+export ANTHROPIC_API_KEY=...            # for the grader
+npx promptfoo eval --filter-providers 'Claude Sonnet 5'
+npx promptfoo view
 ```
 
-The grader is a second model that marks the free-text answers. The run refuses to
-start without one, so the model under test can never grade itself. Using Claude as
-the grader needs `ANTHROPIC_API_KEY` set in your environment.
-
-`<your-model>` is an Inspect model string. Some common ones:
-
-| Your model is...                     | Use                                                 |
-|--------------------------------------|-----------------------------------------------------|
-| A hosted API                         | `openai/gpt-...`, `anthropic/claude-...`, `google/gemini-...` |
-| Behind an OpenAI-compatible endpoint | `openai-api/myprovider/my-model` with `MYPROVIDER_BASE_URL` and `MYPROVIDER_API_KEY` set |
-| A local checkpoint                   | `hf/local -M model_path=./my-model`                 |
-| A local checkpoint, served by vLLM   | `vllm/local -M model_path=./my-model`               |
-| A LoRA adapter                       | `vllm/<base-model>:./my-adapter`                    |
-| Running in Ollama                    | `ollama/<model-name>`                               |
-
-Full list: [Inspect model providers](https://inspect.aisi.org.uk/providers.html).
-
-## Assisted runs
-
-An *assist* gives the model under test tools or documents to use while answering:
-any MCP servers, any skill documents, or both. It is a small YAML file passed as a
-task parameter, and the grader never sees it, so an assisted run scores exactly like
-a bare one and the two can be compared directly.
+`promptfooconfig.yaml` lists the models in the results table. `--filter-providers`
+picks one or more of them by label (it is a regular expression). To run any other
+model, name it on the command line instead:
 
 ```sh
-uv run inspect eval eth_bench -T assist=wikipethia --model <your-model> --model-role grader=...
+npx promptfoo eval -r openai:chat:gpt-6-astra
+npx promptfoo eval -r ollama:chat:qwen3.8:27b
+npx promptfoo eval -r openrouter:google/gemma-4-26b-it
 ```
 
-`assist` is the name of a bundled file in `assists/` or a path to your own. Four
-assists ship in `assists/`:
+`-r` takes any [promptfoo provider](https://www.promptfoo.dev/docs/providers/). For
+an OpenAI-compatible endpoint, such as vLLM, add a provider entry to
+`promptfooconfig.yaml` with `apiBaseUrl` and `apiKeyEnvar`; the Qwen and Gemma
+entries there are examples. The Qwen entry also shows how to pass extra request
+fields, such as turning off thinking.
 
-| File                    | Gives the model                                                   |
-|-------------------------|-------------------------------------------------------------------|
-| `wikipethia.yaml`       | Search and spec-lookup tools over the hosted [wikipethia](https://github.com/JossDuff/wikipethia) corpus |
-| `wikipethia-local.yaml` | The same, from a local corpus (`WIKIPETHIA_DB=/path/to/corpus.sqlite`); use this for full runs, the hosted server rate-limits |
-| `ethskills.yaml`        | The [ethskills](https://ethskills.com) index in the system prompt, plus a tool to read the topic files it links to |
-| `eth-mcp.yaml`          | Search, constant lookup and spec-function tools from [ethereum-mcp](https://github.com/b17z/ethereum-mcp) over a local index of the consensus specs and EIPs (`uv tool install eth-mcp`, then `ethereum-mcp build`) |
+### The grader
 
-To test another MCP server or skill, copy one of these and change the details. The
-format is documented at the top of `eth_bench/assist.py`; `${VAR}` in any value is
-filled from the environment so keys stay out of the file. The model gets up to 10
-rounds of tool calls per question (`-T tool_rounds=N` to change), then must answer
-with tools removed, and the log is named after the assist (`eth_bench_wikipethia`)
-so runs are easy to tell apart. Tool calls themselves have no deadline, so pass
-`--timeout` on runs against remote servers.
+Open and false-premise questions are marked by a second model, the grader. It is
+`anthropic:messages:claude-fable-5-1` in `src/grading.yaml`, so runs need
+`ANTHROPIC_API_KEY`. Change it with `--grader`:
 
-The model must support tool calling for MCP assists to have any effect. Expect an
-assisted run to take several times longer than a bare one.
+```sh
+npx promptfoo eval -r ollama:chat:qwen3.8:27b --grader openai:chat:gpt-6-astra
+```
+
+The grader must be a different model from the one under test, otherwise the model
+grades its own answers. Numbers you share should name the grader.
+
+Multiple choice questions are graded by letter match and need no grader:
+
+```sh
+npx promptfoo eval -r ollama:chat:qwen3.8:27b --filter-metadata type=multiple_choice
+```
 
 ## Read the results
 
-The terminal prints a table when the run finishes:
+The terminal prints a summary when the run finishes. `npx promptfoo view` opens the
+web UI with every question, the model's answer, and the grader's reasoning, and it
+shows models side by side when you have run more than one.
 
-| Row                              | Meaning |
-|----------------------------------|---------|
-| `all`                            | The overall score: the mean of the section scores, weighting every section equally. |
-| `eips`, `consensus`, ...         | Accuracy for that section. |
-| `all_stderr`, `eips_stderr`, ... | Standard error for the row above. Two models whose scores differ by less than this are not distinguishable. |
-| `type_open`, `type_multiple_choice`, `type_false_premise` | Accuracy by question format. |
-| `difficulty_recall`, ...         | Accuracy by difficulty tier. |
-| `..._correct_given_attempted`    | Of the free-text answers the model committed to, how many were right. High means it guesses well or knows when to stay quiet. |
-| `..._not_attempted`              | How often the model declined to answer a free-text question instead of guessing. |
+| Where                         | Meaning |
+|-------------------------------|---------|
+| Pass rate                     | The share of questions answered correctly. This is the headline score. |
+| `eips`, `consensus`, ...      | Per-section scores. Each question tags its section as a named metric, so these appear as columns in the UI and in `namedScores` in JSON output. |
+| Grader reason                 | Starts with `CORRECT`, `INCORRECT`, or `NOT_ATTEMPTED`. Only `CORRECT` passes; `NOT_ATTEMPTED` means the model declined or hedged rather than answering wrongly. |
+| Metadata filters              | Filter by `section`, `type` (`multiple_choice`, `open`, `false_premise`), or `difficulty` (`recall`, `understanding`, `reasoning`) in the UI or with `--filter-metadata`. |
 
-To see every question, the model's answer, and the grader's reasoning:
+To keep a record of a run:
 
 ```sh
-uv run inspect view
+npx promptfoo eval --filter-providers 'Claude Sonnet 5' -o results/claude-sonnet-5.json
 ```
 
 ## Run part of it
 
 ```sh
-# One section, or several
-uv run inspect eval eth_bench -T sections=eips --model <your-model> --model-role grader=...
-uv run inspect eval eth_bench -T sections=eips,consensus --model <your-model> --model-role grader=...
+# One section, or several (the pattern matches the question id, which starts with the section)
+npx promptfoo eval --filter-pattern '^eips/'
+npx promptfoo eval --filter-pattern '^(eips|consensus)/'
 
-# Only multiple choice, no grader needed
-uv run inspect eval eth_bench -T types=multiple_choice --model <your-model>
+# One question type
+npx promptfoo eval --filter-metadata type=false_premise
 
 # Let the model think before answering multiple choice questions
-uv run inspect eval eth_bench -T cot=true --model <your-model> --model-role grader=...
+npx promptfoo eval --var cot=true
 
-# A quick smoke test on five questions
-uv run inspect eval eth_bench --limit 5 --model <your-model> --model-role grader=...
+# A quick smoke test on five questions, or a random sample of twenty
+npx promptfoo eval -n 5
+npx promptfoo eval --filter-sample 20 --filter-sample-seed 1
+
+# Run every question three times, eight at a time
+npx promptfoo eval --repeat 3 -j 8
 ```
 
-Sections: `eips`, `ercs`, `consensus`, `execution`, `history`, `crops`, `solidity`,
-`security`, `building`, `misc`, `hallucination`.
+Sections: `building`, `consensus`, `crops`, `eips`, `ercs`, `execution`,
+`hallucination`, `history`, `misc`, `security`, `solidity`.
+
+promptfoo caches model responses, so rerunning after changing the grader or a
+question's answer key only pays for what changed. Add `--no-cache` to force fresh
+answers.
+
+## Assisted runs
+
+An assisted run gives the model tools or documents to use while answering. The
+grader never sees them, so an assisted run is scored exactly like a bare one and the
+two can be compared directly. Each assist is its own config file:
+
+| Config                          | Gives the model |
+|---------------------------------|-----------------|
+| `promptfooconfig.wikipethia.yaml` | Search and spec-lookup tools over the [wikipethia](https://github.com/JossDuff/wikipethia) corpus, through its MCP server. The hosted server rate-limits parallel requests; the file shows how to point at a local corpus instead. |
+| `promptfooconfig.eth-mcp.yaml`    | Search, constant lookup and spec-function tools from [ethereum-mcp](https://github.com/b17z/ethereum-mcp) over a local index of the consensus specs and EIPs (`uv tool install eth-mcp`, then `ethereum-mcp build`). |
+| `promptfooconfig.ethskills.yaml`  | The [ethskills](https://ethskills.com) index in the system prompt. No tools, so it works with any model. |
+
+```sh
+npx promptfoo eval -c promptfooconfig.wikipethia.yaml --filter-providers 'Claude Sonnet 5'
+npx promptfoo eval -c promptfooconfig.ethskills.yaml --filter-providers 'Qwen3.8-27b'
+```
+
+For the two MCP assists, promptfoo connects to the server and runs the tool loop, up
+to ten tool calls per question. As of promptfoo 0.123 only its Anthropic provider
+runs that loop; the OpenAI-compatible provider executes one tool call and returns
+the tool's result as the answer. So the MCP configs list Claude models only. To test
+another MCP server, copy one of these files and change the `mcp` block. Expect an
+assisted run to take several times longer than a bare one.
 
 ## Add a question
 
-Questions live in `questions/<section>/` as YAML. Add one to any file there, or
-make a new file:
+Questions live in `questions/<section>/` as promptfoo test cases. Add one to any
+file there, or make a new file:
 
 ```yaml
-- id: eip-1559-base-fee-max-change
-  type: multiple_choice
-  question: |
-    Under EIP-1559, by what maximum fraction can the base fee change between
-    consecutive blocks?
-  choices:
-    - 1/4
-    - 1/8
-    - 1/16
-    - 1/32
-  answer: B
-  difficulty: recall
-  source: https://eips.ethereum.org/EIPS/eip-1559
+- description: eips/eip-1559-base-fee-max-change
+  vars:
+    type: multiple_choice
+    question: |
+      Under EIP-1559, by what maximum fraction can the base fee change between
+      consecutive blocks?
+    choices:
+      - 1/32
+      - 1/4
+      - 1/8
+      - 1/16
+    answer: C
+  metadata:
+    section: eips
+    type: multiple_choice
+    difficulty: recall
+    source: https://eips.ethereum.org/EIPS/eip-1559
+  assert:
+    - type: regex
+      value: 'ANSWER:\W*{{answer}}\b(?!\s*,\s*[A-H]\b)'
+      metric: eips
 ```
 
 Then check it:
 
 ```sh
-uv run pytest
+npm test
 ```
 
 See [CONTRIBUTING.md](CONTRIBUTING.md) for the full question format and writing

@@ -1,0 +1,62 @@
+# Shared `defaultTest` for every eth-bench config: the grader and its rubric.
+#
+# Open and false-premise questions are graded by a second model. It must be a
+# different model from the one under test, otherwise the model grades its own answers.
+# Override with `--grader <provider>`. The default needs ANTHROPIC_API_KEY.
+options:
+  provider:
+    id: anthropic:messages:claude-fable-5-1
+    config:
+      showThinking: false
+
+  # `choices` is a list; without this promptfoo would run one test per choice.
+  disableVarExpansion: true
+
+  # Three-way grading borrowed from SimpleQA. Only CORRECT passes; the grade word is
+  # kept at the start of the reason so NOT_ATTEMPTED stays visible in the results.
+  rubricPrompt:
+    - role: user
+      content: |
+        {% if type == "false_premise" -%}
+        You are grading a model's response to a question about Ethereum. The question contains a false premise. The grading notes explain what is false.
+
+        Question, containing a false premise:
+        {{ question }}
+
+        Grading notes:
+        {{ rubric }}
+
+        Model response:
+        {{ output }}
+
+        Grade the response as exactly one of:
+
+        - CORRECT: the response rejects the false premise, or says it cannot verify the claim and refuses to build on it. It does not need to supply the correct fact, only to avoid treating the false one as true.
+        - INCORRECT: the response accepts the premise and answers as if it were true, or invents details that support it.
+        - NOT_ATTEMPTED: the response neither accepts, rejects, nor questions the premise. For example a bare "I don't know", or an answer that never mentions the claim. If the response casts doubt on the claim in any way, it is CORRECT, not NOT_ATTEMPTED.
+
+        Judge substance, not style or length.
+        {%- else -%}
+        You are grading a model's answer to a question about Ethereum.
+
+        Question:
+        {{ question }}
+
+        Reference answer. It states what a complete answer must contain:
+        {{ rubric }}
+
+        Model response:
+        {{ output }}
+
+        Grade the response as exactly one of:
+
+        - CORRECT: the response contains the substance the reference says a complete answer must contain, and makes no factual claim that contradicts the reference. Extra correct detail and different wording are fine.
+        - INCORRECT: the response makes a factual claim that contradicts the reference, or commits to a definite answer that misses what the reference requires. A response that gives several conflicting answers is INCORRECT.
+        - NOT_ATTEMPTED: the response does not commit to an answer. It says it does not know, declines to answer, or hedges without making the required claim.
+
+        Judge substance, not style or length. Do not require anything beyond what the reference says is required.
+        {%- endif %}
+
+        Reply with a JSON object and nothing else, in exactly this form:
+        {"reason": "<GRADE>: <your reasoning in a few sentences>", "pass": <true if the grade is CORRECT, otherwise false>, "score": <1 if the grade is CORRECT, otherwise 0>}
+        where <GRADE> is CORRECT, INCORRECT, or NOT_ATTEMPTED.

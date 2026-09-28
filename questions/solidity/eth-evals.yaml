@@ -1,671 +1,831 @@
-# Imported from https://github.com/clawdbotatg/eth-evals (MIT, Austin Griffith)
-# by scripts/import_ethevals.py. Edit the script, not this file.
-
-- id: calldata-encgiven-02
-  type: open
-  question: |
-    The Solidity function `bridgeOut(address)` has 4-byte selector 0x2ad87485.
-    ABI-encode a call to it with arguments: address = 0x9d0e5b7b347b23b5c76f236bcada49f12dca06f3.
-
-    Answer with only the full 0x-prefixed calldata hex string.
-  answer: |
-    The response's final answer must be exactly `0x2ad874850000000000000000000000009d0e5b7b347b23b5c76f236bcada49f12dca06f3` (case-insensitive).
-  difficulty: reasoning
-  source: https://github.com/clawdbotatg/eth-evals/blob/main/tasks/gen-calldata.jsonl
-  tags:
-  - eth-evals
-  - calldata
-- id: calldata-encgiven-03
-  type: open
-  question: |
-    The Solidity function `swapExact(address,uint256)` has 4-byte selector 0xe3243836.
-    ABI-encode a call to it with arguments: address = 0x428c59044f948b54ecfe2810df8f479a7cd38993, uint256 = 476886598.
-
-    Answer with only the full 0x-prefixed calldata hex string.
-  answer: |
-    The response's final answer must be exactly `0xe3243836000000000000000000000000428c59044f948b54ecfe2810df8f479a7cd38993000000000000000000000000000000000000000000000000000000001c6cb646` (case-insensitive).
-  difficulty: reasoning
-  source: https://github.com/clawdbotatg/eth-evals/blob/main/tasks/gen-calldata.jsonl
-  tags:
-  - eth-evals
-  - calldata
-- id: calldata-decgiven-02
-  type: open
-  question: |
-    A contract has these functions:
-    - `stake(address,address,bool)` — selector 0xcbb6007d
-    - `deposit(uint256,address)` — selector 0x6e553f65
-    - `redeem(uint256)` — selector 0xdb006a75
-
-    This calldata is sent to it:
-    0x6e553f65000000000000000000000000000000000000000000000000000000000ad2aaa3000000000000000000000000e18ce8f7c653cc1042d624073d8cf7775b384d98
-
-    Which function is being called, and with what arguments?
-
-    Reply with JSON only: {"function": "<name>", "args": [...]} — addresses as 0x strings, uints as numbers, bools as true/false.
-  answer: |
-    The response must give a JSON object matching {"function": "deposit", "args": [181578403, "0xe18ce8f7c653cc1042d624073d8cf7775b384d98"]} (other keys may be present).
-  difficulty: reasoning
-  source: https://github.com/clawdbotatg/eth-evals/blob/main/tasks/gen-calldata.jsonl
-  tags:
-  - eth-evals
-  - calldata
-- id: calldata-decgiven-03
-  type: open
-  question: |
-    A contract has these functions:
-    - `claimRewards(bool,bool)` — selector 0xc018e6fa
-    - `updateOracleV2(uint256,address,uint256)` — selector 0x16d5ed31
-    - `setOperatorV2(address,address)` — selector 0x37e6da82
-
-    This calldata is sent to it:
-    0xc018e6fa00000000000000000000000000000000000000000000000000000000000000010000000000000000000000000000000000000000000000000000000000000000
-
-    Which function is being called, and with what arguments?
-
-    Reply with JSON only: {"function": "<name>", "args": [...]} — addresses as 0x strings, uints as numbers, bools as true/false.
-  answer: |
-    The response must give a JSON object matching {"function": "claimRewards", "args": [true, false]} (other keys may be present).
-  difficulty: reasoning
-  source: https://github.com/clawdbotatg/eth-evals/blob/main/tasks/gen-calldata.jsonl
-  tags:
-  - eth-evals
-  - calldata
-- id: indexing-evsig-02
-  type: open
-  question: |
-    A contract declares:
-
-    `event OracleUpdated(bytes32 indexed value, address amount, bytes32 operator);`
-
-    topic0 of this event's logs is the keccak256 hash of exactly what ASCII string?
-
-    Answer with only that string.
-  answer: |
-    The response's final answer must be exactly `OracleUpdated(bytes32,address,bytes32)` (case-sensitive). Grade INCORRECT for these tempting wrong answers: `OracleUpdated(bytes32 value, address amount, bytes32 operator)`; `oracleupdated(bytes32,address,bytes32)`
-  difficulty: reasoning
-  source: https://github.com/clawdbotatg/eth-evals/blob/main/tasks/gen-indexing.jsonl
-  tags:
-  - eth-evals
-  - indexing
-- id: indexing-evsig-03
-  type: open
-  question: |
-    A contract declares:
-
-    `event Redeemed(uint256 indexed id, address value, bytes32 user);`
-
-    topic0 of this event's logs is the keccak256 hash of exactly what ASCII string?
-
-    Answer with only that string.
-  answer: |
-    The response's final answer must be exactly `Redeemed(uint256,address,bytes32)` (case-sensitive). Grade INCORRECT for these tempting wrong answers: `Redeemed(uint256 id, address value, bytes32 user)`; `redeemed(uint256,address,bytes32)`
-  difficulty: reasoning
-  source: https://github.com/clawdbotatg/eth-evals/blob/main/tasks/gen-indexing.jsonl
-  tags:
-  - eth-evals
-  - indexing
-- id: contract-reading-k-01
-  type: multiple_choice
-  question: |
-    Read this complete Solidity contract:
-
-    ```solidity
-    pragma solidity ^0.8.20;
-
-    contract Sale {
-        address public immutable seller;
-        uint256 public immutable startPrice;
-        uint256 public immutable startAt;
-        uint256 public immutable discountPerSecond;
-        address public buyer;
-
-        constructor(uint256 _startPrice, uint256 _discountPerSecond) {
-            seller = msg.sender;
-            startPrice = _startPrice;
-            startAt = block.timestamp;
-            discountPerSecond = _discountPerSecond;
-        }
-
-        function price() public view returns (uint256) {
-            return startPrice - discountPerSecond * (block.timestamp - startAt);
-        }
-
-        function buy() external payable {
-            require(buyer == address(0), "sold");
-            uint256 p = price();
-            require(msg.value >= p, "underpaid");
-            buyer = msg.sender;
-            payable(seller).transfer(p);
-            if (msg.value > p) payable(msg.sender).transfer(msg.value - p);
-        }
-    }
-    ```
-
-    What kind of sale mechanism is this?
-  choices:
-  - English auction — bidders submit ascending bids until a deadline
-  - Dutch auction — the price falls over time and the first buyer to accept it wins
-  - Fixed-price sale — the price never changes
-  - Sealed-bid auction — bids are hidden until a reveal phase
-  answer: B
-  difficulty: understanding
-  source: |-
-    https://github.com/clawdbotatg/eth-evals/blob/main/tasks/skill-contract-reading.jsonl
-  tags:
-  - eth-evals
-  - contract-reading
-- id: contract-reading-k-02
-  type: open
-  question: |
-    Read this complete Solidity contract:
-
-    ```solidity
-    pragma solidity ^0.8.20;
-
-    contract FeeToken {
-        string public constant name = "Fee Token";
-        uint8 public constant decimals = 18;
-        uint256 public totalSupply;
-        uint16 public constant FEE_BPS = 250;
-        address public immutable feeSink;
-        mapping(address => uint256) public balanceOf;
-
-        constructor(uint256 supply, address sink) {
-            totalSupply = supply;
-            feeSink = sink;
-            balanceOf[msg.sender] = supply;
-        }
-
-        function transfer(address to, uint256 amount) external returns (bool) {
-            require(balanceOf[msg.sender] >= amount, "balance");
-            uint256 fee = (amount * FEE_BPS) / 10_000;
-            balanceOf[msg.sender] -= amount;
-            balanceOf[to] += amount - fee;
-            balanceOf[feeSink] += fee;
-            return true;
-        }
-    }
-    ```
-
-    Alice holds 100000 raw token units and calls `transfer(bob, 40000)` (Bob is not the feeSink and starts with a zero balance). After the call, how many raw token units does `balanceOf(bob)` return?
-    End your reply with a line of the form "Answer: <integer>".
-  answer: |
-    The response's final answer must be the integer 39000 (decimal or the equivalent hex). Reference from ethskills: "self-contained"
-  difficulty: recall
-  source: |-
-    https://github.com/clawdbotatg/eth-evals/blob/main/tasks/skill-contract-reading.jsonl
-  tags:
-  - eth-evals
-  - contract-reading
-- id: contract-reading-k-03
-  type: open
-  question: |
-    Read this complete Solidity contract:
-
-    ```solidity
-    pragma solidity ^0.8.20;
-
-    contract FeeRegistry {
-        address public owner;
-        mapping(bytes32 => uint96) public feeBpsOf;
-
-        constructor() {
-            owner = msg.sender;
-        }
-
-        function setFee(bytes32 poolId, uint96 bps) external {
-            require(msg.sender == owner, "not owner");
-            require(bps <= 1000, "max 10%");
-            feeBpsOf[poolId] = bps;
-        }
-    }
-    ```
-
-    You want to read the fee (in basis points) configured for a specific pool id, using a read-only call from the command line (e.g. `cast call`). What is the exact Solidity function signature — function name plus parenthesized argument types, like `balanceOf(address)` — of the public getter you would call?
-    End your reply with a line of the form "Answer: <signature>".
-  answer: |
-    Any of the following counts as correct: The response's final answer must be exactly `feeBpsOf(bytes32)` (case-insensitive). OR The response's answer must match the pattern `feeBpsOf\(bytes32\)` (that is, it must name the concept the pattern captures).. Reference from ethskills: "self-contained"
-  difficulty: recall
-  source: |-
-    https://github.com/clawdbotatg/eth-evals/blob/main/tasks/skill-contract-reading.jsonl
-  tags:
-  - eth-evals
-  - contract-reading
-- id: contract-reading-k-04
-  type: open
-  question: |
-    Read this complete Solidity contract:
-
-    ```solidity
-    pragma solidity ^0.8.20;
-
-    interface IERC20 {
-        function transfer(address to, uint256 amount) external returns (bool);
-        function balanceOf(address who) external view returns (uint256);
-    }
-
-    contract Vesting {
-        IERC20 public immutable token;
-        address public immutable beneficiary;
-        uint64 public immutable start;
-        uint64 public immutable duration;
-        uint256 public released;
-
-        constructor(IERC20 _token, address _beneficiary, uint64 _start, uint64 _duration) {
-            token = _token;
-            beneficiary = _beneficiary;
-            start = _start;
-            duration = _duration;
-        }
-
-        function vestedAmount(uint64 ts) public view returns (uint256) {
-            uint256 total = token.balanceOf(address(this)) + released;
-            if (ts < start) return 0;
-            if (ts >= start + duration) return total;
-            return (total * (ts - start)) / duration;
-        }
-
-        function release() external {
-            uint256 amount = vestedAmount(uint64(block.timestamp)) - released;
-            released += amount;
-            token.transfer(beneficiary, amount);
-        }
-    }
-    ```
-
-    The contract was deployed with `start = 1800000000` and `duration = 7776000`. It currently holds 600000 raw token units and `released` is 0 (nothing has ever been released).
-
-    At `block.timestamp = 1801944000`, the beneficiary triggers `release()`. How many raw token units does the call transfer to the beneficiary?
-    End your reply with a line of the form "Answer: <integer>".
-  answer: |
-    The response's final answer must be the integer 150000 (decimal or the equivalent hex). Reference from ethskills: "self-contained"
-  difficulty: recall
-  source: |-
-    https://github.com/clawdbotatg/eth-evals/blob/main/tasks/skill-contract-reading.jsonl
-  tags:
-  - eth-evals
-  - contract-reading
-- id: contract-reading-k-05
-  type: open
-  question: |
-    Read this complete Solidity contract:
-
-    ```solidity
-    pragma solidity ^0.8.20;
-
-    contract EtherBank {
-        mapping(address => uint256) public balances;
-
-        function deposit() external payable {
-            balances[msg.sender] += msg.value;
-        }
-
-        function withdraw() external {
-            uint256 amount = balances[msg.sender];
-            require(amount > 0, "empty");
-            (bool ok, ) = msg.sender.call{value: amount}("");
-            require(ok, "send failed");
-            balances[msg.sender] = 0;
-        }
-    }
-    ```
-
-    The contract holds 50 ETH of user deposits. An attacker deploys a contract, deposits 1 ETH from it, and then calls `withdraw()` — and drains nearly the entire 50 ETH. What is the standard name of the vulnerability class being exploited?
-    End your reply with a line of the form "Answer: <vulnerability name>".
-  answer: |
-    The response's answer must match the pattern `re-?\s?(entranc|entry)` (that is, it must name the concept the pattern captures). The reference answer is: Answer: reentrancy. Reference from ethskills: "self-contained" Grade INCORRECT for these tempting wrong answers: `Answer: integer overflow`
-  difficulty: recall
-  source: |-
-    https://github.com/clawdbotatg/eth-evals/blob/main/tasks/skill-contract-reading.jsonl
-  tags:
-  - eth-evals
-  - contract-reading
-- id: contract-reading-k-06
-  type: open
-  question: |
-    Read this complete Solidity contract:
-
-    ```solidity
-    pragma solidity ^0.8.20;
-
-    contract Treasury {
-        address public owner;
-        bool public initialized;
-
-        function initialize(address _owner) external {
-            owner = _owner;
-            initialized = true;
-        }
-
-        receive() external payable {}
-
-        function sweep(address payable to) external {
-            require(msg.sender == owner, "not owner");
-            to.transfer(address(this).balance);
-        }
-    }
-    ```
-
-    The deployer called `initialize` with their own address right after deployment, and the contract now holds 200 ETH. Yet an arbitrary attacker can still steal all of it. One function is missing a guard it should have had — name that function (the one whose missing check makes the theft possible).
-    End your reply with a line of the form "Answer: <function name>".
-  answer: |
-    Any of the following counts as correct: The response's final answer must be exactly `initialize` (case-insensitive). OR The response's answer must match the pattern `\binitialize\b` (that is, it must name the concept the pattern captures).. Reference from ethskills: "self-contained"
-  difficulty: recall
-  source: |-
-    https://github.com/clawdbotatg/eth-evals/blob/main/tasks/skill-contract-reading.jsonl
-  tags:
-  - eth-evals
-  - contract-reading
-- id: contract-reading-k-07
-  type: open
-  question: |
-    Read this complete Solidity contract:
-
-    ```solidity
-    pragma solidity ^0.8.20;
-
-    interface IERC20 {
-        function transferFrom(address from, address to, uint256 amount) external returns (bool);
-        function transfer(address to, uint256 amount) external returns (bool);
-    }
-
-    contract PairLite {
-        IERC20 public immutable token0;
-        IERC20 public immutable token1;
-        uint112 public reserve0;
-        uint112 public reserve1;
-
-        constructor(IERC20 _t0, IERC20 _t1) {
-            token0 = _t0;
-            token1 = _t1;
-        }
-
-        function addLiquidity(uint112 amount0, uint112 amount1) external {
-            token0.transferFrom(msg.sender, address(this), amount0);
-            token1.transferFrom(msg.sender, address(this), amount1);
-            reserve0 += amount0;
-            reserve1 += amount1;
-        }
-
-        function swap0For1(uint256 amountIn) external returns (uint256 amountOut) {
-            uint256 amountInWithFee = amountIn * 997;
-            amountOut = (amountInWithFee * reserve1) / (uint256(reserve0) * 1000 + amountInWithFee);
-            token0.transferFrom(msg.sender, address(this), amountIn);
-            token1.transfer(msg.sender, amountOut);
-            reserve0 += uint112(amountIn);
-            reserve1 -= uint112(amountOut);
-        }
-    }
-    ```
-
-    Current state: `reserve0 = 9000` and `reserve1 = 5000` (raw units). A trader calls `swap0For1(1000)`.
-
-    Exactly how many raw units of token1 does the call transfer to the trader (the returned `amountOut`)? Remember Solidity integer division truncates.
-    End your reply with a line of the form "Answer: <integer>".
-  answer: |
-    The response's final answer must be the integer 498 (decimal or the equivalent hex). Reference from ethskills: "self-contained"
-  difficulty: recall
-  source: |-
-    https://github.com/clawdbotatg/eth-evals/blob/main/tasks/skill-contract-reading.jsonl
-  tags:
-  - eth-evals
-  - contract-reading
-- id: contract-reading-k-08
-  type: open
-  question: |
-    Read this complete Solidity contract:
-
-    ```solidity
-    pragma solidity ^0.8.20;
-
-    contract TimeLock {
-        mapping(address => uint256) public balanceOf;
-        mapping(address => uint256) public unlockAt;
-
-        function deposit(uint256 lockSeconds) external payable {
-            require(msg.value > 0, "no value");
-            require(lockSeconds >= 1 days, "lock too short");
-            balanceOf[msg.sender] += msg.value;
-            uint256 t = block.timestamp + lockSeconds;
-            if (t > unlockAt[msg.sender]) unlockAt[msg.sender] = t;
-        }
-
-        function withdraw(uint256 amount) external {
-            require(block.timestamp >= unlockAt[msg.sender], "still locked");
-            require(balanceOf[msg.sender] >= amount, "insufficient");
-            balanceOf[msg.sender] -= amount;
-            payable(msg.sender).transfer(amount);
-        }
-    }
-    ```
-
-    At timestamp T, Alice calls `deposit(172800)` with 2 ETH attached (172800 seconds = 2 days). She makes no other deposits. At timestamp T + 86400 (one day later) she calls `withdraw(1 ether)`.
-
-    Does the withdraw call revert, and if so which require string fails? Reply with JSON only: {"reverts": <true|false>, "reason": "<the exact revert string, or an empty string if it succeeds>"}
-  answer: |
-    The response must give a JSON object matching {"reverts": true, "reason": "still locked"} (other keys may be present). Reference from ethskills: "self-contained"
-  difficulty: recall
-  source: |-
-    https://github.com/clawdbotatg/eth-evals/blob/main/tasks/skill-contract-reading.jsonl
-  tags:
-  - eth-evals
-  - contract-reading
-- id: contract-reading-k-09
-  type: multiple_choice
-  question: |
-    Read this complete Solidity contract:
-
-    ```solidity
-    pragma solidity ^0.8.20;
-
-    contract Auction {
-        address public immutable seller;
-        uint256 public immutable endTime;
-        address public highBidder;
-        uint256 public highBid;
-        mapping(address => uint256) public pendingReturns;
-
-        constructor(uint256 biddingSeconds) {
-            seller = msg.sender;
-            endTime = block.timestamp + biddingSeconds;
-        }
-
-        function bid() external payable {
-            require(block.timestamp < endTime, "ended");
-            require(msg.value > highBid, "bid too low");
-            if (highBidder != address(0)) {
-                pendingReturns[highBidder] += highBid;
-            }
-            highBidder = msg.sender;
-            highBid = msg.value;
-        }
-
-        function withdrawRefund() external {
-            uint256 amount = pendingReturns[msg.sender];
-            pendingReturns[msg.sender] = 0;
-            payable(msg.sender).transfer(amount);
-        }
-
-        function settle() external {
-            require(block.timestamp >= endTime, "not over");
-            payable(seller).transfer(highBid);
-        }
-    }
-    ```
-
-    While the auction is live, this sequence happens: Alice bids 1 ETH, then Bob bids 2 ETH, then Alice bids 3 ETH. Still before `endTime`, Alice calls `withdrawRefund()`. How much ETH does that call transfer to Alice?
-  choices:
-  - 0 ETH
-  - 1 ETH
-  - 3 ETH
-  - 4 ETH
-  answer: B
-  difficulty: understanding
-  source: |-
-    https://github.com/clawdbotatg/eth-evals/blob/main/tasks/skill-contract-reading.jsonl
-  tags:
-  - eth-evals
-  - contract-reading
-- id: contract-reading-k-10
-  type: open
-  question: |
-    Read this complete Solidity contract:
-
-    ```solidity
-    pragma solidity ^0.8.20;
-
-    interface IERC20 {
-        function transferFrom(address from, address to, uint256 amount) external returns (bool);
-        function transfer(address to, uint256 amount) external returns (bool);
-    }
-
-    contract StakingPool {
-        IERC20 public immutable stakeToken;
-        IERC20 public immutable rewardToken;
-        mapping(address => uint256) public staked;
-        mapping(address => uint256) public rewards;
-
-        constructor(IERC20 _stake, IERC20 _reward) {
-            stakeToken = _stake;
-            rewardToken = _reward;
-        }
-
-        function deposit(uint256 amount) external {
-            stakeToken.transferFrom(msg.sender, address(this), amount);
-            staked[msg.sender] += amount;
-        }
-
-        function notifyReward(address user, uint256 amount) external {
-            rewardToken.transferFrom(msg.sender, address(this), amount);
-            rewards[user] += amount;
-        }
-
-        function unstake(uint256 amount) external {
-            staked[msg.sender] -= amount;
-            stakeToken.transfer(msg.sender, amount);
-        }
-
-        function harvest() external {
-            uint256 r = rewards[msg.sender];
-            rewards[msg.sender] = 0;
-            rewardToken.transfer(msg.sender, r);
-        }
-
-        function exit() external {
-            uint256 r = rewards[msg.sender];
-            uint256 s = staked[msg.sender];
-            rewards[msg.sender] = 0;
-            staked[msg.sender] = 0;
-            rewardToken.transfer(msg.sender, r);
-            stakeToken.transfer(msg.sender, s);
-        }
-    }
-    ```
-
-    You have tokens staked and unclaimed rewards, and you want to leave the pool completely — recover your full stake AND all accrued rewards — in a single transaction with a single call. Which function do you call?
-    End your reply with a line of the form "Answer: <function name>".
-  answer: |
-    Any of the following counts as correct: The response's final answer must be exactly `exit` (case-insensitive). OR The response's final answer must be exactly `exit()` (case-insensitive). OR The response's answer must match the pattern `\bexit\b` (that is, it must name the concept the pattern captures).. Reference from ethskills: "self-contained"
-  difficulty: recall
-  source: |-
-    https://github.com/clawdbotatg/eth-evals/blob/main/tasks/skill-contract-reading.jsonl
-  tags:
-  - eth-evals
-  - contract-reading
-- id: contract-reading-k-11
-  type: open
-  question: |
-    Read this complete Solidity contract:
-
-    ```solidity
-    pragma solidity ^0.8.20;
-
-    interface IERC20 {
-        function transferFrom(address from, address to, uint256 amount) external returns (bool);
-        function transfer(address to, uint256 amount) external returns (bool);
-        function balanceOf(address who) external view returns (uint256);
-    }
-
-    contract ShareVault {
-        IERC20 public immutable asset;
-        uint256 public totalShares;
-        mapping(address => uint256) public sharesOf;
-
-        constructor(IERC20 _asset) {
-            asset = _asset;
-        }
-
-        function deposit(uint256 amount) external returns (uint256 shares) {
-            uint256 bal = asset.balanceOf(address(this));
-            shares = totalShares == 0 ? amount : (amount * totalShares) / bal;
-            asset.transferFrom(msg.sender, address(this), amount);
-            totalShares += shares;
-            sharesOf[msg.sender] += shares;
-        }
-
-        function withdraw(uint256 shares) external returns (uint256 amount) {
-            amount = (shares * asset.balanceOf(address(this))) / totalShares;
-            totalShares -= shares;
-            sharesOf[msg.sender] -= shares;
-            asset.transfer(msg.sender, amount);
-        }
-    }
-    ```
-
-    The vault is freshly deployed (`totalShares = 0`, vault token balance 0). Then:
-    1. An attacker calls `deposit(1)` — depositing 1 raw unit of the asset.
-    2. The attacker sends 10000000000000000000000 raw units (10,000 tokens at 18 decimals) DIRECTLY to the vault address with a plain ERC-20 `transfer` (not via `deposit`).
-    3. A victim calls `deposit(10000000000000000000000)` — also 10,000 tokens.
-
-    How many shares are credited to the victim by step 3?
-    End your reply with a line of the form "Answer: <integer>".
-  answer: |
-    The response's final answer must be the integer 0 (decimal or the equivalent hex). Reference from ethskills: "self-contained"
-  difficulty: recall
-  source: |-
-    https://github.com/clawdbotatg/eth-evals/blob/main/tasks/skill-contract-reading.jsonl
-  tags:
-  - eth-evals
-  - contract-reading
-- id: contract-reading-k-12
-  type: open
-  question: |
-    Read this complete Solidity contract:
-
-    ```solidity
-    pragma solidity ^0.8.20;
-
-    contract FeeVault {
-        address public immutable treasury;
-        uint256 public constant EXIT_FEE_BPS = 100;
-        mapping(address => uint256) public balanceOf;
-
-        constructor(address _treasury) {
-            treasury = _treasury;
-        }
-
-        function deposit() external payable {
-            balanceOf[msg.sender] += msg.value;
-        }
-
-        function withdraw(uint256 amount) external {
-            require(balanceOf[msg.sender] >= amount, "insufficient");
-            balanceOf[msg.sender] -= amount;
-            uint256 fee = (amount * EXIT_FEE_BPS) / 10_000;
-            payable(treasury).transfer(fee);
-            payable(msg.sender).transfer(amount - fee);
-        }
-    }
-    ```
-
-    Alice calls `deposit()` with 4 ETH, then later calls `withdraw(2 ether)`. Exactly how many wei does the withdraw call transfer to Alice's own address?
-    End your reply with a line of the form "Answer: <integer, plain decimal, no separators>".
-  answer: |
-    The response's final answer must be the integer 1980000000000000000 (decimal or the equivalent hex). Reference from ethskills: "self-contained"
-  difficulty: recall
-  source: |-
-    https://github.com/clawdbotatg/eth-evals/blob/main/tasks/skill-contract-reading.jsonl
-  tags:
-  - eth-evals
-  - contract-reading
+# Imported from https://github.com/clawdbotatg/eth-evals (MIT, Austin Griffith).
+
+- description: solidity/calldata-encgiven-02
+  vars:
+    type: open
+    question: |-
+      The Solidity function `bridgeOut(address)` has 4-byte selector 0x2ad87485.
+      ABI-encode a call to it with arguments: address = 0x9d0e5b7b347b23b5c76f236bcada49f12dca06f3.
+
+      Answer with only the full 0x-prefixed calldata hex string.
+    answer: |-
+      The response's final answer must be exactly `0x2ad874850000000000000000000000009d0e5b7b347b23b5c76f236bcada49f12dca06f3` (case-insensitive).
+  metadata:
+    section: solidity
+    type: open
+    difficulty: reasoning
+    source: https://github.com/clawdbotatg/eth-evals/blob/main/tasks/gen-calldata.jsonl
+    tags:
+      - eth-evals
+      - calldata
+  assert:
+    - type: llm-rubric
+      value: '{{answer}}'
+      metric: solidity
+
+- description: solidity/calldata-encgiven-03
+  vars:
+    type: open
+    question: |-
+      The Solidity function `swapExact(address,uint256)` has 4-byte selector 0xe3243836.
+      ABI-encode a call to it with arguments: address = 0x428c59044f948b54ecfe2810df8f479a7cd38993, uint256 = 476886598.
+
+      Answer with only the full 0x-prefixed calldata hex string.
+    answer: |-
+      The response's final answer must be exactly `0xe3243836000000000000000000000000428c59044f948b54ecfe2810df8f479a7cd38993000000000000000000000000000000000000000000000000000000001c6cb646` (case-insensitive).
+  metadata:
+    section: solidity
+    type: open
+    difficulty: reasoning
+    source: https://github.com/clawdbotatg/eth-evals/blob/main/tasks/gen-calldata.jsonl
+    tags:
+      - eth-evals
+      - calldata
+  assert:
+    - type: llm-rubric
+      value: '{{answer}}'
+      metric: solidity
+
+- description: solidity/calldata-decgiven-02
+  vars:
+    type: open
+    question: |-
+      A contract has these functions:
+      - `stake(address,address,bool)` — selector 0xcbb6007d
+      - `deposit(uint256,address)` — selector 0x6e553f65
+      - `redeem(uint256)` — selector 0xdb006a75
+
+      This calldata is sent to it:
+      0x6e553f65000000000000000000000000000000000000000000000000000000000ad2aaa3000000000000000000000000e18ce8f7c653cc1042d624073d8cf7775b384d98
+
+      Which function is being called, and with what arguments?
+
+      Reply with JSON only: {"function": "<name>", "args": [...]} — addresses as 0x strings, uints as numbers, bools as true/false.
+    answer: |-
+      The response must give a JSON object matching {"function": "deposit", "args": [181578403, "0xe18ce8f7c653cc1042d624073d8cf7775b384d98"]} (other keys may be present).
+  metadata:
+    section: solidity
+    type: open
+    difficulty: reasoning
+    source: https://github.com/clawdbotatg/eth-evals/blob/main/tasks/gen-calldata.jsonl
+    tags:
+      - eth-evals
+      - calldata
+  assert:
+    - type: llm-rubric
+      value: '{{answer}}'
+      metric: solidity
+
+- description: solidity/calldata-decgiven-03
+  vars:
+    type: open
+    question: |-
+      A contract has these functions:
+      - `claimRewards(bool,bool)` — selector 0xc018e6fa
+      - `updateOracleV2(uint256,address,uint256)` — selector 0x16d5ed31
+      - `setOperatorV2(address,address)` — selector 0x37e6da82
+
+      This calldata is sent to it:
+      0xc018e6fa00000000000000000000000000000000000000000000000000000000000000010000000000000000000000000000000000000000000000000000000000000000
+
+      Which function is being called, and with what arguments?
+
+      Reply with JSON only: {"function": "<name>", "args": [...]} — addresses as 0x strings, uints as numbers, bools as true/false.
+    answer: |-
+      The response must give a JSON object matching {"function": "claimRewards", "args": [true, false]} (other keys may be present).
+  metadata:
+    section: solidity
+    type: open
+    difficulty: reasoning
+    source: https://github.com/clawdbotatg/eth-evals/blob/main/tasks/gen-calldata.jsonl
+    tags:
+      - eth-evals
+      - calldata
+  assert:
+    - type: llm-rubric
+      value: '{{answer}}'
+      metric: solidity
+
+- description: solidity/indexing-evsig-02
+  vars:
+    type: open
+    question: |-
+      A contract declares:
+
+      `event OracleUpdated(bytes32 indexed value, address amount, bytes32 operator);`
+
+      topic0 of this event's logs is the keccak256 hash of exactly what ASCII string?
+
+      Answer with only that string.
+    answer: |-
+      The response's final answer must be exactly `OracleUpdated(bytes32,address,bytes32)` (case-sensitive). Grade INCORRECT for these tempting wrong answers: `OracleUpdated(bytes32 value, address amount, bytes32 operator)`; `oracleupdated(bytes32,address,bytes32)`
+  metadata:
+    section: solidity
+    type: open
+    difficulty: reasoning
+    source: https://github.com/clawdbotatg/eth-evals/blob/main/tasks/gen-indexing.jsonl
+    tags:
+      - eth-evals
+      - indexing
+  assert:
+    - type: llm-rubric
+      value: '{{answer}}'
+      metric: solidity
+
+- description: solidity/indexing-evsig-03
+  vars:
+    type: open
+    question: |-
+      A contract declares:
+
+      `event Redeemed(uint256 indexed id, address value, bytes32 user);`
+
+      topic0 of this event's logs is the keccak256 hash of exactly what ASCII string?
+
+      Answer with only that string.
+    answer: |-
+      The response's final answer must be exactly `Redeemed(uint256,address,bytes32)` (case-sensitive). Grade INCORRECT for these tempting wrong answers: `Redeemed(uint256 id, address value, bytes32 user)`; `redeemed(uint256,address,bytes32)`
+  metadata:
+    section: solidity
+    type: open
+    difficulty: reasoning
+    source: https://github.com/clawdbotatg/eth-evals/blob/main/tasks/gen-indexing.jsonl
+    tags:
+      - eth-evals
+      - indexing
+  assert:
+    - type: llm-rubric
+      value: '{{answer}}'
+      metric: solidity
+
+- description: solidity/contract-reading-k-01
+  vars:
+    type: multiple_choice
+    question: |-
+      Read this complete Solidity contract:
+
+      ```solidity
+      pragma solidity ^0.8.20;
+
+      contract Sale {
+          address public immutable seller;
+          uint256 public immutable startPrice;
+          uint256 public immutable startAt;
+          uint256 public immutable discountPerSecond;
+          address public buyer;
+
+          constructor(uint256 _startPrice, uint256 _discountPerSecond) {
+              seller = msg.sender;
+              startPrice = _startPrice;
+              startAt = block.timestamp;
+              discountPerSecond = _discountPerSecond;
+          }
+
+          function price() public view returns (uint256) {
+              return startPrice - discountPerSecond * (block.timestamp - startAt);
+          }
+
+          function buy() external payable {
+              require(buyer == address(0), "sold");
+              uint256 p = price();
+              require(msg.value >= p, "underpaid");
+              buyer = msg.sender;
+              payable(seller).transfer(p);
+              if (msg.value > p) payable(msg.sender).transfer(msg.value - p);
+          }
+      }
+      ```
+
+      What kind of sale mechanism is this?
+    choices:
+      - Fixed-price sale — the price never changes
+      - Sealed-bid auction — bids are hidden until a reveal phase
+      - Dutch auction — the price falls over time and the first buyer to accept it wins
+      - English auction — bidders submit ascending bids until a deadline
+    answer: C
+  metadata:
+    section: solidity
+    type: multiple_choice
+    difficulty: understanding
+    source: |-
+      https://github.com/clawdbotatg/eth-evals/blob/main/tasks/skill-contract-reading.jsonl
+    tags:
+      - eth-evals
+      - contract-reading
+  assert:
+    - type: regex
+      value: 'ANSWER:\W*{{answer}}\b(?!\s*,\s*[A-H]\b)'
+      metric: solidity
+
+- description: solidity/contract-reading-k-02
+  vars:
+    type: open
+    question: |-
+      Read this complete Solidity contract:
+
+      ```solidity
+      pragma solidity ^0.8.20;
+
+      contract FeeToken {
+          string public constant name = "Fee Token";
+          uint8 public constant decimals = 18;
+          uint256 public totalSupply;
+          uint16 public constant FEE_BPS = 250;
+          address public immutable feeSink;
+          mapping(address => uint256) public balanceOf;
+
+          constructor(uint256 supply, address sink) {
+              totalSupply = supply;
+              feeSink = sink;
+              balanceOf[msg.sender] = supply;
+          }
+
+          function transfer(address to, uint256 amount) external returns (bool) {
+              require(balanceOf[msg.sender] >= amount, "balance");
+              uint256 fee = (amount * FEE_BPS) / 10_000;
+              balanceOf[msg.sender] -= amount;
+              balanceOf[to] += amount - fee;
+              balanceOf[feeSink] += fee;
+              return true;
+          }
+      }
+      ```
+
+      Alice holds 100000 raw token units and calls `transfer(bob, 40000)` (Bob is not the feeSink and starts with a zero balance). After the call, how many raw token units does `balanceOf(bob)` return?
+      End your reply with a line of the form "Answer: <integer>".
+    answer: |-
+      The response's final answer must be the integer 39000 (decimal or the equivalent hex). Reference from ethskills: "self-contained"
+  metadata:
+    section: solidity
+    type: open
+    difficulty: recall
+    source: |-
+      https://github.com/clawdbotatg/eth-evals/blob/main/tasks/skill-contract-reading.jsonl
+    tags:
+      - eth-evals
+      - contract-reading
+  assert:
+    - type: llm-rubric
+      value: '{{answer}}'
+      metric: solidity
+
+- description: solidity/contract-reading-k-03
+  vars:
+    type: open
+    question: |-
+      Read this complete Solidity contract:
+
+      ```solidity
+      pragma solidity ^0.8.20;
+
+      contract FeeRegistry {
+          address public owner;
+          mapping(bytes32 => uint96) public feeBpsOf;
+
+          constructor() {
+              owner = msg.sender;
+          }
+
+          function setFee(bytes32 poolId, uint96 bps) external {
+              require(msg.sender == owner, "not owner");
+              require(bps <= 1000, "max 10%");
+              feeBpsOf[poolId] = bps;
+          }
+      }
+      ```
+
+      You want to read the fee (in basis points) configured for a specific pool id, using a read-only call from the command line (e.g. `cast call`). What is the exact Solidity function signature — function name plus parenthesized argument types, like `balanceOf(address)` — of the public getter you would call?
+      End your reply with a line of the form "Answer: <signature>".
+    answer: |-
+      Any of the following counts as correct: The response's final answer must be exactly `feeBpsOf(bytes32)` (case-insensitive). OR The response's answer must match the pattern `feeBpsOf\(bytes32\)` (that is, it must name the concept the pattern captures).. Reference from ethskills: "self-contained"
+  metadata:
+    section: solidity
+    type: open
+    difficulty: recall
+    source: |-
+      https://github.com/clawdbotatg/eth-evals/blob/main/tasks/skill-contract-reading.jsonl
+    tags:
+      - eth-evals
+      - contract-reading
+  assert:
+    - type: llm-rubric
+      value: '{{answer}}'
+      metric: solidity
+
+- description: solidity/contract-reading-k-04
+  vars:
+    type: open
+    question: |-
+      Read this complete Solidity contract:
+
+      ```solidity
+      pragma solidity ^0.8.20;
+
+      interface IERC20 {
+          function transfer(address to, uint256 amount) external returns (bool);
+          function balanceOf(address who) external view returns (uint256);
+      }
+
+      contract Vesting {
+          IERC20 public immutable token;
+          address public immutable beneficiary;
+          uint64 public immutable start;
+          uint64 public immutable duration;
+          uint256 public released;
+
+          constructor(IERC20 _token, address _beneficiary, uint64 _start, uint64 _duration) {
+              token = _token;
+              beneficiary = _beneficiary;
+              start = _start;
+              duration = _duration;
+          }
+
+          function vestedAmount(uint64 ts) public view returns (uint256) {
+              uint256 total = token.balanceOf(address(this)) + released;
+              if (ts < start) return 0;
+              if (ts >= start + duration) return total;
+              return (total * (ts - start)) / duration;
+          }
+
+          function release() external {
+              uint256 amount = vestedAmount(uint64(block.timestamp)) - released;
+              released += amount;
+              token.transfer(beneficiary, amount);
+          }
+      }
+      ```
+
+      The contract was deployed with `start = 1800000000` and `duration = 7776000`. It currently holds 600000 raw token units and `released` is 0 (nothing has ever been released).
+
+      At `block.timestamp = 1801944000`, the beneficiary triggers `release()`. How many raw token units does the call transfer to the beneficiary?
+      End your reply with a line of the form "Answer: <integer>".
+    answer: |-
+      The response's final answer must be the integer 150000 (decimal or the equivalent hex). Reference from ethskills: "self-contained"
+  metadata:
+    section: solidity
+    type: open
+    difficulty: recall
+    source: |-
+      https://github.com/clawdbotatg/eth-evals/blob/main/tasks/skill-contract-reading.jsonl
+    tags:
+      - eth-evals
+      - contract-reading
+  assert:
+    - type: llm-rubric
+      value: '{{answer}}'
+      metric: solidity
+
+- description: solidity/contract-reading-k-05
+  vars:
+    type: open
+    question: |-
+      Read this complete Solidity contract:
+
+      ```solidity
+      pragma solidity ^0.8.20;
+
+      contract EtherBank {
+          mapping(address => uint256) public balances;
+
+          function deposit() external payable {
+              balances[msg.sender] += msg.value;
+          }
+
+          function withdraw() external {
+              uint256 amount = balances[msg.sender];
+              require(amount > 0, "empty");
+              (bool ok, ) = msg.sender.call{value: amount}("");
+              require(ok, "send failed");
+              balances[msg.sender] = 0;
+          }
+      }
+      ```
+
+      The contract holds 50 ETH of user deposits. An attacker deploys a contract, deposits 1 ETH from it, and then calls `withdraw()` — and drains nearly the entire 50 ETH. What is the standard name of the vulnerability class being exploited?
+      End your reply with a line of the form "Answer: <vulnerability name>".
+    answer: |-
+      The response's answer must match the pattern `re-?\s?(entranc|entry)` (that is, it must name the concept the pattern captures). The reference answer is: Answer: reentrancy. Reference from ethskills: "self-contained" Grade INCORRECT for these tempting wrong answers: `Answer: integer overflow`
+  metadata:
+    section: solidity
+    type: open
+    difficulty: recall
+    source: |-
+      https://github.com/clawdbotatg/eth-evals/blob/main/tasks/skill-contract-reading.jsonl
+    tags:
+      - eth-evals
+      - contract-reading
+  assert:
+    - type: llm-rubric
+      value: '{{answer}}'
+      metric: solidity
+
+- description: solidity/contract-reading-k-06
+  vars:
+    type: open
+    question: |-
+      Read this complete Solidity contract:
+
+      ```solidity
+      pragma solidity ^0.8.20;
+
+      contract Treasury {
+          address public owner;
+          bool public initialized;
+
+          function initialize(address _owner) external {
+              owner = _owner;
+              initialized = true;
+          }
+
+          receive() external payable {}
+
+          function sweep(address payable to) external {
+              require(msg.sender == owner, "not owner");
+              to.transfer(address(this).balance);
+          }
+      }
+      ```
+
+      The deployer called `initialize` with their own address right after deployment, and the contract now holds 200 ETH. Yet an arbitrary attacker can still steal all of it. One function is missing a guard it should have had — name that function (the one whose missing check makes the theft possible).
+      End your reply with a line of the form "Answer: <function name>".
+    answer: |-
+      Any of the following counts as correct: The response's final answer must be exactly `initialize` (case-insensitive). OR The response's answer must match the pattern `\binitialize\b` (that is, it must name the concept the pattern captures).. Reference from ethskills: "self-contained"
+  metadata:
+    section: solidity
+    type: open
+    difficulty: recall
+    source: |-
+      https://github.com/clawdbotatg/eth-evals/blob/main/tasks/skill-contract-reading.jsonl
+    tags:
+      - eth-evals
+      - contract-reading
+  assert:
+    - type: llm-rubric
+      value: '{{answer}}'
+      metric: solidity
+
+- description: solidity/contract-reading-k-07
+  vars:
+    type: open
+    question: |-
+      Read this complete Solidity contract:
+
+      ```solidity
+      pragma solidity ^0.8.20;
+
+      interface IERC20 {
+          function transferFrom(address from, address to, uint256 amount) external returns (bool);
+          function transfer(address to, uint256 amount) external returns (bool);
+      }
+
+      contract PairLite {
+          IERC20 public immutable token0;
+          IERC20 public immutable token1;
+          uint112 public reserve0;
+          uint112 public reserve1;
+
+          constructor(IERC20 _t0, IERC20 _t1) {
+              token0 = _t0;
+              token1 = _t1;
+          }
+
+          function addLiquidity(uint112 amount0, uint112 amount1) external {
+              token0.transferFrom(msg.sender, address(this), amount0);
+              token1.transferFrom(msg.sender, address(this), amount1);
+              reserve0 += amount0;
+              reserve1 += amount1;
+          }
+
+          function swap0For1(uint256 amountIn) external returns (uint256 amountOut) {
+              uint256 amountInWithFee = amountIn * 997;
+              amountOut = (amountInWithFee * reserve1) / (uint256(reserve0) * 1000 + amountInWithFee);
+              token0.transferFrom(msg.sender, address(this), amountIn);
+              token1.transfer(msg.sender, amountOut);
+              reserve0 += uint112(amountIn);
+              reserve1 -= uint112(amountOut);
+          }
+      }
+      ```
+
+      Current state: `reserve0 = 9000` and `reserve1 = 5000` (raw units). A trader calls `swap0For1(1000)`.
+
+      Exactly how many raw units of token1 does the call transfer to the trader (the returned `amountOut`)? Remember Solidity integer division truncates.
+      End your reply with a line of the form "Answer: <integer>".
+    answer: |-
+      The response's final answer must be the integer 498 (decimal or the equivalent hex). Reference from ethskills: "self-contained"
+  metadata:
+    section: solidity
+    type: open
+    difficulty: recall
+    source: |-
+      https://github.com/clawdbotatg/eth-evals/blob/main/tasks/skill-contract-reading.jsonl
+    tags:
+      - eth-evals
+      - contract-reading
+  assert:
+    - type: llm-rubric
+      value: '{{answer}}'
+      metric: solidity
+
+- description: solidity/contract-reading-k-08
+  vars:
+    type: open
+    question: |-
+      Read this complete Solidity contract:
+
+      ```solidity
+      pragma solidity ^0.8.20;
+
+      contract TimeLock {
+          mapping(address => uint256) public balanceOf;
+          mapping(address => uint256) public unlockAt;
+
+          function deposit(uint256 lockSeconds) external payable {
+              require(msg.value > 0, "no value");
+              require(lockSeconds >= 1 days, "lock too short");
+              balanceOf[msg.sender] += msg.value;
+              uint256 t = block.timestamp + lockSeconds;
+              if (t > unlockAt[msg.sender]) unlockAt[msg.sender] = t;
+          }
+
+          function withdraw(uint256 amount) external {
+              require(block.timestamp >= unlockAt[msg.sender], "still locked");
+              require(balanceOf[msg.sender] >= amount, "insufficient");
+              balanceOf[msg.sender] -= amount;
+              payable(msg.sender).transfer(amount);
+          }
+      }
+      ```
+
+      At timestamp T, Alice calls `deposit(172800)` with 2 ETH attached (172800 seconds = 2 days). She makes no other deposits. At timestamp T + 86400 (one day later) she calls `withdraw(1 ether)`.
+
+      Does the withdraw call revert, and if so which require string fails? Reply with JSON only: {"reverts": <true|false>, "reason": "<the exact revert string, or an empty string if it succeeds>"}
+    answer: |-
+      The response must give a JSON object matching {"reverts": true, "reason": "still locked"} (other keys may be present). Reference from ethskills: "self-contained"
+  metadata:
+    section: solidity
+    type: open
+    difficulty: recall
+    source: |-
+      https://github.com/clawdbotatg/eth-evals/blob/main/tasks/skill-contract-reading.jsonl
+    tags:
+      - eth-evals
+      - contract-reading
+  assert:
+    - type: llm-rubric
+      value: '{{answer}}'
+      metric: solidity
+
+- description: solidity/contract-reading-k-09
+  vars:
+    type: multiple_choice
+    question: |-
+      Read this complete Solidity contract:
+
+      ```solidity
+      pragma solidity ^0.8.20;
+
+      contract Auction {
+          address public immutable seller;
+          uint256 public immutable endTime;
+          address public highBidder;
+          uint256 public highBid;
+          mapping(address => uint256) public pendingReturns;
+
+          constructor(uint256 biddingSeconds) {
+              seller = msg.sender;
+              endTime = block.timestamp + biddingSeconds;
+          }
+
+          function bid() external payable {
+              require(block.timestamp < endTime, "ended");
+              require(msg.value > highBid, "bid too low");
+              if (highBidder != address(0)) {
+                  pendingReturns[highBidder] += highBid;
+              }
+              highBidder = msg.sender;
+              highBid = msg.value;
+          }
+
+          function withdrawRefund() external {
+              uint256 amount = pendingReturns[msg.sender];
+              pendingReturns[msg.sender] = 0;
+              payable(msg.sender).transfer(amount);
+          }
+
+          function settle() external {
+              require(block.timestamp >= endTime, "not over");
+              payable(seller).transfer(highBid);
+          }
+      }
+      ```
+
+      While the auction is live, this sequence happens: Alice bids 1 ETH, then Bob bids 2 ETH, then Alice bids 3 ETH. Still before `endTime`, Alice calls `withdrawRefund()`. How much ETH does that call transfer to Alice?
+    choices:
+      - 4 ETH
+      - 3 ETH
+      - 1 ETH
+      - 0 ETH
+    answer: C
+  metadata:
+    section: solidity
+    type: multiple_choice
+    difficulty: understanding
+    source: |-
+      https://github.com/clawdbotatg/eth-evals/blob/main/tasks/skill-contract-reading.jsonl
+    tags:
+      - eth-evals
+      - contract-reading
+  assert:
+    - type: regex
+      value: 'ANSWER:\W*{{answer}}\b(?!\s*,\s*[A-H]\b)'
+      metric: solidity
+
+- description: solidity/contract-reading-k-10
+  vars:
+    type: open
+    question: |-
+      Read this complete Solidity contract:
+
+      ```solidity
+      pragma solidity ^0.8.20;
+
+      interface IERC20 {
+          function transferFrom(address from, address to, uint256 amount) external returns (bool);
+          function transfer(address to, uint256 amount) external returns (bool);
+      }
+
+      contract StakingPool {
+          IERC20 public immutable stakeToken;
+          IERC20 public immutable rewardToken;
+          mapping(address => uint256) public staked;
+          mapping(address => uint256) public rewards;
+
+          constructor(IERC20 _stake, IERC20 _reward) {
+              stakeToken = _stake;
+              rewardToken = _reward;
+          }
+
+          function deposit(uint256 amount) external {
+              stakeToken.transferFrom(msg.sender, address(this), amount);
+              staked[msg.sender] += amount;
+          }
+
+          function notifyReward(address user, uint256 amount) external {
+              rewardToken.transferFrom(msg.sender, address(this), amount);
+              rewards[user] += amount;
+          }
+
+          function unstake(uint256 amount) external {
+              staked[msg.sender] -= amount;
+              stakeToken.transfer(msg.sender, amount);
+          }
+
+          function harvest() external {
+              uint256 r = rewards[msg.sender];
+              rewards[msg.sender] = 0;
+              rewardToken.transfer(msg.sender, r);
+          }
+
+          function exit() external {
+              uint256 r = rewards[msg.sender];
+              uint256 s = staked[msg.sender];
+              rewards[msg.sender] = 0;
+              staked[msg.sender] = 0;
+              rewardToken.transfer(msg.sender, r);
+              stakeToken.transfer(msg.sender, s);
+          }
+      }
+      ```
+
+      You have tokens staked and unclaimed rewards, and you want to leave the pool completely — recover your full stake AND all accrued rewards — in a single transaction with a single call. Which function do you call?
+      End your reply with a line of the form "Answer: <function name>".
+    answer: |-
+      Any of the following counts as correct: The response's final answer must be exactly `exit` (case-insensitive). OR The response's final answer must be exactly `exit()` (case-insensitive). OR The response's answer must match the pattern `\bexit\b` (that is, it must name the concept the pattern captures).. Reference from ethskills: "self-contained"
+  metadata:
+    section: solidity
+    type: open
+    difficulty: recall
+    source: |-
+      https://github.com/clawdbotatg/eth-evals/blob/main/tasks/skill-contract-reading.jsonl
+    tags:
+      - eth-evals
+      - contract-reading
+  assert:
+    - type: llm-rubric
+      value: '{{answer}}'
+      metric: solidity
+
+- description: solidity/contract-reading-k-11
+  vars:
+    type: open
+    question: |-
+      Read this complete Solidity contract:
+
+      ```solidity
+      pragma solidity ^0.8.20;
+
+      interface IERC20 {
+          function transferFrom(address from, address to, uint256 amount) external returns (bool);
+          function transfer(address to, uint256 amount) external returns (bool);
+          function balanceOf(address who) external view returns (uint256);
+      }
+
+      contract ShareVault {
+          IERC20 public immutable asset;
+          uint256 public totalShares;
+          mapping(address => uint256) public sharesOf;
+
+          constructor(IERC20 _asset) {
+              asset = _asset;
+          }
+
+          function deposit(uint256 amount) external returns (uint256 shares) {
+              uint256 bal = asset.balanceOf(address(this));
+              shares = totalShares == 0 ? amount : (amount * totalShares) / bal;
+              asset.transferFrom(msg.sender, address(this), amount);
+              totalShares += shares;
+              sharesOf[msg.sender] += shares;
+          }
+
+          function withdraw(uint256 shares) external returns (uint256 amount) {
+              amount = (shares * asset.balanceOf(address(this))) / totalShares;
+              totalShares -= shares;
+              sharesOf[msg.sender] -= shares;
+              asset.transfer(msg.sender, amount);
+          }
+      }
+      ```
+
+      The vault is freshly deployed (`totalShares = 0`, vault token balance 0). Then:
+      1. An attacker calls `deposit(1)` — depositing 1 raw unit of the asset.
+      2. The attacker sends 10000000000000000000000 raw units (10,000 tokens at 18 decimals) DIRECTLY to the vault address with a plain ERC-20 `transfer` (not via `deposit`).
+      3. A victim calls `deposit(10000000000000000000000)` — also 10,000 tokens.
+
+      How many shares are credited to the victim by step 3?
+      End your reply with a line of the form "Answer: <integer>".
+    answer: |-
+      The response's final answer must be the integer 0 (decimal or the equivalent hex). Reference from ethskills: "self-contained"
+  metadata:
+    section: solidity
+    type: open
+    difficulty: recall
+    source: |-
+      https://github.com/clawdbotatg/eth-evals/blob/main/tasks/skill-contract-reading.jsonl
+    tags:
+      - eth-evals
+      - contract-reading
+  assert:
+    - type: llm-rubric
+      value: '{{answer}}'
+      metric: solidity
+
+- description: solidity/contract-reading-k-12
+  vars:
+    type: open
+    question: |-
+      Read this complete Solidity contract:
+
+      ```solidity
+      pragma solidity ^0.8.20;
+
+      contract FeeVault {
+          address public immutable treasury;
+          uint256 public constant EXIT_FEE_BPS = 100;
+          mapping(address => uint256) public balanceOf;
+
+          constructor(address _treasury) {
+              treasury = _treasury;
+          }
+
+          function deposit() external payable {
+              balanceOf[msg.sender] += msg.value;
+          }
+
+          function withdraw(uint256 amount) external {
+              require(balanceOf[msg.sender] >= amount, "insufficient");
+              balanceOf[msg.sender] -= amount;
+              uint256 fee = (amount * EXIT_FEE_BPS) / 10_000;
+              payable(treasury).transfer(fee);
+              payable(msg.sender).transfer(amount - fee);
+          }
+      }
+      ```
+
+      Alice calls `deposit()` with 4 ETH, then later calls `withdraw(2 ether)`. Exactly how many wei does the withdraw call transfer to Alice's own address?
+      End your reply with a line of the form "Answer: <integer, plain decimal, no separators>".
+    answer: |-
+      The response's final answer must be the integer 1980000000000000000 (decimal or the equivalent hex). Reference from ethskills: "self-contained"
+  metadata:
+    section: solidity
+    type: open
+    difficulty: recall
+    source: |-
+      https://github.com/clawdbotatg/eth-evals/blob/main/tasks/skill-contract-reading.jsonl
+    tags:
+      - eth-evals
+      - contract-reading
+  assert:
+    - type: llm-rubric
+      value: '{{answer}}'
+      metric: solidity

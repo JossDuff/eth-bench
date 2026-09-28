@@ -1,89 +1,141 @@
-# Imported from https://github.com/austintgriffith/ethevals by
-# scripts/import_ethevals.py. Edit the script, not this file.
+# Imported from https://github.com/austintgriffith/ethevals (MIT, Austin Griffith).
 
-- id: concepts-13-eip712-replay
-  type: open
-  question: |
-    A protocol verifies user signatures over typed structured data per EIP-712. Which component of the signed digest is specifically responsible for preventing a valid signature from being replayed against a different contract or on a different chain?
-    End your reply with a line of the form "Answer: <short answer>".
-  answer: |
-    The response's answer must match the pattern `domain[\s_-]?separator` (that is, it must name the concept the pattern captures). The reference answer is: Answer: the domain separator.
-  difficulty: recall
-  source: |-
-    https://github.com/austintgriffith/ethevals/blob/main/evals/concepts/concepts-13-eip712-replay.yaml
-  tags:
-  - ethevals
-  - concepts
-- id: concepts-15-paymaster-deposit
-  type: multiple_choice
-  question: |
-    An ERC-4337 paymaster contract on Ethereum mainnet holds 5 ETH at its own address, yet every UserOperation that names it is rejected by the bundler at validation with AA31 "paymaster deposit too low". Why?
-  choices:
-  - The paymaster must hold at least 32 ETH before the EntryPoint will trust it
-  - |-
-    The EntryPoint prepays gas from the paymaster's deposit held at the EntryPoint (funded via depositTo / addStake), not from ETH sitting in the paymaster's own balance
-  - Bundlers only accept paymasters that are also stakers on the beacon chain
-  - The paymaster's ETH is locked until the UserOperation's nonce is consumed
-  answer: B
-  difficulty: understanding
-  source: |-
-    https://github.com/austintgriffith/ethevals/blob/main/evals/concepts/concepts-15-paymaster-deposit.yaml
-  tags:
-  - ethevals
-  - concepts
-- id: concepts-25-1271-replay-safe
-  type: multiple_choice
-  question: |
-    A smart account owned by the EOA K does not let K sign an ERC-1271 hash directly. It wraps it first: K signs hashTypedData(domain{chainId, verifyingContract: this account}, Message(bytes32 hash)). Why?
-  choices:
-  - It saves gas in isValidSignature
-  - |-
-    K may own other accounts on this and other chains; a bare signature by K over the hash would satisfy isValidSignature on every account K owns, so a signature produced for one account could be replayed as another account's approval (a permit, an order). Binding the account's own domain into the digest makes it valid for one account on one chain.
-  - ERC-1271 requires the signed data to be EIP-712 typed data
-  - It hides the original message from the verifier
-  answer: B
-  difficulty: understanding
-  source: |-
-    https://github.com/austintgriffith/ethevals/blob/main/evals/concepts/concepts-25-1271-replay-safe.yaml
-  tags:
-  - ethevals
-  - concepts
-- id: transactions-06-token-decimals
-  type: open
-  question: |
-    Build the exact calldata for a transferFrom moving 7.25 DAI (the mainnet token at 0x6B175474E89094C44Da98b954EedeAC495271d0F) from 0xd8dA6BF26964aF9D7eEd9e03E53415D37aA96045 to 0x000000000000000000000000000000000000dEaD. Mind the token's decimals.
-    Answer with only the full 0x-prefixed calldata hex string on the last line, as: Answer: 0x...
-  answer: |
-    The response's final answer must be exactly `0x23b872dd000000000000000000000000d8da6bf26964af9d7eed9e03e53415d37aa96045000000000000000000000000000000000000000000000000000000000000dead000000000000000000000000000000000000000000000000649d2c967d950000` (case-insensitive). Grade INCORRECT for these tempting wrong answers: `Answer: 0x23b872dd000000000000000000000000d8da6bf26964af9d7eed9e03e53415d37aa96045000000000000000000000000000000000000000000000000000000000000dead00000000000000000000000000000000000000000000000000000000006ea050`
-  difficulty: reasoning
-  source: |-
-    https://github.com/austintgriffith/ethevals/blob/main/evals/transactions/transactions-06-token-decimals.yaml
-  tags:
-  - ethevals
-  - transactions
-- id: transactions-07-bounded-approve
-  type: open
-  question: |
-    Build the exact calldata to approve the Uniswap v3 SwapRouter (0xE592427A0AEce92De3Edee1F18E0157C05861564) to spend exactly 250 USDT (the mainnet token at 0xdAC17F958D2ee523a2206206994597C13D831ec7). Mind the token's decimals.
-    Answer with only the full 0x-prefixed calldata hex string on the last line, as: Answer: 0x...
-  answer: |
-    The response's final answer must be exactly `0x095ea7b3000000000000000000000000e592427a0aece92de3edee1f18e0157c05861564000000000000000000000000000000000000000000000000000000000ee6b280` (case-insensitive). Grade INCORRECT for these tempting wrong answers: `Answer: 0x095ea7b3000000000000000000000000e592427a0aece92de3edee1f18e0157c0586156400000000000000000000000000000000000000000000000d8d726b7177a80000`; `Answer: 0x095ea7b3000000000000000000000000e592427a0aece92de3edee1f18e0157c05861564ffffffffffffffffffffffffffffffffffffffffffffffffffffffffffffffff`
-  difficulty: reasoning
-  source: |-
-    https://github.com/austintgriffith/ethevals/blob/main/evals/transactions/transactions-07-bounded-approve.yaml
-  tags:
-  - ethevals
-  - transactions
-- id: transactions-08-permit-2612
-  type: open
-  question: |
-    Build the exact calldata for an EIP-2612 permit(address owner, address spender, uint256 value, uint256 deadline, uint8 v, bytes32 r, bytes32 s) call. The selector is 0xd505accf. Parameters: owner 0xd8dA6BF26964aF9D7eEd9e03E53415D37aA96045, spender 0xE592427A0AEce92De3Edee1F18E0157C05861564, value 1000000, deadline 1800000000, v 27, r 0x1111111111111111111111111111111111111111111111111111111111111111, s 0x2222222222222222222222222222222222222222222222222222222222222222.
-    Answer with only the full 0x-prefixed calldata hex string on the last line, as: Answer: 0x...
-  answer: |
-    The response's final answer must be exactly `0xd505accf000000000000000000000000d8da6bf26964af9d7eed9e03e53415d37aa96045000000000000000000000000e592427a0aece92de3edee1f18e0157c0586156400000000000000000000000000000000000000000000000000000000000f4240000000000000000000000000000000000000000000000000000000006b49d200000000000000000000000000000000000000000000000000000000000000001b11111111111111111111111111111111111111111111111111111111111111112222222222222222222222222222222222222222222222222222222222222222` (case-insensitive).
-  difficulty: reasoning
-  source: |-
-    https://github.com/austintgriffith/ethevals/blob/main/evals/transactions/transactions-08-permit-2612.yaml
-  tags:
-  - ethevals
-  - transactions
+- description: ercs/concepts-13-eip712-replay
+  vars:
+    type: open
+    question: |-
+      A protocol verifies user signatures over typed structured data per EIP-712. Which component of the signed digest is specifically responsible for preventing a valid signature from being replayed against a different contract or on a different chain?
+      End your reply with a line of the form "Answer: <short answer>".
+    answer: |-
+      The response's answer must match the pattern `domain[\s_-]?separator` (that is, it must name the concept the pattern captures). The reference answer is: Answer: the domain separator.
+  metadata:
+    section: ercs
+    type: open
+    difficulty: recall
+    source: |-
+      https://github.com/austintgriffith/ethevals/blob/main/evals/concepts/concepts-13-eip712-replay.yaml
+    tags:
+      - ethevals
+      - concepts
+  assert:
+    - type: llm-rubric
+      value: '{{answer}}'
+      metric: ercs
+
+- description: ercs/concepts-15-paymaster-deposit
+  vars:
+    type: multiple_choice
+    question: |-
+      An ERC-4337 paymaster contract on Ethereum mainnet holds 5 ETH at its own address, yet every UserOperation that names it is rejected by the bundler at validation with AA31 "paymaster deposit too low". Why?
+    choices:
+      - Bundlers only accept paymasters that are also stakers on the beacon chain
+      - |-
+        The EntryPoint prepays gas from the paymaster's deposit held at the EntryPoint (funded via depositTo / addStake), not from ETH sitting in the paymaster's own balance
+      - The paymaster's ETH is locked until the UserOperation's nonce is consumed
+      - The paymaster must hold at least 32 ETH before the EntryPoint will trust it
+    answer: B
+  metadata:
+    section: ercs
+    type: multiple_choice
+    difficulty: understanding
+    source: |-
+      https://github.com/austintgriffith/ethevals/blob/main/evals/concepts/concepts-15-paymaster-deposit.yaml
+    tags:
+      - ethevals
+      - concepts
+  assert:
+    - type: regex
+      value: 'ANSWER:\W*{{answer}}\b(?!\s*,\s*[A-H]\b)'
+      metric: ercs
+
+- description: ercs/concepts-25-1271-replay-safe
+  vars:
+    type: multiple_choice
+    question: |-
+      A smart account owned by the EOA K does not let K sign an ERC-1271 hash directly. It wraps it first: K signs hashTypedData(domain{chainId, verifyingContract: this account}, Message(bytes32 hash)). Why?
+    choices:
+      - |-
+        K may own other accounts on this and other chains; a bare signature by K over the hash would satisfy isValidSignature on every account K owns, so a signature produced for one account could be replayed as another account's approval (a permit, an order). Binding the account's own domain into the digest makes it valid for one account on one chain.
+      - It hides the original message from the verifier
+      - It saves gas in isValidSignature
+      - ERC-1271 requires the signed data to be EIP-712 typed data
+    answer: A
+  metadata:
+    section: ercs
+    type: multiple_choice
+    difficulty: understanding
+    source: |-
+      https://github.com/austintgriffith/ethevals/blob/main/evals/concepts/concepts-25-1271-replay-safe.yaml
+    tags:
+      - ethevals
+      - concepts
+  assert:
+    - type: regex
+      value: 'ANSWER:\W*{{answer}}\b(?!\s*,\s*[A-H]\b)'
+      metric: ercs
+
+- description: ercs/transactions-06-token-decimals
+  vars:
+    type: open
+    question: |-
+      Build the exact calldata for a transferFrom moving 7.25 DAI (the mainnet token at 0x6B175474E89094C44Da98b954EedeAC495271d0F) from 0xd8dA6BF26964aF9D7eEd9e03E53415D37aA96045 to 0x000000000000000000000000000000000000dEaD. Mind the token's decimals.
+      Answer with only the full 0x-prefixed calldata hex string on the last line, as: Answer: 0x...
+    answer: |-
+      The response's final answer must be exactly `0x23b872dd000000000000000000000000d8da6bf26964af9d7eed9e03e53415d37aa96045000000000000000000000000000000000000000000000000000000000000dead000000000000000000000000000000000000000000000000649d2c967d950000` (case-insensitive). Grade INCORRECT for these tempting wrong answers: `Answer: 0x23b872dd000000000000000000000000d8da6bf26964af9d7eed9e03e53415d37aa96045000000000000000000000000000000000000000000000000000000000000dead00000000000000000000000000000000000000000000000000000000006ea050`
+  metadata:
+    section: ercs
+    type: open
+    difficulty: reasoning
+    source: |-
+      https://github.com/austintgriffith/ethevals/blob/main/evals/transactions/transactions-06-token-decimals.yaml
+    tags:
+      - ethevals
+      - transactions
+  assert:
+    - type: llm-rubric
+      value: '{{answer}}'
+      metric: ercs
+
+- description: ercs/transactions-07-bounded-approve
+  vars:
+    type: open
+    question: |-
+      Build the exact calldata to approve the Uniswap v3 SwapRouter (0xE592427A0AEce92De3Edee1F18E0157C05861564) to spend exactly 250 USDT (the mainnet token at 0xdAC17F958D2ee523a2206206994597C13D831ec7). Mind the token's decimals.
+      Answer with only the full 0x-prefixed calldata hex string on the last line, as: Answer: 0x...
+    answer: |-
+      The response's final answer must be exactly `0x095ea7b3000000000000000000000000e592427a0aece92de3edee1f18e0157c05861564000000000000000000000000000000000000000000000000000000000ee6b280` (case-insensitive). Grade INCORRECT for these tempting wrong answers: `Answer: 0x095ea7b3000000000000000000000000e592427a0aece92de3edee1f18e0157c0586156400000000000000000000000000000000000000000000000d8d726b7177a80000`; `Answer: 0x095ea7b3000000000000000000000000e592427a0aece92de3edee1f18e0157c05861564ffffffffffffffffffffffffffffffffffffffffffffffffffffffffffffffff`
+  metadata:
+    section: ercs
+    type: open
+    difficulty: reasoning
+    source: |-
+      https://github.com/austintgriffith/ethevals/blob/main/evals/transactions/transactions-07-bounded-approve.yaml
+    tags:
+      - ethevals
+      - transactions
+  assert:
+    - type: llm-rubric
+      value: '{{answer}}'
+      metric: ercs
+
+- description: ercs/transactions-08-permit-2612
+  vars:
+    type: open
+    question: |-
+      Build the exact calldata for an EIP-2612 permit(address owner, address spender, uint256 value, uint256 deadline, uint8 v, bytes32 r, bytes32 s) call. The selector is 0xd505accf. Parameters: owner 0xd8dA6BF26964aF9D7eEd9e03E53415D37aA96045, spender 0xE592427A0AEce92De3Edee1F18E0157C05861564, value 1000000, deadline 1800000000, v 27, r 0x1111111111111111111111111111111111111111111111111111111111111111, s 0x2222222222222222222222222222222222222222222222222222222222222222.
+      Answer with only the full 0x-prefixed calldata hex string on the last line, as: Answer: 0x...
+    answer: |-
+      The response's final answer must be exactly `0xd505accf000000000000000000000000d8da6bf26964af9d7eed9e03e53415d37aa96045000000000000000000000000e592427a0aece92de3edee1f18e0157c0586156400000000000000000000000000000000000000000000000000000000000f4240000000000000000000000000000000000000000000000000000000006b49d200000000000000000000000000000000000000000000000000000000000000001b11111111111111111111111111111111111111111111111111111111111111112222222222222222222222222222222222222222222222222222222222222222` (case-insensitive).
+  metadata:
+    section: ercs
+    type: open
+    difficulty: reasoning
+    source: |-
+      https://github.com/austintgriffith/ethevals/blob/main/evals/transactions/transactions-08-permit-2612.yaml
+    tags:
+      - ethevals
+      - transactions
+  assert:
+    - type: llm-rubric
+      value: '{{answer}}'
+      metric: ercs

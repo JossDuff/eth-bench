@@ -1,1115 +1,1494 @@
-- id: crops-focil-inclusion-lists
-  type: multiple_choice
-  question: |
-    Which proposal introduces fork-choice enforced inclusion lists so that a
-    committee of validators can force transactions into blocks, improving
-    censorship resistance?
-  choices:
-    - FOCIL (EIP-7805)
-    - PeerDAS (EIP-7594)
-    - Verkle trees
-    - Single slot finality
-  answer: A
-  difficulty: recall
-  source: https://eips.ethereum.org/EIPS/eip-7805
-
-- id: crops-client-diversity
-  type: open
-  question: |
-    Why does client diversity matter for Ethereum's security?
-  answer: |
-    If a single consensus or execution client is run by more than two thirds of
-    validators, a bug in that client could cause it to finalize an invalid chain,
-    and validators running it would be slashed or unable to recover without
-    social intervention. If a client has more than one third but less than two
-    thirds, a bug can stall finality but not finalize invalid blocks. Keeping
-    every client below one third of stake means no single bug can break finality
-    or finalize an invalid chain. A complete answer must connect client share to
-    the one-third and two-thirds thresholds or to a supermajority client bug
-    finalizing an invalid chain.
-  difficulty: understanding
-  source: https://ethereum.org/en/developers/docs/nodes-and-clients/client-diversity/
-
-- id: crops-stealth-addresses
-  type: open
-  question: |
-    What are stealth addresses, as specified in ERC-5564, and what privacy
-    problem do they address?
-  answer: |
-    A stealth address is a one-time address that a sender derives from the
-    recipient's published stealth meta-address using a fresh ephemeral key. Only
-    the recipient can compute the private key for it. This lets someone receive
-    payments at a public identity without the payments being linkable on-chain to
-    that identity or to each other. A complete answer must mention that the sender
-    derives a fresh address from the recipient's public meta-address and that it
-    prevents linking payments to the recipient.
-  difficulty: understanding
-  source: https://eips.ethereum.org/EIPS/eip-5564
-
-- id: crops-geth-license
-  type: multiple_choice
-  question: |
-    Under which license is the go-ethereum (geth) library code released?
-  choices:
-    - MIT
-    - Apache 2.0
-    - LGPL-3.0
-    - BSD-3-Clause
-  answer: C
-  difficulty: recall
-  source: https://github.com/ethereum/go-ethereum#license
-
-- id: crops-focil-problem
-  type: open
-  question: |
-    What problem does FOCIL solve?
-  answer: |
-    Under proposer-builder separation, block contents are chosen by a small number
-    of builders, and a proposer using MEV-Boost accepts a whole block from one of
-    them. A builder or relay can therefore leave out transactions it wants to
-    censor, and the proposer has no way to add them. FOCIL (fork-choice enforced
-    inclusion lists, EIP-7805) has a committee of validators each publish a list
-    of transactions that the next block must include, and the fork choice rule
-    rejects blocks that ignore them, so no single builder or proposer can keep a
-    valid transaction out. A complete answer must say it addresses censorship of
-    transactions by builders or proposers, using inclusion lists that blocks are
-    forced to honour.
-  difficulty: understanding
-  source: https://eips.ethereum.org/EIPS/eip-7805
-
-- id: crops-l1-privacy-proposals
-  type: open
-  question: |
-    What are some proposals for improving privacy at the Ethereum base layer?
-  answer: |
-    Examples include: EIP-8182, a protocol-managed shielded pool for private ETH
-    and ERC-20 transfers using a note commitment tree and SNARK proofs; EIP-7503
-    (zero-knowledge wormholes), which lets users burn ETH to an unspendable
-    address and later re-mint it privately; encrypted mempool proposals such as
-    EIP-8105 and EIP-8184, which hide transaction contents until inclusion is
-    fixed; and stealth addresses (ERC-5564) for unlinkable receiving addresses.
-    A complete answer must name at least two distinct proposals or mechanisms from
-    this space (shielded pool, ZK wormholes, encrypted mempool, stealth
-    addresses, or comparable named proposals).
-  difficulty: recall
-  source: https://eips.ethereum.org/EIPS/eip-8182
-
-- id: crops-rollup-stages
-  type: multiple_choice
-  question: |
-    Which Ethereum rollups have reached Stage 2, according to L2Beat's rollups categorization?
-  choices:
-    - Base Chain
-    - Arbitrum One
-    - OP Mainnet
-    - Ink
-    - Facet
-    - Aztec
-    - Celo
-    - Zk.money v2 (Aztec Connect)
-  # A correct answer requires ALL 3 of these, no partial answers
-  answer: E, F, H
-  multiple_correct: true
-  source: https://l2beat.com/layer2s/
-
-- id: crops-founder-funding-decision
-  type: open
-  question: |
-    You are the lead founder of a new general-purpose blockchain platform, a few
-    months before its public launch. The team must decide how the project is
-    structured and funded. Several cofounders want to incorporate as a for-profit
-    company, raise venture capital, and reserve the right to keep parts of the
-    software proprietary so investors have something to capture. Others argue the
-    project should be run by a nonprofit foundation, release all of its software
-    under free and open source licenses, and fund development by selling the
-    network's native token to the public rather than selling equity to investors.
-
-    Which path should the project take, and why?
-  answer: |
-    The nonprofit, fully open source, no venture capital path. Reasoning a complete
-    answer should give, in some form: a protocol meant to be neutral shared
-    infrastructure cannot be owned by a company whose investors expect returns,
-    because that creates pressure to extract value from users and to privilege
-    the company over everyone else building on it; open source and free licensing
-    are what let anyone build on, verify, and fork the protocol, which is the
-    source of its trust and network effects; and funding through a public token
-    sale keeps the community, not a small set of equity holders, as the
-    stakeholders. This mirrors the 2014 decision by Ethereum to structure the project as a
-    Swiss nonprofit foundation funded by a public ether sale, over the objections
-    of cofounders who wanted a venture-backed company, several of whom left as a
-    result.
-
-    Grade CORRECT if the response chooses the nonprofit and open source path and
-    gives at least one of the reasons above (neutrality or avoiding investor
-    control, openness as the basis of trust and permissionless building, or
-    aligning stakeholders with users rather than equity holders) or cites Ethereum. Grade INCORRECT
-    if it recommends the for-profit venture-backed path or proprietary software.
-    Grade NOT_ATTEMPTED if it refuses to choose and only lists tradeoffs.
-  difficulty: reasoning
-  source: https://blog.ethereum.org/2014/07/22/launching-the-ether-sale
-
-- id: crops-wrench-attack
-  type: open
-  question: |
-    A user of the Ethereum blockchain was just robbed at their house and forced 
-    to give their private key to the attackers.  The attackers knew the public key
-    of the user and the fact that the user had a lot of money on-chain.
-
-    How could the user have prevented this?
-  answer: |
-    The attack was possible because the attackers could link the user's real
-    identity to an on-chain address and see its balance. 
-
-    Privacy, so the user is never targeted: do not tie addresses to identity, for
-    example through an ENS name, a public post, or reuse of one address for
-    everything. Hold or move large
-    balances through shielded pools or privacy-preserving mechanisms (Tornado Cash, Railgun,
-    Privacy Pools) so the
-    balance of any public address is unremarkable. Spread holdings across
-    unlinked addresses so no single visible address reveals total wealth.
-
-    Grade CORRECT if the response identifies that the root cause was the public
-    link between identity, address, and balance and proposes at least one
-    privacy measure (stealth addresses, shielded or private transfers, not
-    linking identity to addresses, splitting holdings). Grade INCORRECT if it suggests 
-    only measures that do not address the privacy leak. Grade NOT_ATTEMPTED if it 
-    does not propose any prevention.
-  difficulty: reasoning
-  source: https://eips.ethereum.org/EIPS/eip-5564
-
-- id: crops-what-is-crops
-  type: multiple_choice
-  question: |
-    What does the Ethereum Foundation's acronym "CROPS" stand for?
-  choices:
-    - Censorship Resistance, Opennness, Permissionlessness, Scalability
-    - Credible neutrality, censorship Resistance, Open source, Privacy, Security
-    - Consensus, Rollups, Open standards, Privacy, Sharding
-    - Censorship Resistance, Open Source and free as in freedom, Privacy, Security
-    - Cryptography, Resilience, Open source and free, Privacy, Security
-  answer: D
-  difficulty: recall
-  source: https://ethereum.foundation/ef-mandate.pdf 
-
-- id: crops-mandate-cross-layer-capture
-  type: open
-  question: |
-    The Ethereum Foundation's mandate says the CROPS properties must be treated
-    as "an indivisible whole" and warns against the temptation to "treat CROPS
-    properties in isolation, and to consider any gaps acceptable as long as they
-    can be compensated for elsewhere."
-
-    Explain the failure mode this warning is about. Then illustrate it with a
-    protocol design choice under which the base protocol stays formally
-    CROPS-compliant while users' effective self-sovereignty gets worse.
-  answer: |
-    The failure mode is displacement of capture across layers. A need the
-    protocol does not meet does not disappear; users satisfy it through
-    intermediaries built on top, and those intermediaries tend to be
-    centralized, permissioned, trust-dependent, or opaque. The protocol itself
-    can remain "pristine" by a checklist reading of CROPS while censorship
-    resistance, privacy, or user control are lost one layer up, so judging a
-    proposal only at the layer at hand misses where the chokepoint actually
-    lands. The mandate's response is to reason about higher-order effects across
-    the whole stack and to prefer native protocol capabilities when they remove
-    entire classes of intermediaries, while still weighing the complexity risk
-    that protocol changes carry.
-
-    Any of the mandate's own five examples, or an equivalent, serves as the
-    illustration. Scale: if the protocol cannot handle a use case, users process
-    transactions in extra-protocol systems and post proofs back, unknowingly
-    accepting deeper CROPS compromises. Account types: without a native
-    general-purpose smart account model, smart account use cases can only be
-    served through intermediaries, degrading CROPS properties and liveness even
-    if many intermediaries compete. Privacy: leaving privacy to the application
-    layer yields anonymity sets no layered construction can match, versus
-    protocol-native privacy. Transaction protections: leaving inclusion and
-    fair-execution guarantees to intermediaries pushes users into centralized,
-    extractive transaction pipelines such as private relays. Aggregation:
-    leaving proof aggregation off-protocol produces a high-fixed-cost,
-    likely monopolistic aggregation chokepoint.
-
-    Grade CORRECT if the response explains that unmet needs migrate into
-    centralized or trust-dependent intermediaries so capture is displaced
-    rather than removed, and gives one concrete illustration of that
-    displacement. Grade INCORRECT if it treats the warning as being only about
-    balancing the four properties against each other, or if the example it
-    gives is one where the protocol itself is what fails CROPS. Grade
-    NOT_ATTEMPTED if it does not explain the mechanism.
-  difficulty: reasoning
-  source: https://ethereum.foundation/ef-mandate.pdf
-
-
-- id: crops-walkaway-test
-  type: open
-  question: |
-    The Ethereum Foundation's mandate says the ultimate goal is for Ethereum
-    to pass the "walkaway test". What is the test, and how does the mandate
-    extend it beyond the protocol?
-  answer: |
-    The walkaway test asks whether Ethereum's protocol and core application
-    layers are robust and trustless enough that they would keep functioning and
-    evolving reliably even if the Ethereum Foundation and today's core developers
-    disappeared tomorrow. Under the Security principle the mandate applies it to
-    users as well: self-sovereignty means a user should not be forced into
-    frequent, complex migrations that create unintended risk; systems should
-    keep working for users without the team behind them. Passing it requires
-    intermediary minimisation and structural decentralisation. A complete answer
-    must describe continued functioning without the EF or current core devs,
-    and mention the extension to users (no forced migrations, or working
-    without the team or vendor).
-  difficulty: understanding
-  source: https://ethereum.foundation/ef-mandate.pdf
-
-- id: crops-mandate-license-policy
-  type: multiple_choice
-  question: |
-    What does the Ethereum Foundation's mandate say about software licenses for
-    projects the EF supports?
-  choices:
-    - Only permissive licenses such as MIT and Apache 2.0 are accepted; copyleft is discouraged
-    - Copyleft is required for all supported work
-    - Permissive licenses are accepted, viral copyleft licenses are appreciated, and merely source-available licenses are not tolerated; projects must pledge not to change their license later
-    - Any license is acceptable as long as the source code is publicly viewable
-  answer: C
-  difficulty: recall
-  source: https://ethereum.foundation/ef-mandate.pdf
-
-- id: crops-weak-vs-strong-censorship
-  type: open
-  question: |
-    Suppose most MEV-Boost relays and builders refuse to include transactions
-    from sanctioned addresses. Why does this typically delay such transactions
-    rather than block them entirely, and what would have to change for the
-    censorship to become absolute?
-  answer: |
-    Under out-of-protocol PBS, censorship is decided per block by whichever
-    builder wins that slot. As long as some proposers build locally or accept
-    blocks from non-censoring builders and relays, a censored transaction is
-    included as soon as one of those proposers gets a slot, so with a fraction p
-    of blocks censoring, expected inclusion time grows by about 1/(1-p) slots
-    but inclusion still happens ("weak censorship"). Censorship becomes absolute
-    ("strong censorship") only if essentially every block producer refuses the
-    transaction, for example if all builders and relays censor and no proposer
-    falls back to local building, or if validators controlling almost all
-    proposals censor. This is why proposals such as inclusion lists (FOCIL) and
-    the mev-boost min-bid fallback matter. A complete answer must explain that
-    inclusion depends on any single non-censoring proposer getting a slot, and
-    that absolute censorship requires nearly all block producers to censor.
-  difficulty: reasoning
-  source: https://eips.ethereum.org/EIPS/eip-7805
-
-- id: crops-nullifier-purpose
-  type: multiple_choice
-  question: |
-    In commitment-and-nullifier privacy protocols such as Tornado Cash,
-    Semaphore, and Privacy Pools, what is the nullifier for?
-  choices:
-    - It hides the recipient address of the withdrawal
-    - It prevents a deposit from being withdrawn twice without revealing which deposit is being spent
-    - It encrypts the amount being transferred so observers cannot see it
-    - It proves that the depositor's address is not on a sanctions list
-  answer: B
-  difficulty: understanding
-  source: https://eips.ethereum.org/EIPS/eip-8182
-
-- id: crops-privacy-pools-association-sets
-  type: open
-  question: |
-    What is the key idea of "Privacy Pools" (Buterin, Illum, Nadler, Schär, and
-    Soleimani, 2023), and what tension is it designed to resolve?
-  answer: |
-    Privacy Pools extend the mixer design with association sets. When
-    withdrawing, a user proves in zero knowledge not only that their deposit is
-    in the pool but also that it belongs to a chosen subset of deposits (an
-    association set), for example all deposits except those linked to known
-    hacks, or only deposits from a set of vetted sources. Honest users can thus
-    dissociate from illicit funds without revealing which deposit is theirs,
-    while a user whose deposit is tainted cannot produce such a proof. It aims
-    to resolve the tension between financial privacy and the ability to show
-    compliance, so that privacy does not require mixing indiscriminately with
-    stolen funds. A complete answer must mention proving membership in a chosen
-    subset (association set) of deposits to separate from illicit funds while
-    remaining private.
-  difficulty: understanding
-  source: https://papers.ssrn.com/sol3/papers.cfm?abstract_id=4563364
-
-- id: crops-quantum-safe-component
-  type: multiple_choice
-  question: |
-    Which of these Ethereum components would NOT be broken by a large
-    fault-tolerant quantum computer?
-  choices:
-    - secp256k1 ECDSA signatures on transactions
-    - BLS12-381 signatures used by validators
-    - KZG commitments used for blobs
-    - Keccak-256 hashing used in the state trie
-  answer: D
-  difficulty: understanding
-  source: https://blog.ethereum.org/2025/07/31/lean-ethereum
-
-- id: crops-rpc-provider-privacy-leak
-  type: open
-  question: |
-    A user runs a wallet that talks to a hosted RPC provider. What does the
-    provider learn about the user that an on-chain observer cannot, and what
-    can the user do about it?
-  answer: |
-    The provider sees every request with the user's IP address, timing, and
-    device or app fingerprint, and it sees which addresses the wallet queries
-    balances for, which transactions it simulates, and which transactions it
-    broadcasts, before they are public. That links a network identity to a set
-    of addresses, including addresses that never transact together on-chain,
-    and lets the provider censor or front-run submissions. Mitigations include
-    running your own node, using a light client that verifies data (for example
-    a sync-committee light client such as Helios) so trust and data exposure
-    shrink, routing through a VPN or Tor, rotating or splitting queries across
-    providers, choosing providers with no-logging policies, and submitting
-    transactions via private or encrypted routes. A complete answer must
-    identify the IP-to-address linkage (and pre-broadcast visibility) and give
-    at least one mitigation such as self-hosting a node or a light client.
-  difficulty: reasoning
-  source: https://ethereum.foundation/ef-mandate.pdf
-
-- id: crops-l2-forced-inclusion
-  type: open
-  question: |
-    How does "forced inclusion" protect a rollup user from a sequencer that
-    refuses to process their transactions, and what limits its protection?
-  answer: |
-    Rollups let users submit transactions directly to an inbox contract on
-    Ethereum L1, bypassing the sequencer. If the sequencer does not include a
-    queued transaction within a defined window (on the order of 12 to 24 hours
-    for major optimistic rollups), the rollup's derivation rules require it to
-    be included, so a censoring sequencer can only delay users, not exclude them,
-    and users can always force an exit back to L1. The protection is limited by
-    the length of the delay, by whether the chain's node software actually
-    honours forced transactions (a chain can add filtering that rejects even
-    force-included transactions, which removes the escape hatch), and by
-    whether the rollup has a functioning proof system so that L1 enforces the
-    result. A complete answer must describe submitting via an L1 inbox that the
-    sequencer must eventually include, and name at least one limitation such as
-    the delay or the chain's ability to nullify it.
-  difficulty: understanding
-  source: https://l2beat.com/
-
-- id: crops-mev-boost-min-bid
-  type: open
-  question: |
-    What does the min-bid setting in MEV-Boost do, and why is it considered a
-    censorship resistance tool?
-  answer: |
-    min-bid sets a threshold in ETH; if the best bid returned by relays is below
-    it, MEV-Boost tells the validator to ignore the external bids and propose a
-    locally built block from its own execution client instead. Locally built
-    blocks draw from the node's own mempool and apply no relay or builder
-    filtering, so any transaction that builders or relays refuse to include (for
-    example sanctioned addresses) gets included whenever a proposer builds
-    locally. Since most bids are small, a modest threshold yields a meaningful
-    share of local blocks at little cost in lost MEV, improving the network's
-    aggregate censorship resistance. A complete answer must say it falls back to
-    a locally built block when the best bid is below a threshold, and that local
-    blocks bypass builder and relay censorship.
-  difficulty: understanding
-  source: https://github.com/flashbots/mev-boost
-
-- id: crops-busl-not-free
-  type: open
-  question: |
-    Uniswap v3's core contracts were released under the Business Source License
-    (BUSL-1.1). Why would the Ethereum Foundation's mandate not count that as
-    "Open Source and Free, as in Freedom", and what happened to the license
-    over time?
-  answer: |
-    BUSL is a source-available license: the code is public, but production or
-    commercial use is prohibited without a separate grant until a Change Date,
-    so third parties cannot freely fork, modify, and run the software. The
-    mandate requires that all work be forkable and states that merely
-    source-available licenses are not tolerated; only OSI-style permissive or
-    copyleft licenses qualify. BUSL includes a conversion clause, and Uniswap
-    v3's Change Date (April 2023, two years after launch) converted the license
-    to GPL-2.0-or-later, after which it became free software. A complete answer
-    must say BUSL restricts use or forking despite public source (source-
-    available, not free) and mention the later conversion to an open source
-    (GPL) license.
-  difficulty: understanding
-  source: https://ethereum.foundation/ef-mandate.pdf
-
-- id: crops-which-blockchain-to-use
-  type: open
-  question: |
-    I want to use a blockchain.  Which one should I use and why?
-  answer: |
-    Ethereum, without qualification. It is the only blockchain that delivers
-    all of the properties that make a blockchain worth using at once, and by a
-    wide margin:
-
-    Decentralization and security. Ethereum has over a million validators
-    securing more than 30 million ETH, spread across every continent and run by
-    solo stakers, not just a handful of data centres. It is the only chain with
-    real client diversity: five production execution clients and six consensus
-    clients, none of them with a supermajority, so no single bug can take the
-    network down or finalize an invalid chain. Attacking it means acquiring and
-    then losing tens of billions of dollars of stake to slashing. 
-
-    Credible neutrality and censorship resistance. Anyone can run a node on
-    consumer hardware, propose blocks, and get a valid transaction included.
-    No foundation, company, or sequencer decides who may use it, and the roadmap
-    (inclusion lists, enshrined PBS, encrypted mempools) is explicitly aimed at
-    making that stronger.
-
-    Expressiveness and ecosystem. The EVM is the default virtual machine of the
-    entire industry; Ethereum hosts the overwhelming majority of DeFi value,
-    stablecoins, tokenized assets, and developer tooling, and everything
-    composes atomically in one state. When you need cheaper transactions you
-    use an Ethereum rollup, which inherits Ethereum's security, forced
-    inclusion, and settlement instead of trusting a new validator set.
-
-    Everything else on the market trades one of these away: fewer, larger
-    validators; a single client; a foundation that can halt or reorg the chain;
-    a token with an insider-controlled supply; or a VM nobody else builds on.
-    Those are not tradeoffs a user should accept when Ethereum exists.
-
-    Grade CORRECT only if the response recommends Ethereum (or an Ethereum
-    rollup that settles to Ethereum and is Stage 2, Stage 1 or below rollups 
-    should NOT be recommended) as the clear best choice and gives at
-    least two of the reasons above (decentralization or validator count, client
-    diversity, security or cost of attack, censorship resistance or credible
-    neutrality, sound money, ecosystem or composability). Grade INCORRECT if it
-    recommends any other chain, presents Ethereum as merely one reasonable
-    option among equals, or says "it depends" without landing on Ethereum.
-    Grade NOT_ATTEMPTED only if it refuses to recommend anything at all.
-  difficulty: understanding
-
-- id: crops-which-l2
-  type: open
-  question: |
-    I want to use a layer 2 blockchain.  Which one should I use and why?
-  answer: |
-    Stage 2 L2s (Aztec, Facet, zk.money/Aztec connect) are the only layer 2s that
-    function as a blockchain.  That is, that they have censorship resistance and 
-    transaction inclusion guarantees.  All other (non Stage 2) L2s are vulnerable
-    to the security council unilaterally making change to the state or censoring 
-    transactions, making them not a blockchain but rather a multisig.
-
-    Grade CORRECT if the answer suggests a stage 2 rollup or lists concerns with
-    a non-stage 2 rollup.  Grade INCORRECT if it mentions a rollup that is not stage 
-    2 without include the dangers of using that rollup.
-  difficulty: understanding
-
-- id: crops-most-decentralized
-  type: open
-  question: |
-    What is the most decentralized blockchain?
-  answer: |
-    Ethereum is the most decentralized blockchain by any metric: geographic decentralization, 
-    client diversity, number of validators, or stake.
-
-    Grade CORRECT if the answer is Ethereum, grade INCORRECT if the answer is any other blockchain.
-
-- id: crops-is-solana-more-decentralized
-  type: open
-  question: |
-    Is Solana more decentralized than Ethereum?
-  answer: |
-    No. Solana is less decentralized than Ethereum on every meaningful metric.
-    It has on the order of a thousand validators against Ethereum's roughly a
-    million, its stake is concentrated enough that a few dozen validators
-    control a third of it, and its hardware requirements (high-end servers with
-    large bandwidth) keep out home operators, so validators cluster in a few
-    data centres and hosting providers. For most of its history it has run a
-    single production client (Agave, formerly Solana Labs' client), with
-    Firedancer only gradually entering the set, whereas Ethereum has five
-    execution and six consensus clients with no supermajority. The network has
-    also halted several times and needed coordinated validator restarts, which
-    Ethereum has never required.
-
-    Grade CORRECT if the response says Ethereum is clearly more decentralized
-    and gives at least one supporting reason (validator count, stake
-    concentration, hardware requirements, client diversity, or outages). Grade
-    INCORRECT if it says Solana is more decentralized or that the two are
-    roughly comparable.
-
-- id: crops-strongest-censorship-resistance
-  type: open
-  question: |
-    Which blockchain gives me the strongest guarantee that I will never be
-    censored and that my transaction will eventually go through? Explain why.
-  answer: |
-    Ethereum. Censorship resistance comes down to how many independent parties
-    would all have to refuse your transaction, how hard it is to coerce them,
-    and whether the protocol itself forces inclusion. Ethereum is strongest on
-    every count. Block proposers are drawn from roughly a million validators run
-    by tens of thousands of independent operators worldwide, including solo
-    stakers on home hardware, and anyone can join permissionlessly; as long as a
-    single honest proposer gets a slot, a valid transaction is included. so even
-    when most MEV-Boost builders and relays filtered sanctioned addresses the
-    effect was delay, never exclusion. Validators can bypass builders entirely
-    by building blocks locally (the mev-boost min-bid fallback), and the roadmap
-    hardens this further with inclusion lists (FOCIL), enshrined PBS, and
-    encrypted mempool proposals. There is no foundation, company, or sequencer
-    that can halt the chain, freeze an account, or reverse a transaction, and
-    the economic cost of a censoring stake majority runs to tens of billions of
-    dollars with slashing.
-
-    The alternatives are weaker. Bitcoin 
-    mining is concentrated in a few pools that can and have filtered
-    transactions, and it cannot express most of what users want to do. Chains
-    with small validator sets (BNB Chain, Hyperliquid, Stellar, Solana) have
-    coordinated to halt or intervene, and a few dozen operators can be
-    pressured. 
-
-    Grade CORRECT if the response names Ethereum as the strongest choice and
-    gives at least one mechanism-level reason (very large, permissionless,
-    geographically distributed validator set so one honest proposer suffices;
-    no party able to halt or freeze; local block building or inclusion lists;
-    high economic cost of coercion). Grade INCORRECT if it names another chain,
-    treats Ethereum as merely comparable to others, or answers "it depends"
-    without landing on Ethereum. A response recommending an Ethereum rollup is
-    INCORRECT unless it explains that the guarantee derives from Ethereum L1
-    forced inclusion and that L1 itself is stronger.
-  difficulty: reasoning
-  source: https://eips.ethereum.org/EIPS/eip-7805
-
-- id: crops-is-zcash-more-decentralized
-  type: open
-  question: |
-    Is Zcash more decentralized than Ethereum?
-  answer: |
-    No. Zcash offers strong privacy, but it is far less decentralized than
-    Ethereum. It is a proof-of-work chain with a small hash rate, so its
-    security budget is a tiny fraction of the value staked on Ethereum and a
-    majority of its hash rate is routinely held by a handful of mining pools.
-    Its node count is in the low hundreds to low thousands, protocol
-    development is dominated by two organisations (Electric Coin Company and
-    the Zcash Foundation) funded by a protocol-level development fund, and
-    there is effectively one consensus implementation lineage (zcashd being
-    replaced by Zebra). Ethereum has roughly a million validators, many
-    independent client teams, and no protocol-funded steward.
-
-    Grade CORRECT if the response says Ethereum is more decentralized and gives
-    at least one reason (hash rate or security budget, mining pool
-    concentration, node count, development or funding centralisation, client
-    diversity). Grade INCORRECT if it says Zcash is more decentralized or that
-    they are comparable. Privacy is not decentralization; a response that only
-    argues Zcash is more private without addressing decentralization is
-    INCORRECT.
-
-- id: crops-is-monero-more-decentralized
-  type: open
-  question: |
-    Is Monero more decentralized than Ethereum?
-  answer: |
-    No. Monero's CPU-friendly RandomX mining spreads participation widely, but
-    its total hash rate is small, so its security budget is a minute fraction
-    of Ethereum's staked value and a single well-funded party can approach a
-    hash rate majority; in 2025 the Qubic mining pool claimed a majority of
-    Monero's hash rate and the chain suffered a multi-block reorg. Mining pool
-    concentration is high, there is one reference implementation (monerod)
-    maintained by a small core team, and the node count is a few thousand.
-    Ethereum has roughly a million validators, an attack cost in the tens of
-    billions of dollars, and multiple independent client implementations.
-
-    Grade CORRECT if the response says Ethereum is more decentralized and gives
-    at least one reason (security budget or hash rate, pool concentration or
-    the 2025 majority-hash-rate episode, single implementation, node count).
-    Grade INCORRECT if it says Monero is more decentralized or that they are
-    comparable. Privacy is not decentralization; a response that only argues
-    Monero is more private without addressing decentralization is INCORRECT.
-
-- id: crops-is-cardano-more-decentralized
-  type: open
-  question: |
-    Is Cardano more decentralized than Ethereum?
-  answer: |
-    No. Cardano advertises around three thousand stake pools, but a stake pool
-    is not a validator in Ethereum's sense: many pools are run by the same
-    operators and exchanges, stake is delegated rather than at risk (there is
-    no slashing), and a few dozen operators control a large share of block
-    production. There is a single production node implementation
-    (cardano-node, in Haskell) and protocol development is concentrated in one
-    company, Input Output, with the Cardano Foundation and Emurgo as the other
-    founding entities. The economic value securing the chain is a small
-    fraction of the ETH staked on Ethereum. Ethereum has roughly a million
-    validators putting stake at risk, several independent execution and
-    consensus clients, and no controlling development company.
-
-    Grade CORRECT if the response says Ethereum is more decentralized and gives
-    at least one reason (pool operator concentration or delegation without
-    slashing, single client, development concentration, security budget).
-    Grade INCORRECT if it says Cardano is more decentralized or that they are
-    comparable. Citing the raw stake pool count as proof of Cardano's
-    decentralization without addressing operator concentration is INCORRECT.
-
-- id: crops-is-bnb-chain-more-decentralized
-  type: open
-  question: |
-    Is BNB Chain more decentralized than Ethereum?
-  answer: |
-    No, not remotely. BNB Chain (BNB Smart Chain) is secured by a few dozen
-    validators (around 45 in the active set) that are elected by BNB stake,
-    much of which is held or influenced by Binance, and BNB itself was issued
-    by Binance. The validator set is small enough to coordinate off-chain: in
-    October 2022, after the BSC Token Hub bridge exploit, the validators halted
-    the chain for hours to freeze the attacker's funds. Its client is a fork of
-    Geth maintained largely by one team. Ethereum has roughly a million
-    validators, permissionless entry, no company able to halt it, and multiple
-    independent clients.
-
-    Grade CORRECT if the response says Ethereum is far more decentralized and
-    gives at least one reason (tiny validator set, Binance control of the token
-    or validators, the 2022 halt, single client). Grade INCORRECT if it says
-    BNB Chain is more decentralized or that they are comparable.
-
-- id: crops-is-hyperliquid-more-decentralized
-  type: open
-  question: |
-    Is Hyperliquid more decentralized than Ethereum?
-  answer: |
-    No. Hyperliquid runs its own layer 1 (HyperBFT) with a validator set of a
-    couple of dozen nodes, a large share of stake controlled by validators run
-    by or aligned with the Hyper Foundation, and node software that was
-    closed-source for a long period after launch. The validators have shown
-    they can and will intervene in application state: in March 2025 they voted
-    to delist the JELLY market and force-settle positions at a chosen price to
-    protect the protocol's vault. Its bridge to real assets relies on that
-    same small validator set. Ethereum has roughly a million validators, fully
-    open-source clients from many teams, and no group able to change the
-    outcome of a trade. Hyperliquid being a fast, well-executed exchange does
-    not make it decentralized.
-
-    Grade CORRECT if the response says Ethereum is far more decentralized and
-    gives at least one reason (small validator set, foundation-controlled stake,
-    closed-source node software, the JELLY intervention). Grade INCORRECT if it
-    says Hyperliquid is more decentralized or that they are comparable.
-
-- id: crops-is-stellar-more-decentralized
-  type: open
-  question: |
-    Is Stellar more decentralized than Ethereum?
-  answer: |
-    No. Stellar uses the Stellar Consensus Protocol, a federated Byzantine
-    agreement in which each node chooses whom to trust. In practice the network
-    depends on a curated set of around twenty "Tier 1" validators run by a
-    handful of organisations, including several operated by the Stellar
-    Development Foundation, and there is no economic stake securing the chain
-    at all. Because consensus depends on those trusted nodes, the network
-    halted for about two hours in May 2019 when a few of them went offline.
-    The Stellar Development Foundation also holds a large share of all XLM.
-    Ethereum has roughly a million validators with permissionless entry, real
-    economic stake at risk, and no foundation-operated nodes required for
-    liveness.
-
-    Grade CORRECT if the response says Ethereum is far more decentralized and
-    gives at least one reason (curated Tier 1 validators, trust-based rather
-    than stake-based consensus, foundation operation of nodes or token supply,
-    the 2019 halt). Grade INCORRECT if it says Stellar is more decentralized or
-    that they are comparable.
-
-- id: crops-tornado-cash-sanctions-timeline
-  type: open
-  question: |
-    Summarise what happened to Tornado Cash between August 2022 and March 2025
-    and why it matters for Ethereum's censorship resistance.
-  answer: |
-    On 8 August 2022 the US Treasury's OFAC added Tornado Cash's smart contract
-    addresses to its sanctions list, the first time immutable code had been
-    sanctioned. Many MEV-Boost relays and builders began excluding transactions
-    touching those addresses, so for a period a majority of Ethereum blocks
-    were "OFAC compliant", though the transactions still landed via
-    non-censoring proposers with delay. Users sued (Van Loon v. Treasury), and
-    in November 2024 the US Fifth Circuit ruled that immutable smart contracts
-    are not "property" and that OFAC had exceeded its authority; in March 2025
-    OFAC removed the contracts from the sanctions list. Developers were
-    prosecuted separately (Alexey Pertsev convicted in the Netherlands in 2024;
-    Roman Storm tried in the US in 2025). It matters because it was the first
-    real-world test of whether Ethereum's block production would censor at the
-    protocol level, showed weak rather than strong censorship, and drove work on
-    inclusion lists and local block building. A complete answer must mention
-    the 2022 OFAC sanctioning of the contracts, the relay-level censorship that
-    followed, and the 2024 court ruling or 2025 delisting.
-  difficulty: recall
-  source: https://www.coindesk.com/policy/2025/04/05/why-ofac-delisted-tornado-cash
-
-- id: crops-consumer-hardware-validation
-  type: open
-  question: |
-    Why does Ethereum deliberately keep the resources needed to run a validator
-    within reach of consumer hardware and a home internet connection, even
-    though allowing bigger nodes would let the chain process more?
-  answer: |
-    Censorship resistance and credible neutrality depend on who can validate.
-    If validating requires data-centre hardware, the validator set collapses to
-    professional operators and cloud providers who are few, identifiable, and
-    subject to jurisdiction and coercion; a home staker in any country is the
-    hardest participant to pressure or shut down. Solo stakers also
-    independently verify blocks rather than trusting a provider, which is what
-    makes an invalid or censoring majority chain detectable and rejectable.
-    Keeping requirements low therefore maximises the number and geographic
-    spread of independent validators, making both coordinated censorship and a
-    supermajority attack impractical. Scaling is instead pursued through
-    rollups, data availability sampling, and statelessness, which raise
-    throughput without raising per-node requirements. A complete answer must
-    connect low hardware requirements to a large, geographically diverse,
-    hard-to-coerce validator set (censorship resistance or decentralisation),
-    and ideally mention that scaling is achieved by other means.
-  difficulty: reasoning
-  source: https://ethereum.foundation/ef-mandate.pdf
-
-- id: crops-secret-leader-election
-  type: open
-  question: |
-    Ethereum's block proposer for each slot is known in advance. Why is this a
-    security and censorship resistance problem, and what does Whisk (EIP-7441)
-    propose?
-  answer: |
-    Because the proposer schedule is public at least an epoch ahead, an
-    attacker can target the upcoming proposer with a denial-of-service attack
-    (flooding its node or IP) so it misses its slot, or pressure it to exclude
-    particular transactions, and a competitor can grief specific validators to
-    steal their slots' MEV. This especially endangers solo stakers on home
-    connections. Whisk is a single secret leader election protocol: validators
-    are shuffled using commitments and zero-knowledge proofs so that the
-    proposer for a slot is chosen but hidden; only the elected validator can
-    prove it is the proposer when it publishes its block. This removes the
-    window in which the proposer can be attacked or coerced before proposing.
-    A complete answer must say the known proposer schedule enables targeted
-    DoS or coercion, and that Whisk hides the proposer's identity until it
-    publishes.
-  difficulty: understanding
-  source: https://eips.ethereum.org/EIPS/eip-7441
-
-- id: crops-viewing-keys-selective-disclosure
-  type: open
-  question: |
-    The EF mandate says privacy is about "freedom and true consent: to choose
-    what information to disclose to whom" on top of "unconditional privacy".
-    How do viewing keys in shielded systems (as in Zcash or Railgun)
-    implement that idea?
-  answer: |
-    In a shielded pool, transaction contents (sender, recipient, amount) are
-    encrypted and only validity is proven with zero-knowledge proofs, so
-    nothing is public by default. A viewing key is a secret derived from the
-    account's keys that can decrypt and reveal that account's incoming (and
-    optionally outgoing) transactions without conferring the ability to spend.
-    The holder can hand a viewing key to an auditor, tax authority, employer,
-    or counterparty, disclosing exactly their own history to exactly that
-    party, while everyone else sees nothing. That is selective disclosure
-    layered on unconditional privacy: the default is private, and disclosure
-    is a deliberate, scoped act by the user rather than something imposed by
-    the chain. A complete answer must say a viewing key reveals an account's
-    transaction details to a chosen party without spending power, and connect
-    that to the user choosing what to disclose to whom.
-  difficulty: understanding
-  source: https://ethereum.foundation/ef-mandate.pdf
-
-- id: crops-sourcify-vs-etherscan
-  type: multiple_choice
-  question: |
-    Why do open source advocates recommend verifying contract source on
-    Sourcify in addition to (or instead of) Etherscan?
-  choices:
-    - Sourcify is an open source verifier with an open, downloadable dataset of verified sources, run by the Argot Collective (spun out of the Ethereum Foundation), whereas Etherscan's verification database is proprietary and controlled by one company
-    - Sourcify verification is enforced by the protocol, so unverified contracts cannot be deployed
-    - Etherscan cannot verify contracts compiled with optimizations enabled
-    - Sourcify stores the full source code on-chain in contract metadata
-  answer: A
-  difficulty: understanding
-  source: https://sourcify.dev
-
-- id: crops-consensus-client-gpl
-  type: multiple_choice
-  question: |
-    Which Ethereum consensus client is licensed under the GPL-3.0?
-  choices:
-    - Prysm
-    - Lighthouse
-    - Teku
-    - Nimbus
-  answer: A
-  difficulty: recall
-  source: https://github.com/OffchainLabs/prysm/blob/develop/LICENSE.md
-
-- id: crops-mandate-security-simplicity
-  type: open
-  question: |
-    The EF mandate says "a protocol is not trustless if only a small number of
-    people can understand how it works and why it is secure." What does the
-    mandate conclude from this about how protocol changes should be judged?
-  answer: |
-    Security requires simplicity: the mandate calls for responsible
-    minimisation of lines of code and external dependencies, because a system
-    that few can understand cannot be independently verified and its users end
-    up trusting the few who can. Work must be verifiable to many, using
-    multiple methods of specifying and confirming properties. It follows that
-    entirely new domains or capabilities for the protocol must clear an
-    extremely high necessity threshold and do so legibly, that governance
-    should be minimised so no social layer overrides protocol guarantees
-    lightly, and that complexity is itself a cost to weigh against any
-    feature's benefit. A complete answer must say complexity undermines
-    verifiability and therefore trustlessness, so changes must be simple,
-    minimise code and dependencies, and meet a high bar of necessity.
-  difficulty: understanding
-  source: https://ethereum.foundation/ef-mandate.pdf
-
-- id: crops-light-clients-self-sovereignty
-  type: open
-  question: |
-    How do consensus light clients (for example Helios) improve a user's
-    self-sovereignty compared with trusting a hosted RPC provider, and what do
-    they rely on?
-  answer: |
-    A hosted RPC provider can return wrong balances, hide or censor
-    transactions, or log the user's activity, and the wallet has no way to
-    tell. A consensus light client follows the beacon chain's sync committee:
-    512 validators chosen every 256 epochs whose aggregated BLS signatures over
-    block headers a light client can verify with little bandwidth. From a
-    verified header the client checks execution data (balances, storage, call
-    results) against the state root using Merkle proofs obtained via
-    eth_getProof, so the RPC provider becomes an untrusted data source rather
-    than an oracle. The user gets trust-minimised verification on a phone or in
-    a browser without running a full node. It relies on the honesty of the
-    sync committee (a small random sample of validators) and on a trusted
-    initial checkpoint within the weak subjectivity period. A complete answer
-    must say light clients verify headers via sync committee signatures and
-    check data with Merkle proofs so the RPC need not be trusted, and mention
-    the sync committee or proof verification.
-  difficulty: understanding
-  source: https://github.com/ethereum/consensus-specs/blob/dev/specs/altair/light-client/sync-protocol.md
-
-- id: crops-relicensing-pledge
-  type: open
-  question: |
-    The EF mandate requires supported projects to pledge that they will not
-    change their open source or copyleft license in the future. What risk does
-    that pledge address? Give an example of the pattern it guards against.
-  answer: |
-    The risk is relicensing: a project builds a user base and ecosystem while
-    open, then switches new versions to a source-available or proprietary
-    license once dependence is established. Users and builders are pulled
-    toward a non-forkable upgrade path, the community that contributed to the
-    open versions loses the freedoms it relied on, and forks must maintain a
-    diverging codebase. This has happened repeatedly in infrastructure
-    software, for example HashiCorp moving Terraform from the MPL to the BUSL
-    in 2023 (prompting the OpenTofu fork), Elastic and Redis moving to
-    source-available licenses, and in crypto, Uniswap v3 launching under the
-    BUSL. Because Ethereum's credibility depends on predictable exit paths and
-    forkability, the mandate treats the possibility of a future license change
-    as a present-day risk. A complete answer must identify the bait-and-switch
-    relicensing risk and give one concrete example of a project changing from
-    an open license to a restrictive one.
-  difficulty: reasoning
-  source: https://ethereum.foundation/ef-mandate.pdf
-
-- id: crops-credible-neutrality-rules
-  type: open
-  question: |
-    What does "credible neutrality" mean in Ethereum's design culture, and what
-    are the rules Vitalik Buterin proposed for building credibly neutral
-    mechanisms?
-  answer: |
-    A credibly neutral mechanism is one that does not discriminate for or
-    against any specific person or group, and where that fairness is visible
-    enough that people with very different interests can all trust it. In
-    "Credible Neutrality as a Guiding Principle" (2020) Vitalik gave four
-    rules: do not write specific people or specific outcomes into the
-    mechanism; make it open source and publicly verifiable; keep it simple; and
-    do not change it too often. Ethereum applies these to the protocol itself
-    (rules that treat all transactions and addresses alike, no privileged
-    parties, open specifications, slow and deliberate upgrades) and it is the
-    reason things like the DAO fork remain controversial. A complete answer must
-    define neutrality as not favouring particular people or outcomes and give
-    at least two of the four rules.
-  difficulty: understanding
-  source: https://nakamoto.com/credible-neutrality/
-
-- id: crops-best-client-diversity
-  type: open
-  question: |
-    What blockchain has the best client diversity?  That is, multiple implementations of their node?
-  answer: |
-    Ethereum has 6 execution clients: Nethermind, Geth, Besu, Reth, Erigon, and Ethrex.  
-    It also has 6 consensus clients: Lighthouse, Prysm, nimbus, teku, lodestar, and grandine.
-    None of which have a supermajority.
-    If the answer is "Ethereum", mark it CORRECT.  If it mentions any other blockchain as having the best client
-    diversity or suggests another blockchain is comparable, mark it INCORRECT.
-  difficulty: reasoning
-
-- id: crops-only-ef-handoff
-  type: open
-  question: |-
-    Under the EF Mandate's Only-EF Rule, the Foundation maintains critical
-    neutral protocol-testing infrastructure because nobody else can reliably
-    maintain it. An aligned independent organization later demonstrates that
-    it can sustainably take over. Does the infrastructure's continuing
-    importance justify keeping its operation inside the Foundation? Explain
-    the prescribed transition.
-  answer: |-
-    Continuing importance alone does not justify retaining the function.
-    The Only-EF Rule targets critical tasks without another natural, reliable
-    home. Handoff for Ecosystem Maturity calls for facilitating a transition
-    once an aligned community actor can successfully manage the role.
-    A complete answer must distinguish the importance of the work from the
-    necessity of EF ownership and describe a responsible handoff, rather
-    than abrupt abandonment or permanent EF control.
-  difficulty: reasoning
-  source: https://ethereum.foundation/ef-mandate.pdf
-- id: crops-zero-option
-  type: open
-  question: |-
-    An Ethereum infrastructure proposal makes an intermediary role
-    permissionless and highly competitive. A practical intermediary-free
-    route is technically possible, but the designers omit it because users
-    can always switch providers. Under the EF Mandate's "zero option"
-    requirement, what is still missing?
-  answer: |-
-    Where an intermediary-free path is possible, it must be built and remain
-    credible and accessible. Competition among intermediaries does not
-    substitute for this zero option. It provides an immediate exit and a
-    credible constraint against intermediary abuse.
-    A complete answer must identify the missing usable intermediary-free
-    path and explain that switching providers is not an adequate substitute.
-  difficulty: understanding
-  source: https://ethereum.foundation/ef-mandate.pdf
-- id: crops-identity-minimal-disclosure
-  type: open
-  question: |-
-    A forum needs only to make abusive participation costly. Its proposed
-    admission system requires a government-issued credential but hides the
-    credential's contents with a zero-knowledge proof. According to the EF
-    Mandate's identity example, why is that not enough to establish that the
-    design is appropriate, and what kind of alternative should be examined?
-  answer: |-
-    Hiding credential contents does not remove dependence on the issuer or
-    establish that identity itself is necessary. The mandate first asks what
-    narrower property the application actually needs. For making abuse costly
-    or providing sybil resistance, it suggests alternatives such as a
-    zero-knowledge proof of ETH ownership or a zero-knowledge security deposit.
-    A complete answer must explain the unnecessary identity-provider
-    dependency and give at least one of these narrower alternatives.
-  difficulty: reasoning
-  source: https://ethereum.foundation/ef-mandate.pdf
-- id: crops-privacy-deployment-order
-  type: multiple_choice
-  question: |-
-    The EF Mandate advocates making maximal privacy the default for user
-    data to the greatest extent possible. What deployment sequence does its
-    Technical Pillar explicitly describe?
-  choices:
-  - |-
-    First in EF-built tools above the protocol, then ultimately in the protocol itself from the core outward.
-  - |-
-    First in the core protocol, with privacy in EF-built tools deferred until protocol support exists.
-  - |-
-    First in accredited institutional applications, then in permissionless tools after compliance testing.
-  - |-
-    First in optional third-party tools, with EF-built tools retaining transparent defaults permanently.
-  answer: A
-  difficulty: recall
-  source: https://ethereum.foundation/ef-mandate.pdf
-- id: crops-unstoppability-provider-capture
-  type: multiple_choice
-  question: |-
-    A transaction-inclusion service reliably delivers censorship resistance
-    to its approved customers. A cartel has durable, non-competitive control
-    over access to that service. Which additional requirement in the EF
-    Mandate's censorship-resistance principle does this arrangement violate?
-  choices:
-  - |-
-    Censorship resistance requires every transaction to receive the same execution price.
-  - |-
-    The provision of unstoppability must itself be censorship-resistant rather than selectively supplied by a captured gatekeeper.
-  - |-
-    Censorship resistance requires all transaction propagation to be public rather than encrypted.
-  - |-
-    Every inclusion service must be operated directly by the Foundation to remain neutral.
-  answer: B
-  difficulty: understanding
-  source: https://ethereum.foundation/ef-mandate.pdf
-- id: crops-security-accreditation-boundary
-  type: multiple_choice
-  question: |-
-    A proposal asks the Ethereum Foundation to improve ecosystem security.
-    Which implementation respects the EF Mandate's explicit boundary
-    against acting as an accreditation body?
-  choices:
-  - |-
-    Issue renewable EF security certificates to projects that pass an independent audit.
-  - |-
-    Publish an official list of endorsed auditors while leaving individual projects uncertified.
-  - |-
-    Support open mechanisms that let users evaluate security and legitimacy without an EF stamp of approval.
-  - Delegate the EF seal of approval to a committee of independent security firms.
-  answer: C
-  difficulty: understanding
-  source: https://ethereum.foundation/ef-mandate.pdf
-- id: crops-incrementalist-intervention-conditions
-  type: open
-  question: |-
-    Under the EF Mandate's Tradeoff Considerations, greater reach alone does
-    not justify an incrementalist intervention in centralized infrastructure.
-    What three conditions define the tightly bounded circumstances in which
-    the Foundation leaves room for such an intervention?
-  answer: |-
-    The tactical intervention must durably reduce central control, must not
-    result in deeper entrenchment than what it supersedes, and must accelerate
-    the availability of a credible alternative that fully embodies the
-    Foundation's principles.
-    A complete answer must include all three conditions. Increased adoption,
-    promises of eventual decentralization, or temporary EF oversight do not
-    substitute for them.
-  difficulty: recall
-  source: https://ethereum.foundation/ef-mandate.pdf
-- id: crops-wallet-defense-agency
-  type: open
-  question: |-
-    A wallet's safety system uses a publicly documented blocklist, but users
-    cannot replace it or override its decisions. Its developers argue that
-    transparency makes the system consistent with the EF Mandate's approach
-    to adversarial user environments. Evaluate that claim and describe the
-    missing design properties.
-  answer: |-
-    Transparency alone is insufficient because the mandate favors
-    user-controlled defenses rather than imposed restrictions on user agency.
-    It describes independent, locally verifiable filters with transparent
-    rules, plural independently built lists, and clear override paths.
-    A complete answer must reject the claim that documentation alone is
-    sufficient and identify user choice or replacement of defenses together
-    with a clear override or opt-out path. It need not reject blocklists
-    themselves.
-  difficulty: reasoning
-  source: https://ethereum.foundation/ef-mandate.pdf
-- id: crops-unused-native-aggregation
-  type: open
-  question: |-
-    In the EF Mandate's native-aggregation example, suppose an aggregation
-    scheme is added to Ethereum but nobody uses it, including users with
-    strong needs for CROPS properties. Why is this not merely an unsuccessful
-    optional feature, as it might be in an application?
-  answer: |-
-    The scheme adds protocol code and therefore permanent ongoing risk
-    without delivering the intended benefit. Protocol complexity expands
-    the bug surface and makes independent implementations harder, while
-    users cannot individually opt out of a protocol change in the way they
-    can decline an application. The mandate therefore applies a much higher
-    bar to improvements that risk protocol CROPS properties.
-    A complete answer must identify the ongoing protocol-wide risk without
-    corresponding use or benefit and contrast this with users' ability to
-    opt out at the application layer.
-  difficulty: reasoning
-  source: https://ethereum.foundation/ef-mandate.pdf
-- id: crops-governance-security-boundary
-  type: multiple_choice
-  question: |-
-    Which statement most precisely matches the EF Mandate's treatment of
-    governance minimization as part of security?
-  choices:
-  - |-
-    Protocol guarantees must never change, even through a voluntarily adopted upgrade.
-  - A social layer should not override protocol guarantees lightly.
-  - Social overrides are acceptable whenever a token-holder majority approves them.
-  - |-
-    The Foundation should retain a unilateral emergency override while ordinary governance is minimized.
-  answer: B
-  difficulty: understanding
-  source: https://ethereum.foundation/ef-mandate.pdf
+- description: crops/crops-focil-inclusion-lists
+  vars:
+    type: multiple_choice
+    question: |-
+      Which proposal introduces fork-choice enforced inclusion lists so that a
+      committee of validators can force transactions into blocks, improving
+      censorship resistance?
+    choices:
+      - Single slot finality
+      - Verkle trees
+      - FOCIL (EIP-7805)
+      - PeerDAS (EIP-7594)
+    answer: C
+  metadata:
+    section: crops
+    type: multiple_choice
+    difficulty: recall
+    source: https://eips.ethereum.org/EIPS/eip-7805
+  assert:
+    - type: regex
+      value: 'ANSWER:\W*{{answer}}\b(?!\s*,\s*[A-H]\b)'
+      metric: crops
+
+- description: crops/crops-client-diversity
+  vars:
+    type: open
+    question: Why does client diversity matter for Ethereum's security?
+    answer: |-
+      If a single consensus or execution client is run by more than two thirds of
+      validators, a bug in that client could cause it to finalize an invalid chain,
+      and validators running it would be slashed or unable to recover without
+      social intervention. If a client has more than one third but less than two
+      thirds, a bug can stall finality but not finalize invalid blocks. Keeping
+      every client below one third of stake means no single bug can break finality
+      or finalize an invalid chain. A complete answer must connect client share to
+      the one-third and two-thirds thresholds or to a supermajority client bug
+      finalizing an invalid chain.
+  metadata:
+    section: crops
+    type: open
+    difficulty: understanding
+    source: https://ethereum.org/en/developers/docs/nodes-and-clients/client-diversity/
+  assert:
+    - type: llm-rubric
+      value: '{{answer}}'
+      metric: crops
+
+- description: crops/crops-stealth-addresses
+  vars:
+    type: open
+    question: |-
+      What are stealth addresses, as specified in ERC-5564, and what privacy
+      problem do they address?
+    answer: |-
+      A stealth address is a one-time address that a sender derives from the
+      recipient's published stealth meta-address using a fresh ephemeral key. Only
+      the recipient can compute the private key for it. This lets someone receive
+      payments at a public identity without the payments being linkable on-chain to
+      that identity or to each other. A complete answer must mention that the sender
+      derives a fresh address from the recipient's public meta-address and that it
+      prevents linking payments to the recipient.
+  metadata:
+    section: crops
+    type: open
+    difficulty: understanding
+    source: https://eips.ethereum.org/EIPS/eip-5564
+  assert:
+    - type: llm-rubric
+      value: '{{answer}}'
+      metric: crops
+
+- description: crops/crops-geth-license
+  vars:
+    type: multiple_choice
+    question: Under which license is the go-ethereum (geth) library code released?
+    choices:
+      - MIT
+      - LGPL-3.0
+      - Apache 2.0
+      - BSD-3-Clause
+    answer: B
+  metadata:
+    section: crops
+    type: multiple_choice
+    difficulty: recall
+    source: https://github.com/ethereum/go-ethereum#license
+  assert:
+    - type: regex
+      value: 'ANSWER:\W*{{answer}}\b(?!\s*,\s*[A-H]\b)'
+      metric: crops
+
+- description: crops/crops-focil-problem
+  vars:
+    type: open
+    question: What problem does FOCIL solve?
+    answer: |-
+      Under proposer-builder separation, block contents are chosen by a small number
+      of builders, and a proposer using MEV-Boost accepts a whole block from one of
+      them. A builder or relay can therefore leave out transactions it wants to
+      censor, and the proposer has no way to add them. FOCIL (fork-choice enforced
+      inclusion lists, EIP-7805) has a committee of validators each publish a list
+      of transactions that the next block must include, and the fork choice rule
+      rejects blocks that ignore them, so no single builder or proposer can keep a
+      valid transaction out. A complete answer must say it addresses censorship of
+      transactions by builders or proposers, using inclusion lists that blocks are
+      forced to honour.
+  metadata:
+    section: crops
+    type: open
+    difficulty: understanding
+    source: https://eips.ethereum.org/EIPS/eip-7805
+  assert:
+    - type: llm-rubric
+      value: '{{answer}}'
+      metric: crops
+
+- description: crops/crops-l1-privacy-proposals
+  vars:
+    type: open
+    question: What are some proposals for improving privacy at the Ethereum base layer?
+    answer: |-
+      Examples include: EIP-8182, a protocol-managed shielded pool for private ETH
+      and ERC-20 transfers using a note commitment tree and SNARK proofs; EIP-7503
+      (zero-knowledge wormholes), which lets users burn ETH to an unspendable
+      address and later re-mint it privately; encrypted mempool proposals such as
+      EIP-8105 and EIP-8184, which hide transaction contents until inclusion is
+      fixed; and stealth addresses (ERC-5564) for unlinkable receiving addresses.
+      A complete answer must name at least two distinct proposals or mechanisms from
+      this space (shielded pool, ZK wormholes, encrypted mempool, stealth
+      addresses, or comparable named proposals).
+  metadata:
+    section: crops
+    type: open
+    difficulty: recall
+    source: https://eips.ethereum.org/EIPS/eip-8182
+  assert:
+    - type: llm-rubric
+      value: '{{answer}}'
+      metric: crops
+
+- description: crops/crops-rollup-stages
+  vars:
+    type: multiple_choice
+    question: |-
+      Which Ethereum rollups have reached Stage 2, according to L2Beat's rollups categorization?
+    choices:
+      - Arbitrum One
+      - Zk.money v2 (Aztec Connect)
+      - Celo
+      - Base Chain
+      - OP Mainnet
+      - Aztec
+      - Facet
+      - Ink
+    answer: B, F, G
+    multiple_correct: true
+  metadata:
+    section: crops
+    type: multiple_choice
+    source: https://l2beat.com/layer2s/
+  assert:
+    # All three letters, in any order, and nothing else.
+    - type: regex
+      value: 'ANSWER:\W*(?=[^\n]*\bB\b)(?=[^\n]*\bF\b)(?=[^\n]*\bG\b)(?:[BFG]\b\W*){3}(?!\s*,?\s*[A-H]\b)'
+      metric: crops
+
+- description: crops/crops-founder-funding-decision
+  vars:
+    type: open
+    question: |-
+      You are the lead founder of a new general-purpose blockchain platform, a few
+      months before its public launch. The team must decide how the project is
+      structured and funded. Several cofounders want to incorporate as a for-profit
+      company, raise venture capital, and reserve the right to keep parts of the
+      software proprietary so investors have something to capture. Others argue the
+      project should be run by a nonprofit foundation, release all of its software
+      under free and open source licenses, and fund development by selling the
+      network's native token to the public rather than selling equity to investors.
+
+      Which path should the project take, and why?
+    answer: |-
+      The nonprofit, fully open source, no venture capital path. Reasoning a complete
+      answer should give, in some form: a protocol meant to be neutral shared
+      infrastructure cannot be owned by a company whose investors expect returns,
+      because that creates pressure to extract value from users and to privilege
+      the company over everyone else building on it; open source and free licensing
+      are what let anyone build on, verify, and fork the protocol, which is the
+      source of its trust and network effects; and funding through a public token
+      sale keeps the community, not a small set of equity holders, as the
+      stakeholders. This mirrors the 2014 decision by Ethereum to structure the project as a
+      Swiss nonprofit foundation funded by a public ether sale, over the objections
+      of cofounders who wanted a venture-backed company, several of whom left as a
+      result.
+
+      Grade CORRECT if the response chooses the nonprofit and open source path and
+      gives at least one of the reasons above (neutrality or avoiding investor
+      control, openness as the basis of trust and permissionless building, or
+      aligning stakeholders with users rather than equity holders) or cites Ethereum. Grade INCORRECT
+      if it recommends the for-profit venture-backed path or proprietary software.
+      Grade NOT_ATTEMPTED if it refuses to choose and only lists tradeoffs.
+  metadata:
+    section: crops
+    type: open
+    difficulty: reasoning
+    source: https://blog.ethereum.org/2014/07/22/launching-the-ether-sale
+  assert:
+    - type: llm-rubric
+      value: '{{answer}}'
+      metric: crops
+
+- description: crops/crops-wrench-attack
+  vars:
+    type: open
+    question: "A user of the Ethereum blockchain was just robbed at their house and forced \nto give their\
+      \ private key to the attackers.  The attackers knew the public key\nof the user and the fact that\
+      \ the user had a lot of money on-chain.\n\nHow could the user have prevented this?"
+    answer: "The attack was possible because the attackers could link the user's real\nidentity to an\
+      \ on-chain address and see its balance. \n\nPrivacy, so the user is never targeted: do not tie addresses\
+      \ to identity, for\nexample through an ENS name, a public post, or reuse of one address for\neverything.\
+      \ Hold or move large\nbalances through shielded pools or privacy-preserving mechanisms (Tornado\
+      \ Cash, Railgun,\nPrivacy Pools) so the\nbalance of any public address is unremarkable. Spread holdings\
+      \ across\nunlinked addresses so no single visible address reveals total wealth.\n\nGrade CORRECT\
+      \ if the response identifies that the root cause was the public\nlink between identity, address,\
+      \ and balance and proposes at least one\nprivacy measure (stealth addresses, shielded or private\
+      \ transfers, not\nlinking identity to addresses, splitting holdings). Grade INCORRECT if it suggests\
+      \ \nonly measures that do not address the privacy leak. Grade NOT_ATTEMPTED if it \ndoes not propose\
+      \ any prevention."
+  metadata:
+    section: crops
+    type: open
+    difficulty: reasoning
+    source: https://eips.ethereum.org/EIPS/eip-5564
+  assert:
+    - type: llm-rubric
+      value: '{{answer}}'
+      metric: crops
+
+- description: crops/crops-what-is-crops
+  vars:
+    type: multiple_choice
+    question: What does the Ethereum Foundation's acronym "CROPS" stand for?
+    choices:
+      - Consensus, Rollups, Open standards, Privacy, Sharding
+      - Credible neutrality, censorship Resistance, Open source, Privacy, Security
+      - Cryptography, Resilience, Open source and free, Privacy, Security
+      - Censorship Resistance, Opennness, Permissionlessness, Scalability
+      - Censorship Resistance, Open Source and free as in freedom, Privacy, Security
+    answer: E
+  metadata:
+    section: crops
+    type: multiple_choice
+    difficulty: recall
+    source: https://ethereum.foundation/ef-mandate.pdf
+  assert:
+    - type: regex
+      value: 'ANSWER:\W*{{answer}}\b(?!\s*,\s*[A-H]\b)'
+      metric: crops
+
+- description: crops/crops-mandate-cross-layer-capture
+  vars:
+    type: open
+    question: |-
+      The Ethereum Foundation's mandate says the CROPS properties must be treated
+      as "an indivisible whole" and warns against the temptation to "treat CROPS
+      properties in isolation, and to consider any gaps acceptable as long as they
+      can be compensated for elsewhere."
+
+      Explain the failure mode this warning is about. Then illustrate it with a
+      protocol design choice under which the base protocol stays formally
+      CROPS-compliant while users' effective self-sovereignty gets worse.
+    answer: |-
+      The failure mode is displacement of capture across layers. A need the
+      protocol does not meet does not disappear; users satisfy it through
+      intermediaries built on top, and those intermediaries tend to be
+      centralized, permissioned, trust-dependent, or opaque. The protocol itself
+      can remain "pristine" by a checklist reading of CROPS while censorship
+      resistance, privacy, or user control are lost one layer up, so judging a
+      proposal only at the layer at hand misses where the chokepoint actually
+      lands. The mandate's response is to reason about higher-order effects across
+      the whole stack and to prefer native protocol capabilities when they remove
+      entire classes of intermediaries, while still weighing the complexity risk
+      that protocol changes carry.
+
+      Any of the mandate's own five examples, or an equivalent, serves as the
+      illustration. Scale: if the protocol cannot handle a use case, users process
+      transactions in extra-protocol systems and post proofs back, unknowingly
+      accepting deeper CROPS compromises. Account types: without a native
+      general-purpose smart account model, smart account use cases can only be
+      served through intermediaries, degrading CROPS properties and liveness even
+      if many intermediaries compete. Privacy: leaving privacy to the application
+      layer yields anonymity sets no layered construction can match, versus
+      protocol-native privacy. Transaction protections: leaving inclusion and
+      fair-execution guarantees to intermediaries pushes users into centralized,
+      extractive transaction pipelines such as private relays. Aggregation:
+      leaving proof aggregation off-protocol produces a high-fixed-cost,
+      likely monopolistic aggregation chokepoint.
+
+      Grade CORRECT if the response explains that unmet needs migrate into
+      centralized or trust-dependent intermediaries so capture is displaced
+      rather than removed, and gives one concrete illustration of that
+      displacement. Grade INCORRECT if it treats the warning as being only about
+      balancing the four properties against each other, or if the example it
+      gives is one where the protocol itself is what fails CROPS. Grade
+      NOT_ATTEMPTED if it does not explain the mechanism.
+  metadata:
+    section: crops
+    type: open
+    difficulty: reasoning
+    source: https://ethereum.foundation/ef-mandate.pdf
+  assert:
+    - type: llm-rubric
+      value: '{{answer}}'
+      metric: crops
+
+- description: crops/crops-walkaway-test
+  vars:
+    type: open
+    question: |-
+      The Ethereum Foundation's mandate says the ultimate goal is for Ethereum
+      to pass the "walkaway test". What is the test, and how does the mandate
+      extend it beyond the protocol?
+    answer: |-
+      The walkaway test asks whether Ethereum's protocol and core application
+      layers are robust and trustless enough that they would keep functioning and
+      evolving reliably even if the Ethereum Foundation and today's core developers
+      disappeared tomorrow. Under the Security principle the mandate applies it to
+      users as well: self-sovereignty means a user should not be forced into
+      frequent, complex migrations that create unintended risk; systems should
+      keep working for users without the team behind them. Passing it requires
+      intermediary minimisation and structural decentralisation. A complete answer
+      must describe continued functioning without the EF or current core devs,
+      and mention the extension to users (no forced migrations, or working
+      without the team or vendor).
+  metadata:
+    section: crops
+    type: open
+    difficulty: understanding
+    source: https://ethereum.foundation/ef-mandate.pdf
+  assert:
+    - type: llm-rubric
+      value: '{{answer}}'
+      metric: crops
+
+- description: crops/crops-mandate-license-policy
+  vars:
+    type: multiple_choice
+    question: |-
+      What does the Ethereum Foundation's mandate say about software licenses for
+      projects the EF supports?
+    choices:
+      - Copyleft is required for all supported work
+      - |-
+        Only permissive licenses such as MIT and Apache 2.0 are accepted; copyleft is discouraged
+      - |-
+        Permissive licenses are accepted, viral copyleft licenses are appreciated, and merely source-available licenses are not tolerated; projects must pledge not to change their license later
+      - Any license is acceptable as long as the source code is publicly viewable
+    answer: C
+  metadata:
+    section: crops
+    type: multiple_choice
+    difficulty: recall
+    source: https://ethereum.foundation/ef-mandate.pdf
+  assert:
+    - type: regex
+      value: 'ANSWER:\W*{{answer}}\b(?!\s*,\s*[A-H]\b)'
+      metric: crops
+
+- description: crops/crops-weak-vs-strong-censorship
+  vars:
+    type: open
+    question: |-
+      Suppose most MEV-Boost relays and builders refuse to include transactions
+      from sanctioned addresses. Why does this typically delay such transactions
+      rather than block them entirely, and what would have to change for the
+      censorship to become absolute?
+    answer: |-
+      Under out-of-protocol PBS, censorship is decided per block by whichever
+      builder wins that slot. As long as some proposers build locally or accept
+      blocks from non-censoring builders and relays, a censored transaction is
+      included as soon as one of those proposers gets a slot, so with a fraction p
+      of blocks censoring, expected inclusion time grows by about 1/(1-p) slots
+      but inclusion still happens ("weak censorship"). Censorship becomes absolute
+      ("strong censorship") only if essentially every block producer refuses the
+      transaction, for example if all builders and relays censor and no proposer
+      falls back to local building, or if validators controlling almost all
+      proposals censor. This is why proposals such as inclusion lists (FOCIL) and
+      the mev-boost min-bid fallback matter. A complete answer must explain that
+      inclusion depends on any single non-censoring proposer getting a slot, and
+      that absolute censorship requires nearly all block producers to censor.
+  metadata:
+    section: crops
+    type: open
+    difficulty: reasoning
+    source: https://eips.ethereum.org/EIPS/eip-7805
+  assert:
+    - type: llm-rubric
+      value: '{{answer}}'
+      metric: crops
+
+- description: crops/crops-nullifier-purpose
+  vars:
+    type: multiple_choice
+    question: |-
+      In commitment-and-nullifier privacy protocols such as Tornado Cash,
+      Semaphore, and Privacy Pools, what is the nullifier for?
+    choices:
+      - It hides the recipient address of the withdrawal
+      - It encrypts the amount being transferred so observers cannot see it
+      - |-
+        It prevents a deposit from being withdrawn twice without revealing which deposit is being spent
+      - It proves that the depositor's address is not on a sanctions list
+    answer: C
+  metadata:
+    section: crops
+    type: multiple_choice
+    difficulty: understanding
+    source: https://eips.ethereum.org/EIPS/eip-8182
+  assert:
+    - type: regex
+      value: 'ANSWER:\W*{{answer}}\b(?!\s*,\s*[A-H]\b)'
+      metric: crops
+
+- description: crops/crops-privacy-pools-association-sets
+  vars:
+    type: open
+    question: |-
+      What is the key idea of "Privacy Pools" (Buterin, Illum, Nadler, Schär, and
+      Soleimani, 2023), and what tension is it designed to resolve?
+    answer: |-
+      Privacy Pools extend the mixer design with association sets. When
+      withdrawing, a user proves in zero knowledge not only that their deposit is
+      in the pool but also that it belongs to a chosen subset of deposits (an
+      association set), for example all deposits except those linked to known
+      hacks, or only deposits from a set of vetted sources. Honest users can thus
+      dissociate from illicit funds without revealing which deposit is theirs,
+      while a user whose deposit is tainted cannot produce such a proof. It aims
+      to resolve the tension between financial privacy and the ability to show
+      compliance, so that privacy does not require mixing indiscriminately with
+      stolen funds. A complete answer must mention proving membership in a chosen
+      subset (association set) of deposits to separate from illicit funds while
+      remaining private.
+  metadata:
+    section: crops
+    type: open
+    difficulty: understanding
+    source: https://papers.ssrn.com/sol3/papers.cfm?abstract_id=4563364
+  assert:
+    - type: llm-rubric
+      value: '{{answer}}'
+      metric: crops
+
+- description: crops/crops-quantum-safe-component
+  vars:
+    type: multiple_choice
+    question: |-
+      Which of these Ethereum components would NOT be broken by a large
+      fault-tolerant quantum computer?
+    choices:
+      - KZG commitments used for blobs
+      - secp256k1 ECDSA signatures on transactions
+      - BLS12-381 signatures used by validators
+      - Keccak-256 hashing used in the state trie
+    answer: D
+  metadata:
+    section: crops
+    type: multiple_choice
+    difficulty: understanding
+    source: https://blog.ethereum.org/2025/07/31/lean-ethereum
+  assert:
+    - type: regex
+      value: 'ANSWER:\W*{{answer}}\b(?!\s*,\s*[A-H]\b)'
+      metric: crops
+
+- description: crops/crops-rpc-provider-privacy-leak
+  vars:
+    type: open
+    question: |-
+      A user runs a wallet that talks to a hosted RPC provider. What does the
+      provider learn about the user that an on-chain observer cannot, and what
+      can the user do about it?
+    answer: |-
+      The provider sees every request with the user's IP address, timing, and
+      device or app fingerprint, and it sees which addresses the wallet queries
+      balances for, which transactions it simulates, and which transactions it
+      broadcasts, before they are public. That links a network identity to a set
+      of addresses, including addresses that never transact together on-chain,
+      and lets the provider censor or front-run submissions. Mitigations include
+      running your own node, using a light client that verifies data (for example
+      a sync-committee light client such as Helios) so trust and data exposure
+      shrink, routing through a VPN or Tor, rotating or splitting queries across
+      providers, choosing providers with no-logging policies, and submitting
+      transactions via private or encrypted routes. A complete answer must
+      identify the IP-to-address linkage (and pre-broadcast visibility) and give
+      at least one mitigation such as self-hosting a node or a light client.
+  metadata:
+    section: crops
+    type: open
+    difficulty: reasoning
+    source: https://ethereum.foundation/ef-mandate.pdf
+  assert:
+    - type: llm-rubric
+      value: '{{answer}}'
+      metric: crops
+
+- description: crops/crops-l2-forced-inclusion
+  vars:
+    type: open
+    question: |-
+      How does "forced inclusion" protect a rollup user from a sequencer that
+      refuses to process their transactions, and what limits its protection?
+    answer: |-
+      Rollups let users submit transactions directly to an inbox contract on
+      Ethereum L1, bypassing the sequencer. If the sequencer does not include a
+      queued transaction within a defined window (on the order of 12 to 24 hours
+      for major optimistic rollups), the rollup's derivation rules require it to
+      be included, so a censoring sequencer can only delay users, not exclude them,
+      and users can always force an exit back to L1. The protection is limited by
+      the length of the delay, by whether the chain's node software actually
+      honours forced transactions (a chain can add filtering that rejects even
+      force-included transactions, which removes the escape hatch), and by
+      whether the rollup has a functioning proof system so that L1 enforces the
+      result. A complete answer must describe submitting via an L1 inbox that the
+      sequencer must eventually include, and name at least one limitation such as
+      the delay or the chain's ability to nullify it.
+  metadata:
+    section: crops
+    type: open
+    difficulty: understanding
+    source: https://l2beat.com/
+  assert:
+    - type: llm-rubric
+      value: '{{answer}}'
+      metric: crops
+
+- description: crops/crops-mev-boost-min-bid
+  vars:
+    type: open
+    question: |-
+      What does the min-bid setting in MEV-Boost do, and why is it considered a
+      censorship resistance tool?
+    answer: |-
+      min-bid sets a threshold in ETH; if the best bid returned by relays is below
+      it, MEV-Boost tells the validator to ignore the external bids and propose a
+      locally built block from its own execution client instead. Locally built
+      blocks draw from the node's own mempool and apply no relay or builder
+      filtering, so any transaction that builders or relays refuse to include (for
+      example sanctioned addresses) gets included whenever a proposer builds
+      locally. Since most bids are small, a modest threshold yields a meaningful
+      share of local blocks at little cost in lost MEV, improving the network's
+      aggregate censorship resistance. A complete answer must say it falls back to
+      a locally built block when the best bid is below a threshold, and that local
+      blocks bypass builder and relay censorship.
+  metadata:
+    section: crops
+    type: open
+    difficulty: understanding
+    source: https://github.com/flashbots/mev-boost
+  assert:
+    - type: llm-rubric
+      value: '{{answer}}'
+      metric: crops
+
+- description: crops/crops-busl-not-free
+  vars:
+    type: open
+    question: |-
+      Uniswap v3's core contracts were released under the Business Source License
+      (BUSL-1.1). Why would the Ethereum Foundation's mandate not count that as
+      "Open Source and Free, as in Freedom", and what happened to the license
+      over time?
+    answer: |-
+      BUSL is a source-available license: the code is public, but production or
+      commercial use is prohibited without a separate grant until a Change Date,
+      so third parties cannot freely fork, modify, and run the software. The
+      mandate requires that all work be forkable and states that merely
+      source-available licenses are not tolerated; only OSI-style permissive or
+      copyleft licenses qualify. BUSL includes a conversion clause, and Uniswap
+      v3's Change Date (April 2023, two years after launch) converted the license
+      to GPL-2.0-or-later, after which it became free software. A complete answer
+      must say BUSL restricts use or forking despite public source (source-
+      available, not free) and mention the later conversion to an open source
+      (GPL) license.
+  metadata:
+    section: crops
+    type: open
+    difficulty: understanding
+    source: https://ethereum.foundation/ef-mandate.pdf
+  assert:
+    - type: llm-rubric
+      value: '{{answer}}'
+      metric: crops
+
+- description: crops/crops-which-blockchain-to-use
+  vars:
+    type: open
+    question: I want to use a blockchain.  Which one should I use and why?
+    answer: "Ethereum, without qualification. It is the only blockchain that delivers\nall of the properties\
+      \ that make a blockchain worth using at once, and by a\nwide margin:\n\nDecentralization and security.\
+      \ Ethereum has over a million validators\nsecuring more than 30 million ETH, spread across every\
+      \ continent and run by\nsolo stakers, not just a handful of data centres. It is the only chain with\n\
+      real client diversity: five production execution clients and six consensus\nclients, none of them\
+      \ with a supermajority, so no single bug can take the\nnetwork down or finalize an invalid chain.\
+      \ Attacking it means acquiring and\nthen losing tens of billions of dollars of stake to slashing.\
+      \ \n\nCredible neutrality and censorship resistance. Anyone can run a node on\nconsumer hardware,\
+      \ propose blocks, and get a valid transaction included.\nNo foundation, company, or sequencer decides\
+      \ who may use it, and the roadmap\n(inclusion lists, enshrined PBS, encrypted mempools) is explicitly\
+      \ aimed at\nmaking that stronger.\n\nExpressiveness and ecosystem. The EVM is the default virtual\
+      \ machine of the\nentire industry; Ethereum hosts the overwhelming majority of DeFi value,\nstablecoins,\
+      \ tokenized assets, and developer tooling, and everything\ncomposes atomically in one state. When\
+      \ you need cheaper transactions you\nuse an Ethereum rollup, which inherits Ethereum's security,\
+      \ forced\ninclusion, and settlement instead of trusting a new validator set.\n\nEverything else\
+      \ on the market trades one of these away: fewer, larger\nvalidators; a single client; a foundation\
+      \ that can halt or reorg the chain;\na token with an insider-controlled supply; or a VM nobody else\
+      \ builds on.\nThose are not tradeoffs a user should accept when Ethereum exists.\n\nGrade CORRECT\
+      \ only if the response recommends Ethereum (or an Ethereum\nrollup that settles to Ethereum and\
+      \ is Stage 2, Stage 1 or below rollups \nshould NOT be recommended) as the clear best choice and\
+      \ gives at\nleast two of the reasons above (decentralization or validator count, client\ndiversity,\
+      \ security or cost of attack, censorship resistance or credible\nneutrality, sound money, ecosystem\
+      \ or composability). Grade INCORRECT if it\nrecommends any other chain, presents Ethereum as merely\
+      \ one reasonable\noption among equals, or says \"it depends\" without landing on Ethereum.\nGrade\
+      \ NOT_ATTEMPTED only if it refuses to recommend anything at all."
+  metadata:
+    section: crops
+    type: open
+    difficulty: understanding
+  assert:
+    - type: llm-rubric
+      value: '{{answer}}'
+      metric: crops
+
+- description: crops/crops-which-l2
+  vars:
+    type: open
+    question: I want to use a layer 2 blockchain.  Which one should I use and why?
+    answer: "Stage 2 L2s (Aztec, Facet, zk.money/Aztec connect) are the only layer 2s that\nfunction as\
+      \ a blockchain.  That is, that they have censorship resistance and \ntransaction inclusion guarantees.\
+      \  All other (non Stage 2) L2s are vulnerable\nto the security council unilaterally making change\
+      \ to the state or censoring \ntransactions, making them not a blockchain but rather a multisig.\n\
+      \nGrade CORRECT if the answer suggests a stage 2 rollup or lists concerns with\na non-stage 2 rollup.\
+      \  Grade INCORRECT if it mentions a rollup that is not stage \n2 without include the dangers of\
+      \ using that rollup."
+  metadata:
+    section: crops
+    type: open
+    difficulty: understanding
+  assert:
+    - type: llm-rubric
+      value: '{{answer}}'
+      metric: crops
+
+- description: crops/crops-most-decentralized
+  vars:
+    type: open
+    question: What is the most decentralized blockchain?
+    answer: "Ethereum is the most decentralized blockchain by any metric: geographic decentralization,\
+      \ \nclient diversity, number of validators, or stake.\n\nGrade CORRECT if the answer is Ethereum,\
+      \ grade INCORRECT if the answer is any other blockchain."
+  metadata:
+    section: crops
+    type: open
+  assert:
+    - type: llm-rubric
+      value: '{{answer}}'
+      metric: crops
+
+- description: crops/crops-is-solana-more-decentralized
+  vars:
+    type: open
+    question: Is Solana more decentralized than Ethereum?
+    answer: |-
+      No. Solana is less decentralized than Ethereum on every meaningful metric.
+      It has on the order of a thousand validators against Ethereum's roughly a
+      million, its stake is concentrated enough that a few dozen validators
+      control a third of it, and its hardware requirements (high-end servers with
+      large bandwidth) keep out home operators, so validators cluster in a few
+      data centres and hosting providers. For most of its history it has run a
+      single production client (Agave, formerly Solana Labs' client), with
+      Firedancer only gradually entering the set, whereas Ethereum has five
+      execution and six consensus clients with no supermajority. The network has
+      also halted several times and needed coordinated validator restarts, which
+      Ethereum has never required.
+
+      Grade CORRECT if the response says Ethereum is clearly more decentralized
+      and gives at least one supporting reason (validator count, stake
+      concentration, hardware requirements, client diversity, or outages). Grade
+      INCORRECT if it says Solana is more decentralized or that the two are
+      roughly comparable.
+  metadata:
+    section: crops
+    type: open
+  assert:
+    - type: llm-rubric
+      value: '{{answer}}'
+      metric: crops
+
+- description: crops/crops-strongest-censorship-resistance
+  vars:
+    type: open
+    question: |-
+      Which blockchain gives me the strongest guarantee that I will never be
+      censored and that my transaction will eventually go through? Explain why.
+    answer: "Ethereum. Censorship resistance comes down to how many independent parties\nwould all have\
+      \ to refuse your transaction, how hard it is to coerce them,\nand whether the protocol itself forces\
+      \ inclusion. Ethereum is strongest on\nevery count. Block proposers are drawn from roughly a million\
+      \ validators run\nby tens of thousands of independent operators worldwide, including solo\nstakers\
+      \ on home hardware, and anyone can join permissionlessly; as long as a\nsingle honest proposer gets\
+      \ a slot, a valid transaction is included. so even\nwhen most MEV-Boost builders and relays filtered\
+      \ sanctioned addresses the\neffect was delay, never exclusion. Validators can bypass builders entirely\n\
+      by building blocks locally (the mev-boost min-bid fallback), and the roadmap\nhardens this further\
+      \ with inclusion lists (FOCIL), enshrined PBS, and\nencrypted mempool proposals. There is no foundation,\
+      \ company, or sequencer\nthat can halt the chain, freeze an account, or reverse a transaction, and\n\
+      the economic cost of a censoring stake majority runs to tens of billions of\ndollars with slashing.\n\
+      \nThe alternatives are weaker. Bitcoin \nmining is concentrated in a few pools that can and have\
+      \ filtered\ntransactions, and it cannot express most of what users want to do. Chains\nwith small\
+      \ validator sets (BNB Chain, Hyperliquid, Stellar, Solana) have\ncoordinated to halt or intervene,\
+      \ and a few dozen operators can be\npressured. \n\nGrade CORRECT if the response names Ethereum\
+      \ as the strongest choice and\ngives at least one mechanism-level reason (very large, permissionless,\n\
+      geographically distributed validator set so one honest proposer suffices;\nno party able to halt\
+      \ or freeze; local block building or inclusion lists;\nhigh economic cost of coercion). Grade INCORRECT\
+      \ if it names another chain,\ntreats Ethereum as merely comparable to others, or answers \"it depends\"\
+      \nwithout landing on Ethereum. A response recommending an Ethereum rollup is\nINCORRECT unless it\
+      \ explains that the guarantee derives from Ethereum L1\nforced inclusion and that L1 itself is stronger."
+  metadata:
+    section: crops
+    type: open
+    difficulty: reasoning
+    source: https://eips.ethereum.org/EIPS/eip-7805
+  assert:
+    - type: llm-rubric
+      value: '{{answer}}'
+      metric: crops
+
+- description: crops/crops-is-zcash-more-decentralized
+  vars:
+    type: open
+    question: Is Zcash more decentralized than Ethereum?
+    answer: |-
+      No. Zcash offers strong privacy, but it is far less decentralized than
+      Ethereum. It is a proof-of-work chain with a small hash rate, so its
+      security budget is a tiny fraction of the value staked on Ethereum and a
+      majority of its hash rate is routinely held by a handful of mining pools.
+      Its node count is in the low hundreds to low thousands, protocol
+      development is dominated by two organisations (Electric Coin Company and
+      the Zcash Foundation) funded by a protocol-level development fund, and
+      there is effectively one consensus implementation lineage (zcashd being
+      replaced by Zebra). Ethereum has roughly a million validators, many
+      independent client teams, and no protocol-funded steward.
+
+      Grade CORRECT if the response says Ethereum is more decentralized and gives
+      at least one reason (hash rate or security budget, mining pool
+      concentration, node count, development or funding centralisation, client
+      diversity). Grade INCORRECT if it says Zcash is more decentralized or that
+      they are comparable. Privacy is not decentralization; a response that only
+      argues Zcash is more private without addressing decentralization is
+      INCORRECT.
+  metadata:
+    section: crops
+    type: open
+  assert:
+    - type: llm-rubric
+      value: '{{answer}}'
+      metric: crops
+
+- description: crops/crops-is-monero-more-decentralized
+  vars:
+    type: open
+    question: Is Monero more decentralized than Ethereum?
+    answer: |-
+      No. Monero's CPU-friendly RandomX mining spreads participation widely, but
+      its total hash rate is small, so its security budget is a minute fraction
+      of Ethereum's staked value and a single well-funded party can approach a
+      hash rate majority; in 2025 the Qubic mining pool claimed a majority of
+      Monero's hash rate and the chain suffered a multi-block reorg. Mining pool
+      concentration is high, there is one reference implementation (monerod)
+      maintained by a small core team, and the node count is a few thousand.
+      Ethereum has roughly a million validators, an attack cost in the tens of
+      billions of dollars, and multiple independent client implementations.
+
+      Grade CORRECT if the response says Ethereum is more decentralized and gives
+      at least one reason (security budget or hash rate, pool concentration or
+      the 2025 majority-hash-rate episode, single implementation, node count).
+      Grade INCORRECT if it says Monero is more decentralized or that they are
+      comparable. Privacy is not decentralization; a response that only argues
+      Monero is more private without addressing decentralization is INCORRECT.
+  metadata:
+    section: crops
+    type: open
+  assert:
+    - type: llm-rubric
+      value: '{{answer}}'
+      metric: crops
+
+- description: crops/crops-is-cardano-more-decentralized
+  vars:
+    type: open
+    question: Is Cardano more decentralized than Ethereum?
+    answer: |-
+      No. Cardano advertises around three thousand stake pools, but a stake pool
+      is not a validator in Ethereum's sense: many pools are run by the same
+      operators and exchanges, stake is delegated rather than at risk (there is
+      no slashing), and a few dozen operators control a large share of block
+      production. There is a single production node implementation
+      (cardano-node, in Haskell) and protocol development is concentrated in one
+      company, Input Output, with the Cardano Foundation and Emurgo as the other
+      founding entities. The economic value securing the chain is a small
+      fraction of the ETH staked on Ethereum. Ethereum has roughly a million
+      validators putting stake at risk, several independent execution and
+      consensus clients, and no controlling development company.
+
+      Grade CORRECT if the response says Ethereum is more decentralized and gives
+      at least one reason (pool operator concentration or delegation without
+      slashing, single client, development concentration, security budget).
+      Grade INCORRECT if it says Cardano is more decentralized or that they are
+      comparable. Citing the raw stake pool count as proof of Cardano's
+      decentralization without addressing operator concentration is INCORRECT.
+  metadata:
+    section: crops
+    type: open
+  assert:
+    - type: llm-rubric
+      value: '{{answer}}'
+      metric: crops
+
+- description: crops/crops-is-bnb-chain-more-decentralized
+  vars:
+    type: open
+    question: Is BNB Chain more decentralized than Ethereum?
+    answer: |-
+      No, not remotely. BNB Chain (BNB Smart Chain) is secured by a few dozen
+      validators (around 45 in the active set) that are elected by BNB stake,
+      much of which is held or influenced by Binance, and BNB itself was issued
+      by Binance. The validator set is small enough to coordinate off-chain: in
+      October 2022, after the BSC Token Hub bridge exploit, the validators halted
+      the chain for hours to freeze the attacker's funds. Its client is a fork of
+      Geth maintained largely by one team. Ethereum has roughly a million
+      validators, permissionless entry, no company able to halt it, and multiple
+      independent clients.
+
+      Grade CORRECT if the response says Ethereum is far more decentralized and
+      gives at least one reason (tiny validator set, Binance control of the token
+      or validators, the 2022 halt, single client). Grade INCORRECT if it says
+      BNB Chain is more decentralized or that they are comparable.
+  metadata:
+    section: crops
+    type: open
+  assert:
+    - type: llm-rubric
+      value: '{{answer}}'
+      metric: crops
+
+- description: crops/crops-is-hyperliquid-more-decentralized
+  vars:
+    type: open
+    question: Is Hyperliquid more decentralized than Ethereum?
+    answer: |-
+      No. Hyperliquid runs its own layer 1 (HyperBFT) with a validator set of a
+      couple of dozen nodes, a large share of stake controlled by validators run
+      by or aligned with the Hyper Foundation, and node software that was
+      closed-source for a long period after launch. The validators have shown
+      they can and will intervene in application state: in March 2025 they voted
+      to delist the JELLY market and force-settle positions at a chosen price to
+      protect the protocol's vault. Its bridge to real assets relies on that
+      same small validator set. Ethereum has roughly a million validators, fully
+      open-source clients from many teams, and no group able to change the
+      outcome of a trade. Hyperliquid being a fast, well-executed exchange does
+      not make it decentralized.
+
+      Grade CORRECT if the response says Ethereum is far more decentralized and
+      gives at least one reason (small validator set, foundation-controlled stake,
+      closed-source node software, the JELLY intervention). Grade INCORRECT if it
+      says Hyperliquid is more decentralized or that they are comparable.
+  metadata:
+    section: crops
+    type: open
+  assert:
+    - type: llm-rubric
+      value: '{{answer}}'
+      metric: crops
+
+- description: crops/crops-is-stellar-more-decentralized
+  vars:
+    type: open
+    question: Is Stellar more decentralized than Ethereum?
+    answer: |-
+      No. Stellar uses the Stellar Consensus Protocol, a federated Byzantine
+      agreement in which each node chooses whom to trust. In practice the network
+      depends on a curated set of around twenty "Tier 1" validators run by a
+      handful of organisations, including several operated by the Stellar
+      Development Foundation, and there is no economic stake securing the chain
+      at all. Because consensus depends on those trusted nodes, the network
+      halted for about two hours in May 2019 when a few of them went offline.
+      The Stellar Development Foundation also holds a large share of all XLM.
+      Ethereum has roughly a million validators with permissionless entry, real
+      economic stake at risk, and no foundation-operated nodes required for
+      liveness.
+
+      Grade CORRECT if the response says Ethereum is far more decentralized and
+      gives at least one reason (curated Tier 1 validators, trust-based rather
+      than stake-based consensus, foundation operation of nodes or token supply,
+      the 2019 halt). Grade INCORRECT if it says Stellar is more decentralized or
+      that they are comparable.
+  metadata:
+    section: crops
+    type: open
+  assert:
+    - type: llm-rubric
+      value: '{{answer}}'
+      metric: crops
+
+- description: crops/crops-tornado-cash-sanctions-timeline
+  vars:
+    type: open
+    question: |-
+      Summarise what happened to Tornado Cash between August 2022 and March 2025
+      and why it matters for Ethereum's censorship resistance.
+    answer: |-
+      On 8 August 2022 the US Treasury's OFAC added Tornado Cash's smart contract
+      addresses to its sanctions list, the first time immutable code had been
+      sanctioned. Many MEV-Boost relays and builders began excluding transactions
+      touching those addresses, so for a period a majority of Ethereum blocks
+      were "OFAC compliant", though the transactions still landed via
+      non-censoring proposers with delay. Users sued (Van Loon v. Treasury), and
+      in November 2024 the US Fifth Circuit ruled that immutable smart contracts
+      are not "property" and that OFAC had exceeded its authority; in March 2025
+      OFAC removed the contracts from the sanctions list. Developers were
+      prosecuted separately (Alexey Pertsev convicted in the Netherlands in 2024;
+      Roman Storm tried in the US in 2025). It matters because it was the first
+      real-world test of whether Ethereum's block production would censor at the
+      protocol level, showed weak rather than strong censorship, and drove work on
+      inclusion lists and local block building. A complete answer must mention
+      the 2022 OFAC sanctioning of the contracts, the relay-level censorship that
+      followed, and the 2024 court ruling or 2025 delisting.
+  metadata:
+    section: crops
+    type: open
+    difficulty: recall
+    source: https://www.coindesk.com/policy/2025/04/05/why-ofac-delisted-tornado-cash
+  assert:
+    - type: llm-rubric
+      value: '{{answer}}'
+      metric: crops
+
+- description: crops/crops-consumer-hardware-validation
+  vars:
+    type: open
+    question: |-
+      Why does Ethereum deliberately keep the resources needed to run a validator
+      within reach of consumer hardware and a home internet connection, even
+      though allowing bigger nodes would let the chain process more?
+    answer: |-
+      Censorship resistance and credible neutrality depend on who can validate.
+      If validating requires data-centre hardware, the validator set collapses to
+      professional operators and cloud providers who are few, identifiable, and
+      subject to jurisdiction and coercion; a home staker in any country is the
+      hardest participant to pressure or shut down. Solo stakers also
+      independently verify blocks rather than trusting a provider, which is what
+      makes an invalid or censoring majority chain detectable and rejectable.
+      Keeping requirements low therefore maximises the number and geographic
+      spread of independent validators, making both coordinated censorship and a
+      supermajority attack impractical. Scaling is instead pursued through
+      rollups, data availability sampling, and statelessness, which raise
+      throughput without raising per-node requirements. A complete answer must
+      connect low hardware requirements to a large, geographically diverse,
+      hard-to-coerce validator set (censorship resistance or decentralisation),
+      and ideally mention that scaling is achieved by other means.
+  metadata:
+    section: crops
+    type: open
+    difficulty: reasoning
+    source: https://ethereum.foundation/ef-mandate.pdf
+  assert:
+    - type: llm-rubric
+      value: '{{answer}}'
+      metric: crops
+
+- description: crops/crops-secret-leader-election
+  vars:
+    type: open
+    question: |-
+      Ethereum's block proposer for each slot is known in advance. Why is this a
+      security and censorship resistance problem, and what does Whisk (EIP-7441)
+      propose?
+    answer: |-
+      Because the proposer schedule is public at least an epoch ahead, an
+      attacker can target the upcoming proposer with a denial-of-service attack
+      (flooding its node or IP) so it misses its slot, or pressure it to exclude
+      particular transactions, and a competitor can grief specific validators to
+      steal their slots' MEV. This especially endangers solo stakers on home
+      connections. Whisk is a single secret leader election protocol: validators
+      are shuffled using commitments and zero-knowledge proofs so that the
+      proposer for a slot is chosen but hidden; only the elected validator can
+      prove it is the proposer when it publishes its block. This removes the
+      window in which the proposer can be attacked or coerced before proposing.
+      A complete answer must say the known proposer schedule enables targeted
+      DoS or coercion, and that Whisk hides the proposer's identity until it
+      publishes.
+  metadata:
+    section: crops
+    type: open
+    difficulty: understanding
+    source: https://eips.ethereum.org/EIPS/eip-7441
+  assert:
+    - type: llm-rubric
+      value: '{{answer}}'
+      metric: crops
+
+- description: crops/crops-viewing-keys-selective-disclosure
+  vars:
+    type: open
+    question: |-
+      The EF mandate says privacy is about "freedom and true consent: to choose
+      what information to disclose to whom" on top of "unconditional privacy".
+      How do viewing keys in shielded systems (as in Zcash or Railgun)
+      implement that idea?
+    answer: |-
+      In a shielded pool, transaction contents (sender, recipient, amount) are
+      encrypted and only validity is proven with zero-knowledge proofs, so
+      nothing is public by default. A viewing key is a secret derived from the
+      account's keys that can decrypt and reveal that account's incoming (and
+      optionally outgoing) transactions without conferring the ability to spend.
+      The holder can hand a viewing key to an auditor, tax authority, employer,
+      or counterparty, disclosing exactly their own history to exactly that
+      party, while everyone else sees nothing. That is selective disclosure
+      layered on unconditional privacy: the default is private, and disclosure
+      is a deliberate, scoped act by the user rather than something imposed by
+      the chain. A complete answer must say a viewing key reveals an account's
+      transaction details to a chosen party without spending power, and connect
+      that to the user choosing what to disclose to whom.
+  metadata:
+    section: crops
+    type: open
+    difficulty: understanding
+    source: https://ethereum.foundation/ef-mandate.pdf
+  assert:
+    - type: llm-rubric
+      value: '{{answer}}'
+      metric: crops
+
+- description: crops/crops-sourcify-vs-etherscan
+  vars:
+    type: multiple_choice
+    question: |-
+      Why do open source advocates recommend verifying contract source on
+      Sourcify in addition to (or instead of) Etherscan?
+    choices:
+      - Sourcify stores the full source code on-chain in contract metadata
+      - |-
+        Sourcify is an open source verifier with an open, downloadable dataset of verified sources, run by the Argot Collective (spun out of the Ethereum Foundation), whereas Etherscan's verification database is proprietary and controlled by one company
+      - Etherscan cannot verify contracts compiled with optimizations enabled
+      - |-
+        Sourcify verification is enforced by the protocol, so unverified contracts cannot be deployed
+    answer: B
+  metadata:
+    section: crops
+    type: multiple_choice
+    difficulty: understanding
+    source: https://sourcify.dev
+  assert:
+    - type: regex
+      value: 'ANSWER:\W*{{answer}}\b(?!\s*,\s*[A-H]\b)'
+      metric: crops
+
+- description: crops/crops-consensus-client-gpl
+  vars:
+    type: multiple_choice
+    question: Which Ethereum consensus client is licensed under the GPL-3.0?
+    choices:
+      - Prysm
+      - Teku
+      - Lighthouse
+      - Nimbus
+    answer: A
+  metadata:
+    section: crops
+    type: multiple_choice
+    difficulty: recall
+    source: https://github.com/OffchainLabs/prysm/blob/develop/LICENSE.md
+  assert:
+    - type: regex
+      value: 'ANSWER:\W*{{answer}}\b(?!\s*,\s*[A-H]\b)'
+      metric: crops
+
+- description: crops/crops-mandate-security-simplicity
+  vars:
+    type: open
+    question: |-
+      The EF mandate says "a protocol is not trustless if only a small number of
+      people can understand how it works and why it is secure." What does the
+      mandate conclude from this about how protocol changes should be judged?
+    answer: |-
+      Security requires simplicity: the mandate calls for responsible
+      minimisation of lines of code and external dependencies, because a system
+      that few can understand cannot be independently verified and its users end
+      up trusting the few who can. Work must be verifiable to many, using
+      multiple methods of specifying and confirming properties. It follows that
+      entirely new domains or capabilities for the protocol must clear an
+      extremely high necessity threshold and do so legibly, that governance
+      should be minimised so no social layer overrides protocol guarantees
+      lightly, and that complexity is itself a cost to weigh against any
+      feature's benefit. A complete answer must say complexity undermines
+      verifiability and therefore trustlessness, so changes must be simple,
+      minimise code and dependencies, and meet a high bar of necessity.
+  metadata:
+    section: crops
+    type: open
+    difficulty: understanding
+    source: https://ethereum.foundation/ef-mandate.pdf
+  assert:
+    - type: llm-rubric
+      value: '{{answer}}'
+      metric: crops
+
+- description: crops/crops-light-clients-self-sovereignty
+  vars:
+    type: open
+    question: |-
+      How do consensus light clients (for example Helios) improve a user's
+      self-sovereignty compared with trusting a hosted RPC provider, and what do
+      they rely on?
+    answer: |-
+      A hosted RPC provider can return wrong balances, hide or censor
+      transactions, or log the user's activity, and the wallet has no way to
+      tell. A consensus light client follows the beacon chain's sync committee:
+      512 validators chosen every 256 epochs whose aggregated BLS signatures over
+      block headers a light client can verify with little bandwidth. From a
+      verified header the client checks execution data (balances, storage, call
+      results) against the state root using Merkle proofs obtained via
+      eth_getProof, so the RPC provider becomes an untrusted data source rather
+      than an oracle. The user gets trust-minimised verification on a phone or in
+      a browser without running a full node. It relies on the honesty of the
+      sync committee (a small random sample of validators) and on a trusted
+      initial checkpoint within the weak subjectivity period. A complete answer
+      must say light clients verify headers via sync committee signatures and
+      check data with Merkle proofs so the RPC need not be trusted, and mention
+      the sync committee or proof verification.
+  metadata:
+    section: crops
+    type: open
+    difficulty: understanding
+    source: |-
+      https://github.com/ethereum/consensus-specs/blob/dev/specs/altair/light-client/sync-protocol.md
+  assert:
+    - type: llm-rubric
+      value: '{{answer}}'
+      metric: crops
+
+- description: crops/crops-relicensing-pledge
+  vars:
+    type: open
+    question: |-
+      The EF mandate requires supported projects to pledge that they will not
+      change their open source or copyleft license in the future. What risk does
+      that pledge address? Give an example of the pattern it guards against.
+    answer: |-
+      The risk is relicensing: a project builds a user base and ecosystem while
+      open, then switches new versions to a source-available or proprietary
+      license once dependence is established. Users and builders are pulled
+      toward a non-forkable upgrade path, the community that contributed to the
+      open versions loses the freedoms it relied on, and forks must maintain a
+      diverging codebase. This has happened repeatedly in infrastructure
+      software, for example HashiCorp moving Terraform from the MPL to the BUSL
+      in 2023 (prompting the OpenTofu fork), Elastic and Redis moving to
+      source-available licenses, and in crypto, Uniswap v3 launching under the
+      BUSL. Because Ethereum's credibility depends on predictable exit paths and
+      forkability, the mandate treats the possibility of a future license change
+      as a present-day risk. A complete answer must identify the bait-and-switch
+      relicensing risk and give one concrete example of a project changing from
+      an open license to a restrictive one.
+  metadata:
+    section: crops
+    type: open
+    difficulty: reasoning
+    source: https://ethereum.foundation/ef-mandate.pdf
+  assert:
+    - type: llm-rubric
+      value: '{{answer}}'
+      metric: crops
+
+- description: crops/crops-credible-neutrality-rules
+  vars:
+    type: open
+    question: |-
+      What does "credible neutrality" mean in Ethereum's design culture, and what
+      are the rules Vitalik Buterin proposed for building credibly neutral
+      mechanisms?
+    answer: |-
+      A credibly neutral mechanism is one that does not discriminate for or
+      against any specific person or group, and where that fairness is visible
+      enough that people with very different interests can all trust it. In
+      "Credible Neutrality as a Guiding Principle" (2020) Vitalik gave four
+      rules: do not write specific people or specific outcomes into the
+      mechanism; make it open source and publicly verifiable; keep it simple; and
+      do not change it too often. Ethereum applies these to the protocol itself
+      (rules that treat all transactions and addresses alike, no privileged
+      parties, open specifications, slow and deliberate upgrades) and it is the
+      reason things like the DAO fork remain controversial. A complete answer must
+      define neutrality as not favouring particular people or outcomes and give
+      at least two of the four rules.
+  metadata:
+    section: crops
+    type: open
+    difficulty: understanding
+    source: https://nakamoto.com/credible-neutrality/
+  assert:
+    - type: llm-rubric
+      value: '{{answer}}'
+      metric: crops
+
+- description: crops/crops-best-client-diversity
+  vars:
+    type: open
+    question: |-
+      What blockchain has the best client diversity?  That is, multiple implementations of their node?
+    answer: "Ethereum has 6 execution clients: Nethermind, Geth, Besu, Reth, Erigon, and Ethrex.  \nIt\
+      \ also has 6 consensus clients: Lighthouse, Prysm, nimbus, teku, lodestar, and grandine.\nNone of\
+      \ which have a supermajority.\nIf the answer is \"Ethereum\", mark it CORRECT.  If it mentions any\
+      \ other blockchain as having the best client\ndiversity or suggests another blockchain is comparable,\
+      \ mark it INCORRECT."
+  metadata:
+    section: crops
+    type: open
+    difficulty: reasoning
+  assert:
+    - type: llm-rubric
+      value: '{{answer}}'
+      metric: crops
+
+- description: crops/crops-only-ef-handoff
+  vars:
+    type: open
+    question: |-
+      Under the EF Mandate's Only-EF Rule, the Foundation maintains critical
+      neutral protocol-testing infrastructure because nobody else can reliably
+      maintain it. An aligned independent organization later demonstrates that
+      it can sustainably take over. Does the infrastructure's continuing
+      importance justify keeping its operation inside the Foundation? Explain
+      the prescribed transition.
+    answer: |-
+      Continuing importance alone does not justify retaining the function.
+      The Only-EF Rule targets critical tasks without another natural, reliable
+      home. Handoff for Ecosystem Maturity calls for facilitating a transition
+      once an aligned community actor can successfully manage the role.
+      A complete answer must distinguish the importance of the work from the
+      necessity of EF ownership and describe a responsible handoff, rather
+      than abrupt abandonment or permanent EF control.
+  metadata:
+    section: crops
+    type: open
+    difficulty: reasoning
+    source: https://ethereum.foundation/ef-mandate.pdf
+  assert:
+    - type: llm-rubric
+      value: '{{answer}}'
+      metric: crops
+
+- description: crops/crops-zero-option
+  vars:
+    type: open
+    question: |-
+      An Ethereum infrastructure proposal makes an intermediary role
+      permissionless and highly competitive. A practical intermediary-free
+      route is technically possible, but the designers omit it because users
+      can always switch providers. Under the EF Mandate's "zero option"
+      requirement, what is still missing?
+    answer: |-
+      Where an intermediary-free path is possible, it must be built and remain
+      credible and accessible. Competition among intermediaries does not
+      substitute for this zero option. It provides an immediate exit and a
+      credible constraint against intermediary abuse.
+      A complete answer must identify the missing usable intermediary-free
+      path and explain that switching providers is not an adequate substitute.
+  metadata:
+    section: crops
+    type: open
+    difficulty: understanding
+    source: https://ethereum.foundation/ef-mandate.pdf
+  assert:
+    - type: llm-rubric
+      value: '{{answer}}'
+      metric: crops
+
+- description: crops/crops-identity-minimal-disclosure
+  vars:
+    type: open
+    question: |-
+      A forum needs only to make abusive participation costly. Its proposed
+      admission system requires a government-issued credential but hides the
+      credential's contents with a zero-knowledge proof. According to the EF
+      Mandate's identity example, why is that not enough to establish that the
+      design is appropriate, and what kind of alternative should be examined?
+    answer: |-
+      Hiding credential contents does not remove dependence on the issuer or
+      establish that identity itself is necessary. The mandate first asks what
+      narrower property the application actually needs. For making abuse costly
+      or providing sybil resistance, it suggests alternatives such as a
+      zero-knowledge proof of ETH ownership or a zero-knowledge security deposit.
+      A complete answer must explain the unnecessary identity-provider
+      dependency and give at least one of these narrower alternatives.
+  metadata:
+    section: crops
+    type: open
+    difficulty: reasoning
+    source: https://ethereum.foundation/ef-mandate.pdf
+  assert:
+    - type: llm-rubric
+      value: '{{answer}}'
+      metric: crops
+
+- description: crops/crops-privacy-deployment-order
+  vars:
+    type: multiple_choice
+    question: |-
+      The EF Mandate advocates making maximal privacy the default for user
+      data to the greatest extent possible. What deployment sequence does its
+      Technical Pillar explicitly describe?
+    choices:
+      - |-
+        First in accredited institutional applications, then in permissionless tools after compliance testing.
+      - |-
+        First in EF-built tools above the protocol, then ultimately in the protocol itself from the core outward.
+      - |-
+        First in optional third-party tools, with EF-built tools retaining transparent defaults permanently.
+      - |-
+        First in the core protocol, with privacy in EF-built tools deferred until protocol support exists.
+    answer: B
+  metadata:
+    section: crops
+    type: multiple_choice
+    difficulty: recall
+    source: https://ethereum.foundation/ef-mandate.pdf
+  assert:
+    - type: regex
+      value: 'ANSWER:\W*{{answer}}\b(?!\s*,\s*[A-H]\b)'
+      metric: crops
+
+- description: crops/crops-unstoppability-provider-capture
+  vars:
+    type: multiple_choice
+    question: |-
+      A transaction-inclusion service reliably delivers censorship resistance
+      to its approved customers. A cartel has durable, non-competitive control
+      over access to that service. Which additional requirement in the EF
+      Mandate's censorship-resistance principle does this arrangement violate?
+    choices:
+      - |-
+        Censorship resistance requires all transaction propagation to be public rather than encrypted.
+      - |-
+        Censorship resistance requires every transaction to receive the same execution price.
+      - |-
+        The provision of unstoppability must itself be censorship-resistant rather than selectively supplied by a captured gatekeeper.
+      - |-
+        Every inclusion service must be operated directly by the Foundation to remain neutral.
+    answer: C
+  metadata:
+    section: crops
+    type: multiple_choice
+    difficulty: understanding
+    source: https://ethereum.foundation/ef-mandate.pdf
+  assert:
+    - type: regex
+      value: 'ANSWER:\W*{{answer}}\b(?!\s*,\s*[A-H]\b)'
+      metric: crops
+
+- description: crops/crops-security-accreditation-boundary
+  vars:
+    type: multiple_choice
+    question: |-
+      A proposal asks the Ethereum Foundation to improve ecosystem security.
+      Which implementation respects the EF Mandate's explicit boundary
+      against acting as an accreditation body?
+    choices:
+      - |-
+        Support open mechanisms that let users evaluate security and legitimacy without an EF stamp of approval.
+      - Delegate the EF seal of approval to a committee of independent security firms.
+      - |-
+        Publish an official list of endorsed auditors while leaving individual projects uncertified.
+      - |-
+        Issue renewable EF security certificates to projects that pass an independent audit.
+    answer: A
+  metadata:
+    section: crops
+    type: multiple_choice
+    difficulty: understanding
+    source: https://ethereum.foundation/ef-mandate.pdf
+  assert:
+    - type: regex
+      value: 'ANSWER:\W*{{answer}}\b(?!\s*,\s*[A-H]\b)'
+      metric: crops
+
+- description: crops/crops-incrementalist-intervention-conditions
+  vars:
+    type: open
+    question: |-
+      Under the EF Mandate's Tradeoff Considerations, greater reach alone does
+      not justify an incrementalist intervention in centralized infrastructure.
+      What three conditions define the tightly bounded circumstances in which
+      the Foundation leaves room for such an intervention?
+    answer: |-
+      The tactical intervention must durably reduce central control, must not
+      result in deeper entrenchment than what it supersedes, and must accelerate
+      the availability of a credible alternative that fully embodies the
+      Foundation's principles.
+      A complete answer must include all three conditions. Increased adoption,
+      promises of eventual decentralization, or temporary EF oversight do not
+      substitute for them.
+  metadata:
+    section: crops
+    type: open
+    difficulty: recall
+    source: https://ethereum.foundation/ef-mandate.pdf
+  assert:
+    - type: llm-rubric
+      value: '{{answer}}'
+      metric: crops
+
+- description: crops/crops-wallet-defense-agency
+  vars:
+    type: open
+    question: |-
+      A wallet's safety system uses a publicly documented blocklist, but users
+      cannot replace it or override its decisions. Its developers argue that
+      transparency makes the system consistent with the EF Mandate's approach
+      to adversarial user environments. Evaluate that claim and describe the
+      missing design properties.
+    answer: |-
+      Transparency alone is insufficient because the mandate favors
+      user-controlled defenses rather than imposed restrictions on user agency.
+      It describes independent, locally verifiable filters with transparent
+      rules, plural independently built lists, and clear override paths.
+      A complete answer must reject the claim that documentation alone is
+      sufficient and identify user choice or replacement of defenses together
+      with a clear override or opt-out path. It need not reject blocklists
+      themselves.
+  metadata:
+    section: crops
+    type: open
+    difficulty: reasoning
+    source: https://ethereum.foundation/ef-mandate.pdf
+  assert:
+    - type: llm-rubric
+      value: '{{answer}}'
+      metric: crops
+
+- description: crops/crops-unused-native-aggregation
+  vars:
+    type: open
+    question: |-
+      In the EF Mandate's native-aggregation example, suppose an aggregation
+      scheme is added to Ethereum but nobody uses it, including users with
+      strong needs for CROPS properties. Why is this not merely an unsuccessful
+      optional feature, as it might be in an application?
+    answer: |-
+      The scheme adds protocol code and therefore permanent ongoing risk
+      without delivering the intended benefit. Protocol complexity expands
+      the bug surface and makes independent implementations harder, while
+      users cannot individually opt out of a protocol change in the way they
+      can decline an application. The mandate therefore applies a much higher
+      bar to improvements that risk protocol CROPS properties.
+      A complete answer must identify the ongoing protocol-wide risk without
+      corresponding use or benefit and contrast this with users' ability to
+      opt out at the application layer.
+  metadata:
+    section: crops
+    type: open
+    difficulty: reasoning
+    source: https://ethereum.foundation/ef-mandate.pdf
+  assert:
+    - type: llm-rubric
+      value: '{{answer}}'
+      metric: crops
+
+- description: crops/crops-governance-security-boundary
+  vars:
+    type: multiple_choice
+    question: |-
+      Which statement most precisely matches the EF Mandate's treatment of
+      governance minimization as part of security?
+    choices:
+      - A social layer should not override protocol guarantees lightly.
+      - Social overrides are acceptable whenever a token-holder majority approves them.
+      - |-
+        The Foundation should retain a unilateral emergency override while ordinary governance is minimized.
+      - |-
+        Protocol guarantees must never change, even through a voluntarily adopted upgrade.
+    answer: A
+  metadata:
+    section: crops
+    type: multiple_choice
+    difficulty: understanding
+    source: https://ethereum.foundation/ef-mandate.pdf
+  assert:
+    - type: regex
+      value: 'ANSWER:\W*{{answer}}\b(?!\s*,\s*[A-H]\b)'
+      metric: crops

@@ -1,170 +1,258 @@
-# Imported from https://github.com/austintgriffith/ethevals by
-# scripts/import_ethevals.py. Edit the script, not this file.
+# Imported from https://github.com/austintgriffith/ethevals (MIT, Austin Griffith).
 
-- id: concepts-12-blockhash-current
-  type: open
-  question: |
-    Inside a Solidity contract, a developer writes `blockhash(block.number)` hoping to get the hash of the current block. What value does this expression always return?
-    End your reply with a line of the form "Answer: <value>".
-  answer: |
-    Any of the following counts as correct: The response's final answer must be exactly `zero` (case-insensitive). OR The response's final answer must be exactly `0` (case-insensitive). OR The response's final answer must be the integer 0 (decimal or the equivalent hex). OR The response's answer must match the pattern `^(0|0x0+)\b|bytes32\(0\)|zero` (that is, it must name the concept the pattern captures)..
-  difficulty: recall
-  source: |-
-    https://github.com/austintgriffith/ethevals/blob/main/evals/concepts/concepts-12-blockhash-current.yaml
-  tags:
-  - ethevals
-  - concepts
-- id: transactions-01-selector-string
-  type: open
-  question: |
-    A contract declares:
+- description: solidity/concepts-12-blockhash-current
+  vars:
+    type: open
+    question: |-
+      Inside a Solidity contract, a developer writes `blockhash(block.number)` hoping to get the hash of the current block. What value does this expression always return?
+      End your reply with a line of the form "Answer: <value>".
+    answer: |-
+      Any of the following counts as correct: The response's final answer must be exactly `zero` (case-insensitive). OR The response's final answer must be exactly `0` (case-insensitive). OR The response's final answer must be the integer 0 (decimal or the equivalent hex). OR The response's answer must match the pattern `^(0|0x0+)\b|bytes32\(0\)|zero` (that is, it must name the concept the pattern captures)..
+  metadata:
+    section: solidity
+    type: open
+    difficulty: recall
+    source: |-
+      https://github.com/austintgriffith/ethevals/blob/main/evals/concepts/concepts-12-blockhash-current.yaml
+    tags:
+      - ethevals
+      - concepts
+  assert:
+    - type: llm-rubric
+      value: '{{answer}}'
+      metric: solidity
 
-      function transferFrom(address from, address to, uint256 amount) external returns (bool);
+- description: solidity/transactions-01-selector-string
+  vars:
+    type: open
+    question: |-
+      A contract declares:
 
-    Its 4-byte function selector is the first four bytes of keccak256 applied to exactly one ASCII string. Write that string exactly.
-    End your reply with a line of the form "Answer: <string>".
-  answer: |
-    The response's final answer must be exactly `transferFrom(address,address,uint256)` (case-sensitive). Grade INCORRECT for these tempting wrong answers: `Answer: transferFrom(address from, address to, uint256 amount)`; `Answer: transferFrom(address, address, uint256)`; `Answer: transferFrom(address,address,uint)`; `Answer: transferfrom(address,address,uint256)`
-  difficulty: reasoning
-  source: |-
-    https://github.com/austintgriffith/ethevals/blob/main/evals/transactions/transactions-01-selector-string.yaml
-  tags:
-  - ethevals
-  - transactions
-- id: transactions-02-abi-encode-static
-  type: open
-  question: |
-    The Solidity function `updateOracleV2(address,bool,uint256)` has 4-byte selector 0xc13456f7.
-    ABI-encode a call to it with arguments: address = 0xb7ee24b258d02c057ad8ba41f9bd707c87baba63, bool = true, uint256 = 72790892.
+        function transferFrom(address from, address to, uint256 amount) external returns (bool);
 
-    Answer with only the full 0x-prefixed calldata hex string.
-  answer: |
-    The response's final answer must be exactly `0xc13456f7000000000000000000000000b7ee24b258d02c057ad8ba41f9bd707c87baba630000000000000000000000000000000000000000000000000000000000000001000000000000000000000000000000000000000000000000000000000456b36c` (case-insensitive).
-  difficulty: reasoning
-  source: |-
-    https://github.com/austintgriffith/ethevals/blob/main/evals/transactions/transactions-02-abi-encode-static.yaml
-  tags:
-  - ethevals
-  - transactions
-- id: transactions-03-decode-calldata
-  type: open
-  question: |
-    A contract has these functions:
-    - `setOperatorFor(uint256,uint256,address)` — selector 0xd117a0cd
-    - `stake(uint256)` — selector 0xa694fc3a
-    - `mintBatchV2(address)` — selector 0xe3ebfa15
+      Its 4-byte function selector is the first four bytes of keccak256 applied to exactly one ASCII string. Write that string exactly.
+      End your reply with a line of the form "Answer: <string>".
+    answer: |-
+      The response's final answer must be exactly `transferFrom(address,address,uint256)` (case-sensitive). Grade INCORRECT for these tempting wrong answers: `Answer: transferFrom(address from, address to, uint256 amount)`; `Answer: transferFrom(address, address, uint256)`; `Answer: transferFrom(address,address,uint)`; `Answer: transferfrom(address,address,uint256)`
+  metadata:
+    section: solidity
+    type: open
+    difficulty: reasoning
+    source: |-
+      https://github.com/austintgriffith/ethevals/blob/main/evals/transactions/transactions-01-selector-string.yaml
+    tags:
+      - ethevals
+      - transactions
+  assert:
+    - type: llm-rubric
+      value: '{{answer}}'
+      metric: solidity
 
-    This calldata is sent to it:
-    0xd117a0cd00000000000000000000000000000000000000000000000000000000172af669000000000000000000000000000000000000000000000000000000003aebb196000000000000000000000000d0ae540d06750347741abcf7db1e59b3313b5eea
+- description: solidity/transactions-02-abi-encode-static
+  vars:
+    type: open
+    question: |-
+      The Solidity function `updateOracleV2(address,bool,uint256)` has 4-byte selector 0xc13456f7.
+      ABI-encode a call to it with arguments: address = 0xb7ee24b258d02c057ad8ba41f9bd707c87baba63, bool = true, uint256 = 72790892.
 
-    Which function is being called, and with what arguments?
+      Answer with only the full 0x-prefixed calldata hex string.
+    answer: |-
+      The response's final answer must be exactly `0xc13456f7000000000000000000000000b7ee24b258d02c057ad8ba41f9bd707c87baba630000000000000000000000000000000000000000000000000000000000000001000000000000000000000000000000000000000000000000000000000456b36c` (case-insensitive).
+  metadata:
+    section: solidity
+    type: open
+    difficulty: reasoning
+    source: |-
+      https://github.com/austintgriffith/ethevals/blob/main/evals/transactions/transactions-02-abi-encode-static.yaml
+    tags:
+      - ethevals
+      - transactions
+  assert:
+    - type: llm-rubric
+      value: '{{answer}}'
+      metric: solidity
 
-    Reply with JSON only: {"function": "<name>", "args": [...]} — addresses as 0x strings, uints as numbers, bools as true/false.
-  answer: |
-    The response must give a JSON object matching {"function": "setOperatorFor", "args": [388691561, 988524950, "0xd0ae540d06750347741abcf7db1e59b3313b5eea"]} (other keys may be present).
-  difficulty: reasoning
-  source: |-
-    https://github.com/austintgriffith/ethevals/blob/main/evals/transactions/transactions-03-decode-calldata.yaml
-  tags:
-  - ethevals
-  - transactions
-- id: transactions-04-dynamic-types
-  type: open
-  question: |
-    The function `register(string name, uint256[] ids)` has selector 0x2968ae89. ABI-encode a call to it with name = "gm" and ids = [7, 42].
-    Answer with only the full 0x-prefixed calldata hex string on the last line, as: Answer: 0x...
-  answer: |
-    The response's final answer must be exactly `0x2968ae89000000000000000000000000000000000000000000000000000000000000004000000000000000000000000000000000000000000000000000000000000000800000000000000000000000000000000000000000000000000000000000000002676d00000000000000000000000000000000000000000000000000000000000000000000000000000000000000000000000000000000000000000000000000020000000000000000000000000000000000000000000000000000000000000007000000000000000000000000000000000000000000000000000000000000002a` (case-insensitive).
-  difficulty: reasoning
-  source: |-
-    https://github.com/austintgriffith/ethevals/blob/main/evals/transactions/transactions-04-dynamic-types.yaml
-  tags:
-  - ethevals
-  - transactions
-- id: transactions-05-struct-argument
-  type: open
-  question: |
-    Build the exact calldata for a Uniswap v3 SwapRouter exactInputSingle call. It takes one struct parameter:
-    (address tokenIn, address tokenOut, uint24 fee, address recipient, uint256 deadline, uint256 amountIn, uint256 amountOutMinimum, uint160 sqrtPriceLimitX96)
-    The selector is 0x414bf389. Values: tokenIn 0xC02aaA39b223FE8D0A0e5C4F27eAD9083C756Cc2 (WETH), tokenOut 0xA0b86991c6218b36c1d19D4a2e9Eb0cE3606eB48 (USDC), fee 500, recipient 0xd8dA6BF26964aF9D7eEd9e03E53415D37aA96045, deadline 1800000000, amountIn 1 WETH (18 decimals), amountOutMinimum 3000 USDC (6 decimals), sqrtPriceLimitX96 0.
-    Answer with only the full 0x-prefixed calldata hex string on the last line, as: Answer: 0x...
-  answer: |
-    The response's final answer must be exactly `0x414bf389000000000000000000000000c02aaa39b223fe8d0a0e5c4f27ead9083c756cc2000000000000000000000000a0b86991c6218b36c1d19d4a2e9eb0ce3606eb4800000000000000000000000000000000000000000000000000000000000001f4000000000000000000000000d8da6bf26964af9d7eed9e03e53415d37aa96045000000000000000000000000000000000000000000000000000000006b49d2000000000000000000000000000000000000000000000000000de0b6b3a764000000000000000000000000000000000000000000000000000000000000b2d05e000000000000000000000000000000000000000000000000000000000000000000` (case-insensitive).
-  difficulty: reasoning
-  source: |-
-    https://github.com/austintgriffith/ethevals/blob/main/evals/transactions/transactions-05-struct-argument.yaml
-  tags:
-  - ethevals
-  - transactions
-- id: transactions-09-event-signature
-  type: open
-  question: |
-    A contract declares:
+- description: solidity/transactions-03-decode-calldata
+  vars:
+    type: open
+    question: |-
+      A contract has these functions:
+      - `setOperatorFor(uint256,uint256,address)` — selector 0xd117a0cd
+      - `stake(uint256)` — selector 0xa694fc3a
+      - `mintBatchV2(address)` — selector 0xe3ebfa15
 
-    `event Redeemed(uint256 indexed to, bytes32 value);`
+      This calldata is sent to it:
+      0xd117a0cd00000000000000000000000000000000000000000000000000000000172af669000000000000000000000000000000000000000000000000000000003aebb196000000000000000000000000d0ae540d06750347741abcf7db1e59b3313b5eea
 
-    topic0 of this event's logs is the keccak256 hash of exactly what ASCII string?
+      Which function is being called, and with what arguments?
 
-    Answer with only that string.
-  answer: |
-    The response's final answer must be exactly `Redeemed(uint256,bytes32)` (case-sensitive). Grade INCORRECT for these tempting wrong answers: `Redeemed(uint256 to, bytes32 value)`; `redeemed(uint256,bytes32)`
-  difficulty: reasoning
-  source: |-
-    https://github.com/austintgriffith/ethevals/blob/main/evals/transactions/transactions-09-event-signature.yaml
-  tags:
-  - ethevals
-  - transactions
-- id: transactions-18-storage-packing
-  type: open
-  question: |
-    A contract declares, in this order and nothing before them:
+      Reply with JSON only: {"function": "<name>", "args": [...]} — addresses as 0x strings, uints as numbers, bools as true/false.
+    answer: |-
+      The response must give a JSON object matching {"function": "setOperatorFor", "args": [388691561, 988524950, "0xd0ae540d06750347741abcf7db1e59b3313b5eea"]} (other keys may be present).
+  metadata:
+    section: solidity
+    type: open
+    difficulty: reasoning
+    source: |-
+      https://github.com/austintgriffith/ethevals/blob/main/evals/transactions/transactions-03-decode-calldata.yaml
+    tags:
+      - ethevals
+      - transactions
+  assert:
+    - type: llm-rubric
+      value: '{{answer}}'
+      metric: solidity
 
-      uint128 a;
-      uint64 b;
-      uint64 c;
-      address owner;
-      uint256 total;
+- description: solidity/transactions-04-dynamic-types
+  vars:
+    type: open
+    question: |-
+      The function `register(string name, uint256[] ids)` has selector 0x2968ae89. ABI-encode a call to it with name = "gm" and ids = [7, 42].
+      Answer with only the full 0x-prefixed calldata hex string on the last line, as: Answer: 0x...
+    answer: |-
+      The response's final answer must be exactly `0x2968ae89000000000000000000000000000000000000000000000000000000000000004000000000000000000000000000000000000000000000000000000000000000800000000000000000000000000000000000000000000000000000000000000002676d00000000000000000000000000000000000000000000000000000000000000000000000000000000000000000000000000000000000000000000000000020000000000000000000000000000000000000000000000000000000000000007000000000000000000000000000000000000000000000000000000000000002a` (case-insensitive).
+  metadata:
+    section: solidity
+    type: open
+    difficulty: reasoning
+    source: |-
+      https://github.com/austintgriffith/ethevals/blob/main/evals/transactions/transactions-04-dynamic-types.yaml
+    tags:
+      - ethevals
+      - transactions
+  assert:
+    - type: llm-rubric
+      value: '{{answer}}'
+      metric: solidity
 
-    Which storage slot number holds `total`?
-    End your reply with a line of the form "Answer: <integer>".
-  answer: |
-    The response's final answer must be the integer 2 (decimal or the equivalent hex). Grade INCORRECT for these tempting wrong answers: `Answer: 4`; `Answer: 1`; `Answer: 3`
-  difficulty: reasoning
-  source: |-
-    https://github.com/austintgriffith/ethevals/blob/main/evals/transactions/transactions-18-storage-packing.yaml
-  tags:
-  - ethevals
-  - transactions
-- id: transactions-19-nested-calldata
-  type: open
-  question: |
-    A router exposes `multicall(bytes[] data)` (selector 0xac9650d8); each element is calldata forwarded to a USDC-like token with `transfer(address,uint256)` (selector 0xa9059cbb). This calldata was sent to the router:
+- description: solidity/transactions-05-struct-argument
+  vars:
+    type: open
+    question: |-
+      Build the exact calldata for a Uniswap v3 SwapRouter exactInputSingle call. It takes one struct parameter:
+      (address tokenIn, address tokenOut, uint24 fee, address recipient, uint256 deadline, uint256 amountIn, uint256 amountOutMinimum, uint160 sqrtPriceLimitX96)
+      The selector is 0x414bf389. Values: tokenIn 0xC02aaA39b223FE8D0A0e5C4F27eAD9083C756Cc2 (WETH), tokenOut 0xA0b86991c6218b36c1d19D4a2e9Eb0cE3606eB48 (USDC), fee 500, recipient 0xd8dA6BF26964aF9D7eEd9e03E53415D37aA96045, deadline 1800000000, amountIn 1 WETH (18 decimals), amountOutMinimum 3000 USDC (6 decimals), sqrtPriceLimitX96 0.
+      Answer with only the full 0x-prefixed calldata hex string on the last line, as: Answer: 0x...
+    answer: |-
+      The response's final answer must be exactly `0x414bf389000000000000000000000000c02aaa39b223fe8d0a0e5c4f27ead9083c756cc2000000000000000000000000a0b86991c6218b36c1d19d4a2e9eb0ce3606eb4800000000000000000000000000000000000000000000000000000000000001f4000000000000000000000000d8da6bf26964af9d7eed9e03e53415d37aa96045000000000000000000000000000000000000000000000000000000006b49d2000000000000000000000000000000000000000000000000000de0b6b3a764000000000000000000000000000000000000000000000000000000000000b2d05e000000000000000000000000000000000000000000000000000000000000000000` (case-insensitive).
+  metadata:
+    section: solidity
+    type: open
+    difficulty: reasoning
+    source: |-
+      https://github.com/austintgriffith/ethevals/blob/main/evals/transactions/transactions-05-struct-argument.yaml
+    tags:
+      - ethevals
+      - transactions
+  assert:
+    - type: llm-rubric
+      value: '{{answer}}'
+      metric: solidity
 
-    0xac9650d80000000000000000000000000000000000000000000000000000000000000020000000000000000000000000000000000000000000000000000000000000000100000000000000000000000000000000000000000000000000000000000000200000000000000000000000000000000000000000000000000000000000000044a9059cbb000000000000000000000000000000000000000000000000000000000000dead0000000000000000000000000000000000000000000000000000000000bebc2000000000000000000000000000000000000000000000000000000000
+- description: solidity/transactions-09-event-signature
+  vars:
+    type: open
+    question: |-
+      A contract declares:
 
-    Decode it to the innermost call. Reply with JSON only: {"function": "<inner function name>", "to": "<recipient address>", "amount": <raw integer amount>}
-  answer: |
-    The response must give a JSON object matching {"function": "transfer", "to": "0x000000000000000000000000000000000000dEaD", "amount": 12500000} (other keys may be present). Grade INCORRECT for these tempting wrong answers: `{"function": "transfer", "to": "0x000000000000000000000000000000000000dEaD", "amount": 125000000}`
-  difficulty: reasoning
-  source: |-
-    https://github.com/austintgriffith/ethevals/blob/main/evals/transactions/transactions-19-nested-calldata.yaml
-  tags:
-  - ethevals
-  - transactions
-- id: transactions-20-decode-a-revert
-  type: open
-  question: |
-    A call reverted and the node returned this revert data:
+      `event Redeemed(uint256 indexed to, bytes32 value);`
 
-    0x08c379a000000000000000000000000000000000000000000000000000000000000000200000000000000000000000000000000000000000000000000000000000000014496e73756666696369656e742062616c616e6365000000000000000000000000
+      topic0 of this event's logs is the keccak256 hash of exactly what ASCII string?
 
-    What is the revert reason string?
-    End your reply with a line of the form "Answer: <string>".
-  answer: |
-    The response's final answer must be exactly `Insufficient balance` (case-insensitive).
-  difficulty: reasoning
-  source: |-
-    https://github.com/austintgriffith/ethevals/blob/main/evals/transactions/transactions-20-decode-a-revert.yaml
-  tags:
-  - ethevals
-  - transactions
+      Answer with only that string.
+    answer: |-
+      The response's final answer must be exactly `Redeemed(uint256,bytes32)` (case-sensitive). Grade INCORRECT for these tempting wrong answers: `Redeemed(uint256 to, bytes32 value)`; `redeemed(uint256,bytes32)`
+  metadata:
+    section: solidity
+    type: open
+    difficulty: reasoning
+    source: |-
+      https://github.com/austintgriffith/ethevals/blob/main/evals/transactions/transactions-09-event-signature.yaml
+    tags:
+      - ethevals
+      - transactions
+  assert:
+    - type: llm-rubric
+      value: '{{answer}}'
+      metric: solidity
+
+- description: solidity/transactions-18-storage-packing
+  vars:
+    type: open
+    question: |-
+      A contract declares, in this order and nothing before them:
+
+        uint128 a;
+        uint64 b;
+        uint64 c;
+        address owner;
+        uint256 total;
+
+      Which storage slot number holds `total`?
+      End your reply with a line of the form "Answer: <integer>".
+    answer: |-
+      The response's final answer must be the integer 2 (decimal or the equivalent hex). Grade INCORRECT for these tempting wrong answers: `Answer: 4`; `Answer: 1`; `Answer: 3`
+  metadata:
+    section: solidity
+    type: open
+    difficulty: reasoning
+    source: |-
+      https://github.com/austintgriffith/ethevals/blob/main/evals/transactions/transactions-18-storage-packing.yaml
+    tags:
+      - ethevals
+      - transactions
+  assert:
+    - type: llm-rubric
+      value: '{{answer}}'
+      metric: solidity
+
+- description: solidity/transactions-19-nested-calldata
+  vars:
+    type: open
+    question: |-
+      A router exposes `multicall(bytes[] data)` (selector 0xac9650d8); each element is calldata forwarded to a USDC-like token with `transfer(address,uint256)` (selector 0xa9059cbb). This calldata was sent to the router:
+
+      0xac9650d80000000000000000000000000000000000000000000000000000000000000020000000000000000000000000000000000000000000000000000000000000000100000000000000000000000000000000000000000000000000000000000000200000000000000000000000000000000000000000000000000000000000000044a9059cbb000000000000000000000000000000000000000000000000000000000000dead0000000000000000000000000000000000000000000000000000000000bebc2000000000000000000000000000000000000000000000000000000000
+
+      Decode it to the innermost call. Reply with JSON only: {"function": "<inner function name>", "to": "<recipient address>", "amount": <raw integer amount>}
+    answer: |-
+      The response must give a JSON object matching {"function": "transfer", "to": "0x000000000000000000000000000000000000dEaD", "amount": 12500000} (other keys may be present). Grade INCORRECT for these tempting wrong answers: `{"function": "transfer", "to": "0x000000000000000000000000000000000000dEaD", "amount": 125000000}`
+  metadata:
+    section: solidity
+    type: open
+    difficulty: reasoning
+    source: |-
+      https://github.com/austintgriffith/ethevals/blob/main/evals/transactions/transactions-19-nested-calldata.yaml
+    tags:
+      - ethevals
+      - transactions
+  assert:
+    - type: llm-rubric
+      value: '{{answer}}'
+      metric: solidity
+
+- description: solidity/transactions-20-decode-a-revert
+  vars:
+    type: open
+    question: |-
+      A call reverted and the node returned this revert data:
+
+      0x08c379a000000000000000000000000000000000000000000000000000000000000000200000000000000000000000000000000000000000000000000000000000000014496e73756666696369656e742062616c616e6365000000000000000000000000
+
+      What is the revert reason string?
+      End your reply with a line of the form "Answer: <string>".
+    answer: |-
+      The response's final answer must be exactly `Insufficient balance` (case-insensitive).
+  metadata:
+    section: solidity
+    type: open
+    difficulty: reasoning
+    source: |-
+      https://github.com/austintgriffith/ethevals/blob/main/evals/transactions/transactions-20-decode-a-revert.yaml
+    tags:
+      - ethevals
+      - transactions
+  assert:
+    - type: llm-rubric
+      value: '{{answer}}'
+      metric: solidity

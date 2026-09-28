@@ -1,0 +1,36 @@
+# yaml-language-server: $schema=https://promptfoo.dev/config-schema.json
+#
+# Assisted run: the ethskills index (https://ethskills.com/SKILL.md) is fetched once
+# and placed in the system prompt. No tools; the model cannot follow the index's links.
+#
+#   npx promptfoo eval -c promptfooconfig.ethskills.yaml --filter-providers 'Qwen3.8-27b'
+
+description: eth-bench with the ethskills index in the system prompt
+
+sharing: false
+
+prompts:
+  - id: file://src/prompt.js:ethskills
+    label: ethskills
+
+providers:
+  - id: openai:chat:qwen3.8-27b
+    label: Qwen3.8-27b + ethskills
+    config:
+      apiBaseUrl: "{{ env.EF_BASE_URL }}"
+      apiKeyEnvar: EF_API_KEY
+      passthrough:
+        chat_template_kwargs: { enable_thinking: false }
+  - id: openai:chat:google/gemma-4-26B-A4B-it
+    label: Gemma 4 26B-A4B-it + ethskills
+    config:
+      apiBaseUrl: "{{ env.EF_BASE_URL }}"
+      apiKeyEnvar: EF_API_KEY
+
+defaultTest: file://src/grading.yaml
+
+tests:
+  - file://questions/**/*.yaml
+
+evaluateOptions:
+  maxConcurrency: 4

@@ -1,200 +1,323 @@
-# Imported from https://github.com/clawdbotatg/eth-evals (MIT, Austin Griffith)
-# by scripts/import_ethevals.py. Edit the script, not this file.
+# Imported from https://github.com/clawdbotatg/eth-evals (MIT, Austin Griffith).
 
-- id: derivations-c2finish-02
-  type: open
-  question: |
-    In a CREATE2 derivation, keccak256(0xff ++ deployer ++ salt ++ keccak256(init_code)) evaluates to:
-    0xa52ecc02bbc9d231fbf91c4159c95b39661eb83fb524230f1a2e10ebddaad12a
+- description: execution/derivations-c2finish-02
+  vars:
+    type: open
+    question: |-
+      In a CREATE2 derivation, keccak256(0xff ++ deployer ++ salt ++ keccak256(init_code)) evaluates to:
+      0xa52ecc02bbc9d231fbf91c4159c95b39661eb83fb524230f1a2e10ebddaad12a
 
-    What address is the contract deployed at?
+      What address is the contract deployed at?
 
-    Answer with only the address (any casing).
-  answer: |
-    The response's final answer must be exactly `0x59c95b39661eb83fb524230f1a2e10ebddaad12a` (case-insensitive). Grade INCORRECT for these tempting wrong answers: `0xa52ecc02bbc9d231fbf91c4159c95b39661eb83fb524230f1a2e10ebddaad12a`
-  difficulty: reasoning
-  source: https://github.com/clawdbotatg/eth-evals/blob/main/tasks/gen-derivations.jsonl
-  tags:
-  - eth-evals
-  - derivations
-- id: gas-intrinsic-02
-  type: open
-  question: |
-    A simple value-transfer transaction to an EOA carries this calldata:
-    0x00a600760060fd8545da0000004000d2c80000c000930000d4b50011
+      Answer with only the address (any casing).
+    answer: |-
+      The response's final answer must be exactly `0x59c95b39661eb83fb524230f1a2e10ebddaad12a` (case-insensitive). Grade INCORRECT for these tempting wrong answers: `0xa52ecc02bbc9d231fbf91c4159c95b39661eb83fb524230f1a2e10ebddaad12a`
+  metadata:
+    section: execution
+    type: open
+    difficulty: reasoning
+    source: https://github.com/clawdbotatg/eth-evals/blob/main/tasks/gen-derivations.jsonl
+    tags:
+      - eth-evals
+      - derivations
+  assert:
+    - type: llm-rubric
+      value: '{{answer}}'
+      metric: execution
 
-    Using EIP-2028 calldata pricing (ignore the EIP-7623 floor and access lists), what is the transaction's intrinsic gas?
+- description: execution/gas-intrinsic-02
+  vars:
+    type: open
+    question: |-
+      A simple value-transfer transaction to an EOA carries this calldata:
+      0x00a600760060fd8545da0000004000d2c80000c000930000d4b50011
 
-    End your reply with a line of the form "Answer: <integer>".
-  answer: |
-    The response's final answer must be the integer 21292 (decimal or the equivalent hex).
-  difficulty: reasoning
-  source: https://github.com/clawdbotatg/eth-evals/blob/main/tasks/gen-gas.jsonl
-  tags:
-  - eth-evals
-  - gas
-- id: gas-basefee-01
-  type: open
-  question: |
-    An EIP-1559 chain has a gas target of 15,000,000 per block. The base fee entering block 1 is 1400000000 wei.
-    Blocks execute as follows:
-    - block 1: 30,000,000 gas used
-    - block 2: 15,000,000 gas used
+      Using EIP-2028 calldata pricing (ignore the EIP-7623 floor and access lists), what is the transaction's intrinsic gas?
 
-    Using the exact EIP-1559 integer update rule, what is the base fee (in wei) entering the block AFTER the last one listed?
+      End your reply with a line of the form "Answer: <integer>".
+    answer: |-
+      The response's final answer must be the integer 21292 (decimal or the equivalent hex).
+  metadata:
+    section: execution
+    type: open
+    difficulty: reasoning
+    source: https://github.com/clawdbotatg/eth-evals/blob/main/tasks/gen-gas.jsonl
+    tags:
+      - eth-evals
+      - gas
+  assert:
+    - type: llm-rubric
+      value: '{{answer}}'
+      metric: execution
 
-    End your reply with a line of the form "Answer: <integer>".
-  answer: |
-    The response's final answer must be the integer 1575000000 (decimal or the equivalent hex).
-  difficulty: reasoning
-  source: https://github.com/clawdbotatg/eth-evals/blob/main/tasks/gen-gas.jsonl
-  tags:
-  - eth-evals
-  - gas
-- id: gas-basefee-02
-  type: open
-  question: |
-    An EIP-1559 chain has a gas target of 15,000,000 per block. The base fee entering block 1 is 5900000000 wei.
-    Blocks execute as follows:
-    - block 1: 0 gas used
-    - block 2: 0 gas used
-    - block 3: 0 gas used
+- description: execution/gas-basefee-01
+  vars:
+    type: open
+    question: |-
+      An EIP-1559 chain has a gas target of 15,000,000 per block. The base fee entering block 1 is 1400000000 wei.
+      Blocks execute as follows:
+      - block 1: 30,000,000 gas used
+      - block 2: 15,000,000 gas used
 
-    Using the exact EIP-1559 integer update rule, what is the base fee (in wei) entering the block AFTER the last one listed?
+      Using the exact EIP-1559 integer update rule, what is the base fee (in wei) entering the block AFTER the last one listed?
 
-    End your reply with a line of the form "Answer: <integer>".
-  answer: |
-    The response's final answer must be the integer 3952539063 (decimal or the equivalent hex).
-  difficulty: reasoning
-  source: https://github.com/clawdbotatg/eth-evals/blob/main/tasks/gen-gas.jsonl
-  tags:
-  - eth-evals
-  - gas
-- id: units-02
-  type: open
-  question: |
-    Convert 2.356 ether to wei.
+      End your reply with a line of the form "Answer: <integer>".
+    answer: |-
+      The response's final answer must be the integer 1575000000 (decimal or the equivalent hex).
+  metadata:
+    section: execution
+    type: open
+    difficulty: reasoning
+    source: https://github.com/clawdbotatg/eth-evals/blob/main/tasks/gen-gas.jsonl
+    tags:
+      - eth-evals
+      - gas
+  assert:
+    - type: llm-rubric
+      value: '{{answer}}'
+      metric: execution
 
-    End your reply with a line of the form "Answer: <integer>" (plain decimal, no separators).
-  answer: |
-    The response's final answer must be the integer 2356000000000000000 (decimal or the equivalent hex).
-  difficulty: reasoning
-  source: https://github.com/clawdbotatg/eth-evals/blob/main/tasks/gen-units.jsonl
-  tags:
-  - eth-evals
-  - units
-- id: units-03
-  type: open
-  question: |
-    An ERC-20 token has 8 decimals. What raw integer amount represents 414 whole tokens?
+- description: execution/gas-basefee-02
+  vars:
+    type: open
+    question: |-
+      An EIP-1559 chain has a gas target of 15,000,000 per block. The base fee entering block 1 is 5900000000 wei.
+      Blocks execute as follows:
+      - block 1: 0 gas used
+      - block 2: 0 gas used
+      - block 3: 0 gas used
 
-    End your reply with a line of the form "Answer: <integer>" (plain decimal, no separators).
-  answer: |
-    The response's final answer must be the integer 41400000000 (decimal or the equivalent hex).
-  difficulty: reasoning
-  source: https://github.com/clawdbotatg/eth-evals/blob/main/tasks/gen-units.jsonl
-  tags:
-  - eth-evals
-  - units
-- id: gas-k-01
-  type: open
-  question: |
-    How much gas does a simple ETH value transfer (plain send to an EOA, empty calldata) consume on Ethereum?
-    End your reply with a line of the form "Answer: <integer>".
-  answer: |
-    The response's final answer must be the integer 21000 (decimal or the equivalent hex). Reference from ethskills: "| ETH transfer | 21,000 | **$0.004** | $0.04 | $0.42 |"
-  difficulty: recall
-  source: https://github.com/clawdbotatg/eth-evals/blob/main/tasks/skill-gas.jsonl
-  tags:
-  - eth-evals
-  - gas
-- id: gas-k-03
-  type: open
-  question: |
-    The Ethereum network upgrade of March 2024 that activated blob transactions (EIP-4844) is commonly known by what name?
-    End your reply with a line of the form "Answer: <upgrade name>".
-  answer: |
-    The response's answer must match the pattern `dencun|cancun` (that is, it must name the concept the pattern captures). The reference answer is: Answer: Dencun. Reference from ethskills: "**EIP-4844 (Dencun, March 2024):** Blob transactions — L2s post data as blobs instead of calldata, 100x cheaper."
-  difficulty: recall
-  source: https://github.com/clawdbotatg/eth-evals/blob/main/tasks/skill-gas.jsonl
-  tags:
-  - eth-evals
-  - gas
-- id: gas-k-04
-  type: open
-  question: |
-    After EIP-4844, rollups post their batch data to Ethereum as blobs. Before that, which part of a regular transaction did rollups use to post that data (roughly 100x more expensive)?
-    End your reply with a line of the form "Answer: <term>".
-  answer: |
-    The response's answer must match the pattern `call\s?-?data` (that is, it must name the concept the pattern captures). The reference answer is: Answer: calldata. Reference from ethskills: "**EIP-4844 (Dencun, March 2024):** Blob transactions — L2s post data as blobs instead of calldata, 100x cheaper."
-  difficulty: recall
-  source: https://github.com/clawdbotatg/eth-evals/blob/main/tasks/skill-gas.jsonl
-  tags:
-  - eth-evals
-  - gas
-- id: gas-k-05
-  type: open
-  question: |
-    The Pectra upgrade (May 2025) changed Ethereum's target blob count per block from 3 to what number?
-    End your reply with a line of the form "Answer: <integer>".
-  answer: |
-    The response's final answer must be the integer 6 (decimal or the equivalent hex). Reference from ethskills: "**Pectra (May 2025):** Doubled blob capacity (3→6 target blobs)."
-  difficulty: recall
-  source: https://github.com/clawdbotatg/eth-evals/blob/main/tasks/skill-gas.jsonl
-  tags:
-  - eth-evals
-  - gas
-- id: gas-k-06
-  type: open
-  question: |
-    EIP-7935, part of the Fusaka upgrade (December 2025), coordinated client defaults toward what mainnet block gas limit? Answer in millions of gas.
-    End your reply with a line of the form "Answer: <integer>".
-  answer: |
-    Any of the following counts as correct: The response's final answer must be the integer 60 (decimal or the equivalent hex). OR The response's final answer must be the integer 60000000 (decimal or the equivalent hex).. Reference from ethskills: "**Fusaka (Dec 2025):** PeerDAS (nodes sample 1/8 of data) + 2x gas limit (30M→60M)." Grade INCORRECT for these tempting wrong answers: `Answer: 30`; `Answer: 45`
-  difficulty: recall
-  source: https://github.com/clawdbotatg/eth-evals/blob/main/tasks/skill-gas.jsonl
-  tags:
-  - eth-evals
-  - gas
-- id: gas-k-07
-  type: open
-  question: |
-    Under PeerDAS (shipped in Ethereum's Fusaka upgrade), each node samples what fraction of blob data instead of downloading all of it?
-    End your reply with a line of the form "Answer: <fraction>".
-  answer: |
-    The response's answer must match the pattern `1\s*/\s*8|one[\s-]?eighth|12\.5\s*%` (that is, it must name the concept the pattern captures). The reference answer is: Answer: 1/8. Reference from ethskills: "**Fusaka (Dec 2025):** PeerDAS (nodes sample 1/8 of data) + 2x gas limit (30M→60M)."
-  difficulty: recall
-  source: https://github.com/clawdbotatg/eth-evals/blob/main/tasks/skill-gas.jsonl
-  tags:
-  - eth-evals
-  - gas
-- id: gas-k-08
-  type: multiple_choice
-  question: |
-    The total fee a user pays for a transaction on an optimistic or ZK rollup is made up of which two cost components?
-  choices:
-  - Sequencer subscription plus validator staking fee
-  - Priority tip plus MEV auction fee
-  - L2 execution gas plus L1 data gas (data availability)
-  - Storage rent plus compute credits
-  answer: C
-  difficulty: understanding
-  source: https://github.com/clawdbotatg/eth-evals/blob/main/tasks/skill-gas.jsonl
-  tags:
-  - eth-evals
-  - gas
-- id: gas-k-09
-  type: multiple_choice
-  question: |
-    Roughly how much gas does a standard ERC-20 token transfer use on Ethereum?
-  choices:
-  - ~21,000
-  - ~650,000
-  - ~250,000
-  - ~65,000
-  answer: D
-  difficulty: understanding
-  source: https://github.com/clawdbotatg/eth-evals/blob/main/tasks/skill-gas.jsonl
-  tags:
-  - eth-evals
-  - gas
+      Using the exact EIP-1559 integer update rule, what is the base fee (in wei) entering the block AFTER the last one listed?
+
+      End your reply with a line of the form "Answer: <integer>".
+    answer: |-
+      The response's final answer must be the integer 3952539063 (decimal or the equivalent hex).
+  metadata:
+    section: execution
+    type: open
+    difficulty: reasoning
+    source: https://github.com/clawdbotatg/eth-evals/blob/main/tasks/gen-gas.jsonl
+    tags:
+      - eth-evals
+      - gas
+  assert:
+    - type: llm-rubric
+      value: '{{answer}}'
+      metric: execution
+
+- description: execution/units-02
+  vars:
+    type: open
+    question: |-
+      Convert 2.356 ether to wei.
+
+      End your reply with a line of the form "Answer: <integer>" (plain decimal, no separators).
+    answer: |-
+      The response's final answer must be the integer 2356000000000000000 (decimal or the equivalent hex).
+  metadata:
+    section: execution
+    type: open
+    difficulty: reasoning
+    source: https://github.com/clawdbotatg/eth-evals/blob/main/tasks/gen-units.jsonl
+    tags:
+      - eth-evals
+      - units
+  assert:
+    - type: llm-rubric
+      value: '{{answer}}'
+      metric: execution
+
+- description: execution/units-03
+  vars:
+    type: open
+    question: |-
+      An ERC-20 token has 8 decimals. What raw integer amount represents 414 whole tokens?
+
+      End your reply with a line of the form "Answer: <integer>" (plain decimal, no separators).
+    answer: |-
+      The response's final answer must be the integer 41400000000 (decimal or the equivalent hex).
+  metadata:
+    section: execution
+    type: open
+    difficulty: reasoning
+    source: https://github.com/clawdbotatg/eth-evals/blob/main/tasks/gen-units.jsonl
+    tags:
+      - eth-evals
+      - units
+  assert:
+    - type: llm-rubric
+      value: '{{answer}}'
+      metric: execution
+
+- description: execution/gas-k-01
+  vars:
+    type: open
+    question: |-
+      How much gas does a simple ETH value transfer (plain send to an EOA, empty calldata) consume on Ethereum?
+      End your reply with a line of the form "Answer: <integer>".
+    answer: |-
+      The response's final answer must be the integer 21000 (decimal or the equivalent hex). Reference from ethskills: "| ETH transfer | 21,000 | **$0.004** | $0.04 | $0.42 |"
+  metadata:
+    section: execution
+    type: open
+    difficulty: recall
+    source: https://github.com/clawdbotatg/eth-evals/blob/main/tasks/skill-gas.jsonl
+    tags:
+      - eth-evals
+      - gas
+  assert:
+    - type: llm-rubric
+      value: '{{answer}}'
+      metric: execution
+
+- description: execution/gas-k-03
+  vars:
+    type: open
+    question: |-
+      The Ethereum network upgrade of March 2024 that activated blob transactions (EIP-4844) is commonly known by what name?
+      End your reply with a line of the form "Answer: <upgrade name>".
+    answer: |-
+      The response's answer must match the pattern `dencun|cancun` (that is, it must name the concept the pattern captures). The reference answer is: Answer: Dencun. Reference from ethskills: "**EIP-4844 (Dencun, March 2024):** Blob transactions — L2s post data as blobs instead of calldata, 100x cheaper."
+  metadata:
+    section: execution
+    type: open
+    difficulty: recall
+    source: https://github.com/clawdbotatg/eth-evals/blob/main/tasks/skill-gas.jsonl
+    tags:
+      - eth-evals
+      - gas
+  assert:
+    - type: llm-rubric
+      value: '{{answer}}'
+      metric: execution
+
+- description: execution/gas-k-04
+  vars:
+    type: open
+    question: |-
+      After EIP-4844, rollups post their batch data to Ethereum as blobs. Before that, which part of a regular transaction did rollups use to post that data (roughly 100x more expensive)?
+      End your reply with a line of the form "Answer: <term>".
+    answer: |-
+      The response's answer must match the pattern `call\s?-?data` (that is, it must name the concept the pattern captures). The reference answer is: Answer: calldata. Reference from ethskills: "**EIP-4844 (Dencun, March 2024):** Blob transactions — L2s post data as blobs instead of calldata, 100x cheaper."
+  metadata:
+    section: execution
+    type: open
+    difficulty: recall
+    source: https://github.com/clawdbotatg/eth-evals/blob/main/tasks/skill-gas.jsonl
+    tags:
+      - eth-evals
+      - gas
+  assert:
+    - type: llm-rubric
+      value: '{{answer}}'
+      metric: execution
+
+- description: execution/gas-k-05
+  vars:
+    type: open
+    question: |-
+      The Pectra upgrade (May 2025) changed Ethereum's target blob count per block from 3 to what number?
+      End your reply with a line of the form "Answer: <integer>".
+    answer: |-
+      The response's final answer must be the integer 6 (decimal or the equivalent hex). Reference from ethskills: "**Pectra (May 2025):** Doubled blob capacity (3→6 target blobs)."
+  metadata:
+    section: execution
+    type: open
+    difficulty: recall
+    source: https://github.com/clawdbotatg/eth-evals/blob/main/tasks/skill-gas.jsonl
+    tags:
+      - eth-evals
+      - gas
+  assert:
+    - type: llm-rubric
+      value: '{{answer}}'
+      metric: execution
+
+- description: execution/gas-k-06
+  vars:
+    type: open
+    question: |-
+      EIP-7935, part of the Fusaka upgrade (December 2025), coordinated client defaults toward what mainnet block gas limit? Answer in millions of gas.
+      End your reply with a line of the form "Answer: <integer>".
+    answer: |-
+      Any of the following counts as correct: The response's final answer must be the integer 60 (decimal or the equivalent hex). OR The response's final answer must be the integer 60000000 (decimal or the equivalent hex).. Reference from ethskills: "**Fusaka (Dec 2025):** PeerDAS (nodes sample 1/8 of data) + 2x gas limit (30M→60M)." Grade INCORRECT for these tempting wrong answers: `Answer: 30`; `Answer: 45`
+  metadata:
+    section: execution
+    type: open
+    difficulty: recall
+    source: https://github.com/clawdbotatg/eth-evals/blob/main/tasks/skill-gas.jsonl
+    tags:
+      - eth-evals
+      - gas
+  assert:
+    - type: llm-rubric
+      value: '{{answer}}'
+      metric: execution
+
+- description: execution/gas-k-07
+  vars:
+    type: open
+    question: |-
+      Under PeerDAS (shipped in Ethereum's Fusaka upgrade), each node samples what fraction of blob data instead of downloading all of it?
+      End your reply with a line of the form "Answer: <fraction>".
+    answer: |-
+      The response's answer must match the pattern `1\s*/\s*8|one[\s-]?eighth|12\.5\s*%` (that is, it must name the concept the pattern captures). The reference answer is: Answer: 1/8. Reference from ethskills: "**Fusaka (Dec 2025):** PeerDAS (nodes sample 1/8 of data) + 2x gas limit (30M→60M)."
+  metadata:
+    section: execution
+    type: open
+    difficulty: recall
+    source: https://github.com/clawdbotatg/eth-evals/blob/main/tasks/skill-gas.jsonl
+    tags:
+      - eth-evals
+      - gas
+  assert:
+    - type: llm-rubric
+      value: '{{answer}}'
+      metric: execution
+
+- description: execution/gas-k-08
+  vars:
+    type: multiple_choice
+    question: |-
+      The total fee a user pays for a transaction on an optimistic or ZK rollup is made up of which two cost components?
+    choices:
+      - Storage rent plus compute credits
+      - Priority tip plus MEV auction fee
+      - L2 execution gas plus L1 data gas (data availability)
+      - Sequencer subscription plus validator staking fee
+    answer: C
+  metadata:
+    section: execution
+    type: multiple_choice
+    difficulty: understanding
+    source: https://github.com/clawdbotatg/eth-evals/blob/main/tasks/skill-gas.jsonl
+    tags:
+      - eth-evals
+      - gas
+  assert:
+    - type: regex
+      value: 'ANSWER:\W*{{answer}}\b(?!\s*,\s*[A-H]\b)'
+      metric: execution
+
+- description: execution/gas-k-09
+  vars:
+    type: multiple_choice
+    question: Roughly how much gas does a standard ERC-20 token transfer use on Ethereum?
+    choices:
+      - ~21,000
+      - ~650,000
+      - ~65,000
+      - ~250,000
+    answer: C
+  metadata:
+    section: execution
+    type: multiple_choice
+    difficulty: understanding
+    source: https://github.com/clawdbotatg/eth-evals/blob/main/tasks/skill-gas.jsonl
+    tags:
+      - eth-evals
+      - gas
+  assert:
+    - type: regex
+      value: 'ANSWER:\W*{{answer}}\b(?!\s*,\s*[A-H]\b)'
+      metric: execution

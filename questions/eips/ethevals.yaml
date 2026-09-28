@@ -1,96 +1,148 @@
-# Imported from https://github.com/austintgriffith/ethevals by
-# scripts/import_ethevals.py. Edit the script, not this file.
+# Imported from https://github.com/austintgriffith/ethevals (MIT, Austin Griffith).
 
-- id: concepts-09-eip1559-mechanics
-  type: multiple_choice
-  question: |
-    Under EIP-1559, block N used its entire gas limit — twice the gas target. Ignoring the tip, which statement about block N+1 is correct?
-  choices:
-  - The base fee is unchanged; only priority fees respond to demand
-  - The base fee rises by 12.5%, and the base fee portion of every fee is burned
-  - The base fee rises by 25%, and the base fee portion goes to the proposer
-  - The proposer sets the base fee freely for the next block
-  answer: B
-  difficulty: understanding
-  source: |-
-    https://github.com/austintgriffith/ethevals/blob/main/evals/concepts/concepts-09-eip1559-mechanics.yaml
-  tags:
-  - ethevals
-  - concepts
-- id: concepts-14-eip7702-delegation
-  type: multiple_choice
-  question: |
-    Under EIP-7702, an EOA signs an authorization that sets a delegation designator pointing its code at a contract. Per the spec, how long does that delegation remain in effect?
-  choices:
-  - It applies to a single transaction only, then clears automatically
-  - It expires at the end of the block
-  - It remains until replaced or cleared by a later authorization
-  - It expires after a protocol-defined timeout
-  answer: C
-  difficulty: understanding
-  source: |-
-    https://github.com/austintgriffith/ethevals/blob/main/evals/concepts/concepts-14-eip7702-delegation.yaml
-  tags:
-  - ethevals
-  - concepts
-- id: concepts-16-peerdas-eip
-  type: open
-  question: "PeerDAS (peer data availability sampling), the headline change of Ethereum's\
-    \ Fusaka hard fork, is specified in which EIP? \nEnd your reply with a line of the form\
-    \ \"Answer: <EIP number>\".\n"
-  answer: |
-    The response's final answer must be the integer 7594 (decimal or the equivalent hex). Grade INCORRECT for these tempting wrong answers: `Answer: EIP-1559`; `Answer: 7595`
-  difficulty: reasoning
-  source: |-
-    https://github.com/austintgriffith/ethevals/blob/main/evals/concepts/concepts-16-peerdas-eip.yaml
-  tags:
-  - ethevals
-  - concepts
-- id: concepts-22-7702-no-recursion
-  type: multiple_choice
-  question: |
-    Under EIP-7702, account A is delegated to B (A's code is 0xef0100 followed by B's address), and B is itself an EOA delegated to C. A transaction calls A. What runs?
-  choices:
-  - 'C''s code: delegation resolves transitively until real bytecode is found'
-  - |-
-    Only one hop is followed: the EVM loads B's code, which is B's own 23-byte delegation designator, not C's code; the designator is not executable, so the call fails without running anything useful
-  - The transaction is invalid and never enters a block
-  - B's code, but with C's storage
-  answer: B
-  difficulty: understanding
-  source: |-
-    https://github.com/austintgriffith/ethevals/blob/main/evals/concepts/concepts-22-7702-no-recursion.yaml
-  tags:
-  - ethevals
-  - concepts
-- id: concepts-23-7702-bad-tuple
-  type: multiple_choice
-  question: |
-    A type-4 transaction carries two authorization tuples. One was signed for a different chain id. What happens when the transaction is included?
-  choices:
-  - The whole transaction is invalid and cannot be included
-  - |-
-    The mismatched tuple is skipped, the other is applied, the transaction executes normally and is charged for both tuples; only an empty authorization list makes the transaction itself invalid
-  - The transaction reverts and the sender pays nothing
-  - |-
-    Both tuples are applied, because authorizations are validated at signing time, not at inclusion
-  answer: B
-  difficulty: understanding
-  source: |-
-    https://github.com/austintgriffith/ethevals/blob/main/evals/concepts/concepts-23-7702-bad-tuple.yaml
-  tags:
-  - ethevals
-  - concepts
-- id: transactions-24-7702-self-nonce
-  type: open
-  question: |
-    An EOA whose current nonce is 5 wants to delegate itself to an EIP-7702 implementation and pays for the type-4 transaction itself: the transaction sender and the authorization signer are the same account. What nonce must the authorization tuple carry for the delegation to take effect?
-    End your reply with a line of the form "Answer: <integer>".
-  answer: |
-    The response's final answer must be the integer 6 (decimal or the equivalent hex). Grade INCORRECT for these tempting wrong answers: `Answer: 5`; `Answer: 0`; `Answer: 7`
-  difficulty: reasoning
-  source: |-
-    https://github.com/austintgriffith/ethevals/blob/main/evals/transactions/transactions-24-7702-self-nonce.yaml
-  tags:
-  - ethevals
-  - transactions
+- description: eips/concepts-09-eip1559-mechanics
+  vars:
+    type: multiple_choice
+    question: |-
+      Under EIP-1559, block N used its entire gas limit — twice the gas target. Ignoring the tip, which statement about block N+1 is correct?
+    choices:
+      - The proposer sets the base fee freely for the next block
+      - The base fee rises by 25%, and the base fee portion goes to the proposer
+      - The base fee rises by 12.5%, and the base fee portion of every fee is burned
+      - The base fee is unchanged; only priority fees respond to demand
+    answer: C
+  metadata:
+    section: eips
+    type: multiple_choice
+    difficulty: understanding
+    source: |-
+      https://github.com/austintgriffith/ethevals/blob/main/evals/concepts/concepts-09-eip1559-mechanics.yaml
+    tags:
+      - ethevals
+      - concepts
+  assert:
+    - type: regex
+      value: 'ANSWER:\W*{{answer}}\b(?!\s*,\s*[A-H]\b)'
+      metric: eips
+
+- description: eips/concepts-14-eip7702-delegation
+  vars:
+    type: multiple_choice
+    question: |-
+      Under EIP-7702, an EOA signs an authorization that sets a delegation designator pointing its code at a contract. Per the spec, how long does that delegation remain in effect?
+    choices:
+      - It expires after a protocol-defined timeout
+      - It remains until replaced or cleared by a later authorization
+      - It applies to a single transaction only, then clears automatically
+      - It expires at the end of the block
+    answer: B
+  metadata:
+    section: eips
+    type: multiple_choice
+    difficulty: understanding
+    source: |-
+      https://github.com/austintgriffith/ethevals/blob/main/evals/concepts/concepts-14-eip7702-delegation.yaml
+    tags:
+      - ethevals
+      - concepts
+  assert:
+    - type: regex
+      value: 'ANSWER:\W*{{answer}}\b(?!\s*,\s*[A-H]\b)'
+      metric: eips
+
+- description: eips/concepts-16-peerdas-eip
+  vars:
+    type: open
+    question: "PeerDAS (peer data availability sampling), the headline change of Ethereum's Fusaka hard\
+      \ fork, is specified in which EIP? \nEnd your reply with a line of the form \"Answer: <EIP number>\"\
+      ."
+    answer: |-
+      The response's final answer must be the integer 7594 (decimal or the equivalent hex). Grade INCORRECT for these tempting wrong answers: `Answer: EIP-1559`; `Answer: 7595`
+  metadata:
+    section: eips
+    type: open
+    difficulty: reasoning
+    source: |-
+      https://github.com/austintgriffith/ethevals/blob/main/evals/concepts/concepts-16-peerdas-eip.yaml
+    tags:
+      - ethevals
+      - concepts
+  assert:
+    - type: llm-rubric
+      value: '{{answer}}'
+      metric: eips
+
+- description: eips/concepts-22-7702-no-recursion
+  vars:
+    type: multiple_choice
+    question: |-
+      Under EIP-7702, account A is delegated to B (A's code is 0xef0100 followed by B's address), and B is itself an EOA delegated to C. A transaction calls A. What runs?
+    choices:
+      - |-
+        Only one hop is followed: the EVM loads B's code, which is B's own 23-byte delegation designator, not C's code; the designator is not executable, so the call fails without running anything useful
+      - The transaction is invalid and never enters a block
+      - B's code, but with C's storage
+      - 'C''s code: delegation resolves transitively until real bytecode is found'
+    answer: A
+  metadata:
+    section: eips
+    type: multiple_choice
+    difficulty: understanding
+    source: |-
+      https://github.com/austintgriffith/ethevals/blob/main/evals/concepts/concepts-22-7702-no-recursion.yaml
+    tags:
+      - ethevals
+      - concepts
+  assert:
+    - type: regex
+      value: 'ANSWER:\W*{{answer}}\b(?!\s*,\s*[A-H]\b)'
+      metric: eips
+
+- description: eips/concepts-23-7702-bad-tuple
+  vars:
+    type: multiple_choice
+    question: |-
+      A type-4 transaction carries two authorization tuples. One was signed for a different chain id. What happens when the transaction is included?
+    choices:
+      - |-
+        Both tuples are applied, because authorizations are validated at signing time, not at inclusion
+      - |-
+        The mismatched tuple is skipped, the other is applied, the transaction executes normally and is charged for both tuples; only an empty authorization list makes the transaction itself invalid
+      - The whole transaction is invalid and cannot be included
+      - The transaction reverts and the sender pays nothing
+    answer: B
+  metadata:
+    section: eips
+    type: multiple_choice
+    difficulty: understanding
+    source: |-
+      https://github.com/austintgriffith/ethevals/blob/main/evals/concepts/concepts-23-7702-bad-tuple.yaml
+    tags:
+      - ethevals
+      - concepts
+  assert:
+    - type: regex
+      value: 'ANSWER:\W*{{answer}}\b(?!\s*,\s*[A-H]\b)'
+      metric: eips
+
+- description: eips/transactions-24-7702-self-nonce
+  vars:
+    type: open
+    question: |-
+      An EOA whose current nonce is 5 wants to delegate itself to an EIP-7702 implementation and pays for the type-4 transaction itself: the transaction sender and the authorization signer are the same account. What nonce must the authorization tuple carry for the delegation to take effect?
+      End your reply with a line of the form "Answer: <integer>".
+    answer: |-
+      The response's final answer must be the integer 6 (decimal or the equivalent hex). Grade INCORRECT for these tempting wrong answers: `Answer: 5`; `Answer: 0`; `Answer: 7`
+  metadata:
+    section: eips
+    type: open
+    difficulty: reasoning
+    source: |-
+      https://github.com/austintgriffith/ethevals/blob/main/evals/transactions/transactions-24-7702-self-nonce.yaml
+    tags:
+      - ethevals
+      - transactions
+  assert:
+    - type: llm-rubric
+      value: '{{answer}}'
+      metric: eips
