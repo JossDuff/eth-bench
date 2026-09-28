@@ -1,60 +1,87 @@
 # Contributing questions
 
-Questions are YAML files in `questions/<section>/`. The section is the directory
-name. Put a question in any existing file in that directory, or make a new file.
-File names are up to you; grouping by topic (`eip-1559.yaml`, `upgrades.yaml`) works
-well.
+Questions are promptfoo test cases in YAML files under `questions/<section>/`. The
+section is the directory name. Put a question in any existing file in that directory,
+or make a new file. File names are up to you; grouping by topic (`eip-1559.yaml`,
+`upgrades.yaml`) works well.
 
 After editing, run:
 
 ```sh
-uv run pytest
+npm test
 ```
 
-Every file is checked. A failure names the file and the question id.
+Every file is checked. A failure names the file and the question.
 
 ## The three question types
+
+Every question has the same shape: a `description` that is its id, `vars` holding
+the question and the answer key, `metadata` for filtering, and one assertion that
+grades it. Only the `vars.type` and the assertion differ between types.
 
 ### Multiple choice
 
 The model sees the lettered options and must reply with a single `ANSWER: X` line.
-Graded by exact letter match. Choices are shuffled at run time, so their order in
-the file does not matter, and `answer` refers to the order in the file.
+Graded by exact letter match, by `src/multiple_choice.js`.
 
 ```yaml
-- id: eip-1559-base-fee-max-change
-  type: multiple_choice
-  question: |
-    Under EIP-1559, by what maximum fraction can the base fee change between
-    consecutive blocks?
-  choices:
-    - 1/4
-    - 1/8
-    - 1/16
-    - 1/32
-  answer: B
-  difficulty: recall
-  source: https://eips.ethereum.org/EIPS/eip-1559
+- description: eips/eip-1559-base-fee-max-change
+  vars:
+    type: multiple_choice
+    question: |
+      Under EIP-1559, by what maximum fraction can the base fee change between
+      consecutive blocks?
+    choices:
+      - 1/32
+      - 1/4
+      - 1/8
+      - 1/16
+    answer: C
+  metadata:
+    section: eips
+    type: multiple_choice
+    difficulty: recall
+    source: https://eips.ethereum.org/EIPS/eip-1559
+  assert:
+    - type: javascript
+      value: file://src/multiple_choice.js
+      metric: eips
 ```
+
+Nothing reorders the choices at run time, so put the correct choice at a random
+position. The tests fail if any one letter is the answer to more than 40% of the
+multiple choice questions.
+
+When more than one option is right, set `multiple_correct: true` in `vars` and give
+`answer` as `"A, C"`. The model must name exactly that set; there is no partial credit.
 
 ### Open
 
 The model answers in free text. A grader model compares the response against
-`answer` and returns CORRECT, INCORRECT, or NOT_ATTEMPTED. Write `answer` as
-grading guidance: state the facts, then say what a complete answer must include.
+`answer` and returns CORRECT, INCORRECT, or NOT_ATTEMPTED. Only CORRECT passes. Write
+`answer` as grading guidance: state the facts, then say what a complete answer must
+include.
 
 ```yaml
-- id: evm-call-vs-delegatecall
-  type: open
-  question: |
-    What is the difference between CALL and DELEGATECALL?
-  answer: |
-    CALL runs the target's code in the target's own context. DELEGATECALL runs
-    the target's code in the caller's context: the caller's storage is used and
-    msg.sender and msg.value are preserved. A complete answer must state that
-    DELEGATECALL uses the caller's storage and preserves msg.sender.
-  difficulty: understanding
-  source: https://eips.ethereum.org/EIPS/eip-7
+- description: execution/evm-call-vs-delegatecall
+  vars:
+    type: open
+    question: |
+      What is the difference between CALL and DELEGATECALL?
+    answer: |
+      CALL runs the target's code in the target's own context. DELEGATECALL runs
+      the target's code in the caller's context: the caller's storage is used and
+      msg.sender and msg.value are preserved. A complete answer must state that
+      DELEGATECALL uses the caller's storage and preserves msg.sender.
+  metadata:
+    section: execution
+    type: open
+    difficulty: understanding
+    source: https://eips.ethereum.org/EIPS/eip-7
+  assert:
+    - type: llm-rubric
+      value: '{{answer}}'
+      metric: execution
 ```
 
 ### False premise
@@ -63,41 +90,46 @@ Only for the `hallucination` section. The question states something untrue. The
 model scores CORRECT for rejecting or questioning the premise, INCORRECT for
 answering as if it were true, and NOT_ATTEMPTED for a bare "I don't know" that
 never engages with the claim. `answer` explains what is false so the grader can
-check.
+check. The assertion is the same `llm-rubric` as for open questions; the grading
+prompt in `src/grading.yaml` switches on `vars.type`.
 
 ```yaml
-- id: fake-push0-byzantium
-  type: false_premise
-  question: |
-    The Byzantium upgrade introduced the PUSH0 opcode. Which EIP specified it?
-  answer: |
-    The premise is false. PUSH0 was introduced by EIP-3855 in Shanghai (2023),
-    not Byzantium (2017). A correct response points this out.
-  difficulty: recall
+- description: hallucination/fake-push0-byzantium
+  vars:
+    type: false_premise
+    question: |
+      The Byzantium upgrade introduced the PUSH0 opcode. Which EIP specified it?
+    answer: |
+      The premise is false. PUSH0 was introduced by EIP-3855 in Shanghai (2023),
+      not Byzantium (2017). A correct response points this out.
+  metadata:
+    section: hallucination
+    type: false_premise
+    difficulty: recall
+  assert:
+    - type: llm-rubric
+      value: '{{answer}}'
+      metric: hallucination
 ```
 
 ## Fields
 
-| Field              | Required | Notes |
-|--------------------|----------|-------|
-| `id`               | yes      | Unique across the whole benchmark. Lowercase letters, digits, and hyphens. |
-| `type`             | yes      | `multiple_choice`, `open`, or `false_premise`. |
-| `question`         | yes      | The prompt. Use `\|` for multiple lines. |
-| `choices`          | MC only  | 2 to 8 distinct options. Not allowed on other types. |
-| `answer`           | yes      | MC: the correct letter in file order. Others: the answer key for the grader. |
-| `difficulty`       | no       | `recall`, `understanding`, or `reasoning`. |
-| `source`           | no       | URL of the spec, EIP, or primary source that backs the answer. Strongly encouraged. |
-| `tags`             | no       | Free-form list, for future filtering. |
-| `multiple_correct` | no       | MC only. Set `true` and give `answer` as `"A, C"` when more than one option is right. |
+| Field                    | Required | Notes |
+|--------------------------|----------|-------|
+| `description`            | yes      | `<section>/<id>`. The id is unique across the whole benchmark: lowercase letters, digits, and hyphens. |
+| `vars.type`              | yes      | `multiple_choice`, `open`, or `false_premise`. |
+| `vars.question`          | yes      | The prompt. Use `\|` for multiple lines. |
+| `vars.choices`           | MC only  | 2 to 8 distinct options. Not allowed on other types. Quote options that look like numbers (`'32'`, `'0x60'`) so YAML keeps them as text. |
+| `vars.answer`            | yes      | MC: the correct letter. Others: the answer key for the grader. |
+| `vars.multiple_correct`  | no       | MC only. `true` when more than one option is right. |
+| `metadata.section`       | yes      | The directory name. |
+| `metadata.type`          | yes      | Same as `vars.type`. |
+| `metadata.difficulty`    | no       | `recall`, `understanding`, or `reasoning`. |
+| `metadata.source`        | no       | URL of the spec, EIP, or primary source that backs the answer. Strongly encouraged. |
+| `metadata.tags`          | no       | Free-form list, for filtering. |
+| `assert`                 | yes      | Exactly one assertion: `javascript` with `file://src/multiple_choice.js` for MC, `llm-rubric` with `'{{answer}}'` otherwise. `metric` is the section. |
 
-Anything else is an error, so typos in field names are caught.
-
-## YAML notes
-
-Every value is read as the exact text you typed. `0x60` stays `0x60`, `32` stays
-`32`, `yes` stays `yes`, and `2022-09-15` stays a string. You never need to quote a
-value to protect it. Leaving an optional field blank (`source:`) is the same as
-leaving it out.
+Anything else in `vars` or `metadata` is an error, so typos in field names are caught.
 
 ## Writing good questions
 
@@ -138,31 +170,29 @@ leaving it out.
 | `hallucination`  | False-premise questions only. |
 | `misc`           | Anything that does not fit a section yet: layer 2, MEV and PBS, roadmap, networking. |
 
-Questions imported from [ethevals](https://github.com/austintgriffith/ethevals) live in
-`ethevals.yaml` inside their section and are regenerated by `scripts/import_ethevals.py`;
-edit the script rather than those files.
+Questions imported from [ethevals](https://github.com/austintgriffith/ethevals) and
+[eth-evals](https://github.com/clawdbotatg/eth-evals) live in `ethevals.yaml` and
+`eth-evals.yaml` inside their section and keep their upstream ids.
 
-To add a section, create a new directory under `questions/`. Nothing else needs
-to change.
+To add a section, create a new directory under `questions/`. Set `metadata.section`
+and the assertion `metric` to its name; nothing else needs to change.
 
 ## Assists
 
-An assist file in `assists/` describes tools or documents given to the model under
-test. To add one, copy an existing file and change the name (lowercase, hyphens),
-the MCP servers (`transport: http` with a `url`, or `transport: stdio` with a
-`command` and `args`), and the skills (`source` is a URL or a path relative to the
-file; `follow_links: true` adds a tool that can read documents from the same site or
-directory). Put secrets in the environment and reference them as `${VAR}`. Run
-`uv run pytest`; every file in `assists/` is parsed by the tests.
+An assist is a promptfoo config at the repository root, `promptfooconfig.<name>.yaml`,
+whose providers carry an `mcp` block (tools) or use the `ethskills` prompt (a document
+in the system prompt). To add one, copy an existing file and change the provider
+labels and the `mcp` block. Secrets stay in the environment; reference them as
+`{{ env.VAR }}`. Check it with `npx promptfoo validate -c promptfooconfig.<name>.yaml`.
 
 ## Code changes
 
 ```sh
-uv sync --all-groups
-uv run ruff check .
-uv run ruff format .
-uv run pytest
+npm install
+npm test
+npx promptfoo validate
+npx promptfoo eval -r echo --filter-metadata type=multiple_choice -n 20 --no-write
 ```
 
-The tests run the whole benchmark against Inspect's mock model, so no API key is
-needed.
+The last command runs the multiple choice questions against promptfoo's `echo`
+provider, which returns the prompt itself, so no API key is needed.
