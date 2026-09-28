@@ -1,677 +1,1012 @@
-- id: l2-native-rollups-benefit
-  type: open
-  question: |
-    What benefit would native rollups bring to Ethereum?
-  answer: |
-    A native rollup verifies its EVM state transitions using an L1 precompile
-    (the proposed EXECUTE precompile) instead of its own fraud-proof or
-    validity-proof system. That gives it Ethereum's own security with no security
-    council or bespoke prover to trust, lets it upgrade automatically in step with
-    L1 EVM changes with no governance, and removes most of the complexity of
-    building a rollup VM. A complete answer must say native rollups reuse L1
-    execution verification (a precompile) so they inherit L1 security and stay
-    in sync with EVM upgrades without their own governance.
-  difficulty: understanding
-  source: https://ethresear.ch/t/native-rollups-superpowers-from-l1-execution/21517
+- description: misc/l2-native-rollups-benefit
+  vars:
+    type: open
+    question: What benefit would native rollups bring to Ethereum?
+    answer: |-
+      A native rollup verifies its EVM state transitions using an L1 precompile
+      (the proposed EXECUTE precompile) instead of its own fraud-proof or
+      validity-proof system. That gives it Ethereum's own security with no security
+      council or bespoke prover to trust, lets it upgrade automatically in step with
+      L1 EVM changes with no governance, and removes most of the complexity of
+      building a rollup VM. A complete answer must say native rollups reuse L1
+      execution verification (a precompile) so they inherit L1 security and stay
+      in sync with EVM upgrades without their own governance.
+  metadata:
+    section: misc
+    type: open
+    difficulty: understanding
+    source: https://ethresear.ch/t/native-rollups-superpowers-from-l1-execution/21517
+  assert:
+    - type: llm-rubric
+      value: '{{answer}}'
+      metric: misc
 
-- id: l2-types-and-tradeoffs
-  type: open
-  question: |
-    What are the main types of Ethereum layer 2 designs, and what are their
-    tradeoffs?
-  answer: |
-    Optimistic rollups post data to L1 and assume validity, relying on fraud
-    proofs during a challenge window, so they are cheap and EVM-compatible but
-    have long withdrawal delays. ZK (validity) rollups post data plus a validity
-    proof, giving fast finality and stronger security at the cost of proving
-    complexity and cost. Validiums and plasma keep data off-chain, cutting costs
-    further but weakening data availability guarantees. Based rollups let L1
-    proposers sequence L2 blocks, gaining L1 liveness and censorship resistance
-    but giving up fast soft confirmations and sequencer revenue. Sidechains have
-    their own consensus and do not inherit Ethereum security at all. A complete
-    answer must describe at least optimistic and ZK rollups with their core
-    tradeoff (fraud proofs and delay versus validity proofs and proving cost) and
-    mention at least one other category.
-  difficulty: reasoning
-  source: https://vitalik.eth.limo/general/2021/01/05/rollup.html
+- description: misc/l2-types-and-tradeoffs
+  vars:
+    type: open
+    question: |-
+      What are the main types of Ethereum layer 2 designs, and what are their
+      tradeoffs?
+    answer: |-
+      Optimistic rollups post data to L1 and assume validity, relying on fraud
+      proofs during a challenge window, so they are cheap and EVM-compatible but
+      have long withdrawal delays. ZK (validity) rollups post data plus a validity
+      proof, giving fast finality and stronger security at the cost of proving
+      complexity and cost. Validiums and plasma keep data off-chain, cutting costs
+      further but weakening data availability guarantees. Based rollups let L1
+      proposers sequence L2 blocks, gaining L1 liveness and censorship resistance
+      but giving up fast soft confirmations and sequencer revenue. Sidechains have
+      their own consensus and do not inherit Ethereum security at all. A complete
+      answer must describe at least optimistic and ZK rollups with their core
+      tradeoff (fraud proofs and delay versus validity proofs and proving cost) and
+      mention at least one other category.
+  metadata:
+    section: misc
+    type: open
+    difficulty: reasoning
+    source: https://vitalik.eth.limo/general/2021/01/05/rollup.html
+  assert:
+    - type: llm-rubric
+      value: '{{answer}}'
+      metric: misc
 
-- id: l2-rollup-stages
-  type: open
-  question: |
-    What do "Stage 0", "Stage 1", and "Stage 2" mean when describing a rollup?
-  answer: |
-    They are the decentralisation stages from L2BEAT's framework. Stage 0 is
-    "full training wheels": the rollup posts data to L1 but users depend on the
-    operators, with no working proof system or with a security council that can
-    override everything. Stage 1 has a functioning fraud or validity proof system
-    so the L1 enforces state transitions, with a security council limited to
-    fixing bugs (typically requiring a large supermajority) and users able to exit
-    without operator cooperation. Stage 2 removes the training wheels: the proof
-    system is fully in charge, the security council can only act on provable
-    on-chain bugs, and upgrades have a delay long enough for users to exit. A
-    complete answer must describe the progression from operator trust to a proof
-    system enforced by L1 with limited or no override powers.
-  difficulty: understanding
-  source: https://vitalik.eth.limo/general/2025/05/06/stages.html
+- description: misc/l2-rollup-stages
+  vars:
+    type: open
+    question: What do "Stage 0", "Stage 1", and "Stage 2" mean when describing a rollup?
+    answer: |-
+      They are the decentralisation stages from L2BEAT's framework. Stage 0 is
+      "full training wheels": the rollup posts data to L1 but users depend on the
+      operators, with no working proof system or with a security council that can
+      override everything. Stage 1 has a functioning fraud or validity proof system
+      so the L1 enforces state transitions, with a security council limited to
+      fixing bugs (typically requiring a large supermajority) and users able to exit
+      without operator cooperation. Stage 2 removes the training wheels: the proof
+      system is fully in charge, the security council can only act on provable
+      on-chain bugs, and upgrades have a delay long enough for users to exit. A
+      complete answer must describe the progression from operator trust to a proof
+      system enforced by L1 with limited or no override powers.
+  metadata:
+    section: misc
+    type: open
+    difficulty: understanding
+    source: https://vitalik.eth.limo/general/2025/05/06/stages.html
+  assert:
+    - type: llm-rubric
+      value: '{{answer}}'
+      metric: misc
 
-- id: pbs-what-it-is
-  type: open
-  question: |
-    What is proposer-builder separation (PBS)?
-  answer: |
-    PBS splits the role of producing a block into two: builders, who assemble
-    block contents (including capturing MEV) and bid for the right to have their
-    block proposed, and proposers (validators), who choose the highest bid and
-    sign the block without seeing or constructing its contents. The aim is to
-    keep validating simple and decentralised while allowing block building, which
-    rewards sophistication and scale, to specialise. Today it exists out of
-    protocol via MEV-Boost and relays. A complete answer must describe the split
-    between builders who construct blocks and proposers who select and sign them,
-    and mention the goal of keeping validators decentralised despite MEV.
-  difficulty: understanding
-  source: https://ethresear.ch/t/why-enshrine-proposer-builder-separation-a-viable-path-to-epbs/15710
+- description: misc/pbs-what-it-is
+  vars:
+    type: open
+    question: What is proposer-builder separation (PBS)?
+    answer: |-
+      PBS splits the role of producing a block into two: builders, who assemble
+      block contents (including capturing MEV) and bid for the right to have their
+      block proposed, and proposers (validators), who choose the highest bid and
+      sign the block without seeing or constructing its contents. The aim is to
+      keep validating simple and decentralised while allowing block building, which
+      rewards sophistication and scale, to specialise. Today it exists out of
+      protocol via MEV-Boost and relays. A complete answer must describe the split
+      between builders who construct blocks and proposers who select and sign them,
+      and mention the goal of keeping validators decentralised despite MEV.
+  metadata:
+    section: misc
+    type: open
+    difficulty: understanding
+    source: |-
+      https://ethresear.ch/t/why-enshrine-proposer-builder-separation-a-viable-path-to-epbs/15710
+  assert:
+    - type: llm-rubric
+      value: '{{answer}}'
+      metric: misc
 
-- id: pbs-why-enshrine
-  type: open
-  question: |
-    Why enshrine proposer-builder separation in the protocol (ePBS) rather than
-    keep relying on MEV-Boost?
-  answer: |
-    MEV-Boost depends on relays, which are trusted third parties: proposers trust
-    them to deliver the block after signing, builders trust them not to steal the
-    block, and a handful of relays are a centralisation and censorship point. ePBS
-    (EIP-7732) makes the builder commitment and payment part of consensus, so the
-    exchange is trustless and enforced by the protocol, removes relays from the
-    critical path, and gives the protocol control over the timing of the slot.
-    A complete answer must say MEV-Boost relies on trusted relays and that ePBS
-    removes that trust by enforcing the proposer-builder exchange in-protocol.
-  difficulty: understanding
-  source: https://ethresear.ch/t/why-enshrine-proposer-builder-separation-a-viable-path-to-epbs/15710
+- description: misc/pbs-why-enshrine
+  vars:
+    type: open
+    question: |-
+      Why enshrine proposer-builder separation in the protocol (ePBS) rather than
+      keep relying on MEV-Boost?
+    answer: |-
+      MEV-Boost depends on relays, which are trusted third parties: proposers trust
+      them to deliver the block after signing, builders trust them not to steal the
+      block, and a handful of relays are a centralisation and censorship point. ePBS
+      (EIP-7732) makes the builder commitment and payment part of consensus, so the
+      exchange is trustless and enforced by the protocol, removes relays from the
+      critical path, and gives the protocol control over the timing of the slot.
+      A complete answer must say MEV-Boost relies on trusted relays and that ePBS
+      removes that trust by enforcing the proposer-builder exchange in-protocol.
+  metadata:
+    section: misc
+    type: open
+    difficulty: understanding
+    source: |-
+      https://ethresear.ch/t/why-enshrine-proposer-builder-separation-a-viable-path-to-epbs/15710
+  assert:
+    - type: llm-rubric
+      value: '{{answer}}'
+      metric: misc
 
-- id: engine-getblobs-partial
-  type: open
-  question: |
-    If a consensus client asks an execution client for blobs via the Engine API
-    and the execution client only has some of them, what does it get back?
-  answer: |
-    It depends on the method version. engine_getBlobsV1 returns an array of the
-    same length and order as the request, with null in the positions of blobs
-    the client does not have and the blob (with proof) elsewhere, so a request
-    for [A, B, C] where B is missing returns [A, null, C]. engine_getBlobsV2 is
-    all-or-nothing: it returns null for the entire response if any requested
-    blob is missing (or only available with an old-style proof).
-    engine_getBlobsV3 restores per-position results with null for missing blobs.
-    All versions reject requests above the size limit with a "Too large request"
-    error. A complete answer must say V1 returns per-position results with null
-    for missing blobs, and V2 returns null for the whole response when anything
-    is missing.
-  difficulty: reasoning
-  source: https://github.com/ethereum/execution-apis/blob/main/src/engine/cancun.md#engine_getblobsv1
+- description: misc/engine-getblobs-partial
+  vars:
+    type: open
+    question: |-
+      If a consensus client asks an execution client for blobs via the Engine API
+      and the execution client only has some of them, what does it get back?
+    answer: |-
+      It depends on the method version. engine_getBlobsV1 returns an array of the
+      same length and order as the request, with null in the positions of blobs
+      the client does not have and the blob (with proof) elsewhere, so a request
+      for [A, B, C] where B is missing returns [A, null, C]. engine_getBlobsV2 is
+      all-or-nothing: it returns null for the entire response if any requested
+      blob is missing (or only available with an old-style proof).
+      engine_getBlobsV3 restores per-position results with null for missing blobs.
+      All versions reject requests above the size limit with a "Too large request"
+      error. A complete answer must say V1 returns per-position results with null
+      for missing blobs, and V2 returns null for the whole response when anything
+      is missing.
+  metadata:
+    section: misc
+    type: open
+    difficulty: reasoning
+    source: |-
+      https://github.com/ethereum/execution-apis/blob/main/src/engine/cancun.md#engine_getblobsv1
+  assert:
+    - type: llm-rubric
+      value: '{{answer}}'
+      metric: misc
 
-- id: engine-newpayload-missing-parent
-  type: open
-  question: |
-    What should an execution client return from engine_newPayload when it does
-    not yet have the payload's parent block?
-  answer: |
-    A payload status of SYNCING, with latestValidHash null and validationError
-    null. The client cannot validate the payload without its parent, so it
-    signals that it is still syncing rather than claiming the payload is valid or
-    invalid. A complete answer must give the SYNCING status.
-  difficulty: recall
-  source: https://github.com/ethereum/execution-apis/blob/main/src/engine/paris.md
+- description: misc/engine-newpayload-missing-parent
+  vars:
+    type: open
+    question: |-
+      What should an execution client return from engine_newPayload when it does
+      not yet have the payload's parent block?
+    answer: |-
+      A payload status of SYNCING, with latestValidHash null and validationError
+      null. The client cannot validate the payload without its parent, so it
+      signals that it is still syncing rather than claiming the payload is valid or
+      invalid. A complete answer must give the SYNCING status.
+  metadata:
+    section: misc
+    type: open
+    difficulty: recall
+    source: https://github.com/ethereum/execution-apis/blob/main/src/engine/paris.md
+  assert:
+    - type: llm-rubric
+      value: '{{answer}}'
+      metric: misc
 
-- id: roadmap-lean-ethereum-pillars
-  type: open
-  question: |
-    What is "lean Ethereum" and what are its main pillars?
-  answer: |
-    Lean Ethereum is the Ethereum Foundation's long-term vision for a simpler,
-    hardened, post-quantum protocol built on hash-based cryptography. Its three
-    pillars are lean consensus (a beacon chain 2.0 hardened for security and
-    decentralisation with finality in seconds), lean data (blobs 2.0 with
-    post-quantum commitments and finer-grained blob sizing), and lean execution
-    (a minimal, SNARK-friendly instruction set, possibly RISC-V based). A
-    complete answer must name the three pillars of consensus, data, and execution
-    and mention post-quantum or hash-based cryptography as a theme.
-  difficulty: recall
-  source: https://blog.ethereum.org/en/2025/07/31/lean-ethereum
+- description: misc/roadmap-lean-ethereum-pillars
+  vars:
+    type: open
+    question: What is "lean Ethereum" and what are its main pillars?
+    answer: |-
+      Lean Ethereum is the Ethereum Foundation's long-term vision for a simpler,
+      hardened, post-quantum protocol built on hash-based cryptography. Its three
+      pillars are lean consensus (a beacon chain 2.0 hardened for security and
+      decentralisation with finality in seconds), lean data (blobs 2.0 with
+      post-quantum commitments and finer-grained blob sizing), and lean execution
+      (a minimal, SNARK-friendly instruction set, possibly RISC-V based). A
+      complete answer must name the three pillars of consensus, data, and execution
+      and mention post-quantum or hash-based cryptography as a theme.
+  metadata:
+    section: misc
+    type: open
+    difficulty: recall
+    source: https://blog.ethereum.org/en/2025/07/31/lean-ethereum
+  assert:
+    - type: llm-rubric
+      value: '{{answer}}'
+      metric: misc
 
-- id: roadmap-extremely-lean-chain-privacy
-  type: open
-  question: |
-    What does "The Extremely Lean Chain" proposal suggest, and how does it give
-    validators privacy?
-  answer: |
-    It proposes shrinking consensus state to almost nothing by having validators,
-    not the protocol, track their own balances: validators periodically submit
-    zero-knowledge proofs of their participation and rewards instead of the chain
-    computing them. Validator privacy comes from re-anonymisation: each validator
-    registers with a fresh public key each period and proves in zero knowledge
-    that it is a legitimate validator with a certain balance, without revealing
-    which past identity it corresponds to, so the chain never tracks a persistent
-    validator identity and proposer selection becomes approximately a secret
-    leader election. A complete answer must mention validators proving their own
-    state with ZK proofs and periodic fresh keys that break the link between a
-    validator's identities over time.
-  difficulty: reasoning
-  source: https://ethresear.ch/t/the-extremely-lean-chain/25369
+- description: misc/roadmap-extremely-lean-chain-privacy
+  vars:
+    type: open
+    question: |-
+      What does "The Extremely Lean Chain" proposal suggest, and how does it give
+      validators privacy?
+    answer: |-
+      It proposes shrinking consensus state to almost nothing by having validators,
+      not the protocol, track their own balances: validators periodically submit
+      zero-knowledge proofs of their participation and rewards instead of the chain
+      computing them. Validator privacy comes from re-anonymisation: each validator
+      registers with a fresh public key each period and proves in zero knowledge
+      that it is a legitimate validator with a certain balance, without revealing
+      which past identity it corresponds to, so the chain never tracks a persistent
+      validator identity and proposer selection becomes approximately a secret
+      leader election. A complete answer must mention validators proving their own
+      state with ZK proofs and periodic fresh keys that break the link between a
+      validator's identities over time.
+  metadata:
+    section: misc
+    type: open
+    difficulty: reasoning
+    source: https://ethresear.ch/t/the-extremely-lean-chain/25369
+  assert:
+    - type: llm-rubric
+      value: '{{answer}}'
+      metric: misc
 
-- id: roadmap-new-commitment-scheme-tradeoffs
-  type: open
-  question: |
-    What are the tradeoffs of adding a new commitment scheme or erasure coding
-    algorithm to Ethereum?
-  answer: |
-    Benefits can include faster propagation, post-quantum security, or cheaper
-    proving. The costs are significant: every client team must implement and
-    audit new cryptography, which is complex and error-prone; a second scheme
-    alongside KZG means two code paths and two sets of security assumptions
-    (including any trusted setup); rollups and tooling built on the existing
-    commitments must adapt; and the protocol surface grows permanently. Vitalik
-    Buterin has argued that introducing a whole new commitment scheme is "a lot of
-    needless complexity" unless the gain is large. A complete answer must weigh a
-    concrete benefit against implementation complexity, security review burden,
-    and the cost of maintaining multiple schemes.
-  difficulty: reasoning
-  source: https://ethresear.ch/t/faster-block-blob-propagation-in-ethereum/21370/27
+- description: misc/roadmap-new-commitment-scheme-tradeoffs
+  vars:
+    type: open
+    question: |-
+      What are the tradeoffs of adding a new commitment scheme or erasure coding
+      algorithm to Ethereum?
+    answer: |-
+      Benefits can include faster propagation, post-quantum security, or cheaper
+      proving. The costs are significant: every client team must implement and
+      audit new cryptography, which is complex and error-prone; a second scheme
+      alongside KZG means two code paths and two sets of security assumptions
+      (including any trusted setup); rollups and tooling built on the existing
+      commitments must adapt; and the protocol surface grows permanently. Vitalik
+      Buterin has argued that introducing a whole new commitment scheme is "a lot of
+      needless complexity" unless the gain is large. A complete answer must weigh a
+      concrete benefit against implementation complexity, security review burden,
+      and the cost of maintaining multiple schemes.
+  metadata:
+    section: misc
+    type: open
+    difficulty: reasoning
+    source: https://ethresear.ch/t/faster-block-blob-propagation-in-ethereum/21370/27
+  assert:
+    - type: llm-rubric
+      value: '{{answer}}'
+      metric: misc
 
-- id: engine-api-start-block-building
-  type: multiple_choice
-  question: |
-    Which Engine API call does a consensus client use to ask its execution
-    client to start building a block, receiving a payloadId in return?
-  choices:
-    - engine_newPayload
-    - engine_getPayload
-    - engine_forkchoiceUpdated with payloadAttributes set
-    - engine_exchangeCapabilities
-  answer: C
-  difficulty: understanding
-  source: https://github.com/ethereum/execution-apis/blob/main/src/engine/paris.md
+- description: misc/engine-api-start-block-building
+  vars:
+    type: multiple_choice
+    question: |-
+      Which Engine API call does a consensus client use to ask its execution
+      client to start building a block, receiving a payloadId in return?
+    choices:
+      - engine_exchangeCapabilities
+      - engine_newPayload
+      - engine_forkchoiceUpdated with payloadAttributes set
+      - engine_getPayload
+    answer: C
+  metadata:
+    section: misc
+    type: multiple_choice
+    difficulty: understanding
+    source: https://github.com/ethereum/execution-apis/blob/main/src/engine/paris.md
+  assert:
+    - type: javascript
+      value: file://src/multiple_choice.js
+      metric: misc
 
-- id: engine-api-authentication
-  type: multiple_choice
-  question: |
-    How is the Engine API connection between a consensus client and an
-    execution client authenticated?
-  choices:
-    - Mutual TLS with client certificates
-    - JWT tokens signed with a shared secret (typically served on port 8551)
-    - A static API key sent in an HTTP header
-    - It is not authenticated; it is only reachable on localhost
-  answer: B
-  difficulty: recall
-  source: https://github.com/ethereum/execution-apis/blob/main/src/engine/authentication.md
+- description: misc/engine-api-authentication
+  vars:
+    type: multiple_choice
+    question: |-
+      How is the Engine API connection between a consensus client and an
+      execution client authenticated?
+    choices:
+      - Mutual TLS with client certificates
+      - It is not authenticated; it is only reachable on localhost
+      - A static API key sent in an HTTP header
+      - JWT tokens signed with a shared secret (typically served on port 8551)
+    answer: D
+  metadata:
+    section: misc
+    type: multiple_choice
+    difficulty: recall
+    source: |-
+      https://github.com/ethereum/execution-apis/blob/main/src/engine/authentication.md
+  assert:
+    - type: javascript
+      value: file://src/multiple_choice.js
+      metric: misc
 
-- id: networking-beacon-discovery-protocol
-  type: multiple_choice
-  question: |
-    Which peer discovery protocol do Ethereum consensus clients use to find
-    other beacon nodes?
-  choices:
-    - Kademlia DHT over libp2p (kad-dht)
-    - discv4
-    - discv5
-    - mDNS
-  answer: C
-  difficulty: recall
-  source: https://github.com/ethereum/consensus-specs/blob/dev/specs/phase0/p2p-interface.md
+- description: misc/networking-beacon-discovery-protocol
+  vars:
+    type: multiple_choice
+    question: |-
+      Which peer discovery protocol do Ethereum consensus clients use to find
+      other beacon nodes?
+    choices:
+      - mDNS
+      - Kademlia DHT over libp2p (kad-dht)
+      - discv4
+      - discv5
+    answer: D
+  metadata:
+    section: misc
+    type: multiple_choice
+    difficulty: recall
+    source: |-
+      https://github.com/ethereum/consensus-specs/blob/dev/specs/phase0/p2p-interface.md
+  assert:
+    - type: javascript
+      value: file://src/multiple_choice.js
+      metric: misc
 
-- id: networking-attestation-subnets
-  type: multiple_choice
-  question: |
-    Unaggregated attestations are gossiped on a fixed number of attestation
-    subnets so that no node has to see every attestation. How many attestation
-    subnets are there?
-  choices:
-    - 32
-    - 64
-    - 128
-    - 256
-  answer: B
-  difficulty: recall
-  source: https://github.com/ethereum/consensus-specs/blob/dev/specs/phase0/p2p-interface.md
+- description: misc/networking-attestation-subnets
+  vars:
+    type: multiple_choice
+    question: |-
+      Unaggregated attestations are gossiped on a fixed number of attestation
+      subnets so that no node has to see every attestation. How many attestation
+      subnets are there?
+    choices:
+      - '128'
+      - '32'
+      - '64'
+      - '256'
+    answer: C
+  metadata:
+    section: misc
+    type: multiple_choice
+    difficulty: recall
+    source: |-
+      https://github.com/ethereum/consensus-specs/blob/dev/specs/phase0/p2p-interface.md
+  assert:
+    - type: javascript
+      value: file://src/multiple_choice.js
+      metric: misc
 
-- id: epbs-payload-timeliness-committee
-  type: open
-  question: |
-    In enshrined proposer-builder separation (EIP-7732), what is the Payload
-    Timeliness Committee and why does the design need it?
-  answer: |
-    EIP-7732 splits the slot in two: the proposer publishes a beacon block that
-    contains a signed builder bid (a commitment to an execution payload and a
-    payment) and the builder reveals the actual payload later in the slot. The
-    Payload Timeliness Committee (PTC) is a committee of PTC_SIZE = 512
-    validators per slot who attest to whether the builder revealed the payload
-    on time (and whether blob data was available). Their votes let the fork
-    choice treat a block whose payload was withheld as "empty" while still
-    counting the beacon block, so the builder is paid unconditionally once the
-    proposer's block is included and the proposer cannot be griefed by a
-    withheld payload; it removes the need for a trusted relay to enforce the
-    exchange. A complete answer must say the PTC attests to timely payload
-    reveal and that this is what lets the protocol enforce the proposer-builder
-    exchange without relays.
-  difficulty: understanding
-  source: https://eips.ethereum.org/EIPS/eip-7732
+- description: misc/epbs-payload-timeliness-committee
+  vars:
+    type: open
+    question: |-
+      In enshrined proposer-builder separation (EIP-7732), what is the Payload
+      Timeliness Committee and why does the design need it?
+    answer: |-
+      EIP-7732 splits the slot in two: the proposer publishes a beacon block that
+      contains a signed builder bid (a commitment to an execution payload and a
+      payment) and the builder reveals the actual payload later in the slot. The
+      Payload Timeliness Committee (PTC) is a committee of PTC_SIZE = 512
+      validators per slot who attest to whether the builder revealed the payload
+      on time (and whether blob data was available). Their votes let the fork
+      choice treat a block whose payload was withheld as "empty" while still
+      counting the beacon block, so the builder is paid unconditionally once the
+      proposer's block is included and the proposer cannot be griefed by a
+      withheld payload; it removes the need for a trusted relay to enforce the
+      exchange. A complete answer must say the PTC attests to timely payload
+      reveal and that this is what lets the protocol enforce the proposer-builder
+      exchange without relays.
+  metadata:
+    section: misc
+    type: open
+    difficulty: understanding
+    source: https://eips.ethereum.org/EIPS/eip-7732
+  assert:
+    - type: llm-rubric
+      value: '{{answer}}'
+      metric: misc
 
-- id: bal-block-level-access-lists
-  type: open
-  question: |
-    What does a Block-Level Access List (EIP-7928, scheduled for Glamsterdam)
-    contain, and how does it differ from EIP-2930 transaction access lists?
-  answer: |
-    A BAL records every address and storage key touched during block execution,
-    grouped per account, along with the post-transaction values of storage
-    writes, balance changes, nonce changes, and code changes, indexed by the
-    transaction that made them. The block header commits to it via a
-    block_access_list_hash, and a block whose BAL does not match its execution
-    is invalid. Unlike EIP-2930 lists, which are optional hints supplied by the
-    transaction sender and never checked, BALs are produced by the block builder,
-    cover the whole block, and are enforced. They let clients prefetch state and
-    execute transactions in parallel, compute the post-state root in parallel,
-    and update state without re-executing. A complete answer must say BALs are
-    enforced block-wide lists including post-state values and that they enable
-    parallel execution or state prefetching, in contrast to unenforced 2930
-    lists.
-  difficulty: understanding
-  source: https://eips.ethereum.org/EIPS/eip-7928
+- description: misc/bal-block-level-access-lists
+  vars:
+    type: open
+    question: |-
+      What does a Block-Level Access List (EIP-7928, scheduled for Glamsterdam)
+      contain, and how does it differ from EIP-2930 transaction access lists?
+    answer: |-
+      A BAL records every address and storage key touched during block execution,
+      grouped per account, along with the post-transaction values of storage
+      writes, balance changes, nonce changes, and code changes, indexed by the
+      transaction that made them. The block header commits to it via a
+      block_access_list_hash, and a block whose BAL does not match its execution
+      is invalid. Unlike EIP-2930 lists, which are optional hints supplied by the
+      transaction sender and never checked, BALs are produced by the block builder,
+      cover the whole block, and are enforced. They let clients prefetch state and
+      execute transactions in parallel, compute the post-state root in parallel,
+      and update state without re-executing. A complete answer must say BALs are
+      enforced block-wide lists including post-state values and that they enable
+      parallel execution or state prefetching, in contrast to unenforced 2930
+      lists.
+  metadata:
+    section: misc
+    type: open
+    difficulty: understanding
+    source: https://eips.ethereum.org/EIPS/eip-7928
+  assert:
+    - type: llm-rubric
+      value: '{{answer}}'
+      metric: misc
 
-- id: history-expiry-partial-2025
-  type: open
-  question: |
-    What is "partial history expiry", which execution clients rolled out in 2025,
-    and what security model does it rely on?
-  answer: |
-    Partial history expiry is the first step of EIP-4444: execution clients
-    stop storing (or never download) block bodies and receipts from before the
-    Merge, saving roughly 300 to 500 GB per node, while keeping all headers so
-    the chain can still be verified cryptographically from genesis. Since
-    proof-of-stake sync already starts from a weak-subjectivity checkpoint
-    rather than executing from genesis, dropping old bodies does not change the
-    default trust model. Availability relies on a 1-of-N assumption: as long as
-    someone serves the history (institutional archives, torrents, peers that
-    keep it, the Portal network), nodes can retrieve it out of protocol. A
-    complete answer must say pre-Merge block bodies and receipts are dropped
-    (headers kept) per EIP-4444 and mention the reliance on at least one
-    provider still serving history.
-  difficulty: recall
-  source: https://blog.ethereum.org/2025/07/08/partial-history-exp
+- description: misc/history-expiry-partial-2025
+  vars:
+    type: open
+    question: |-
+      What is "partial history expiry", which execution clients rolled out in 2025,
+      and what security model does it rely on?
+    answer: |-
+      Partial history expiry is the first step of EIP-4444: execution clients
+      stop storing (or never download) block bodies and receipts from before the
+      Merge, saving roughly 300 to 500 GB per node, while keeping all headers so
+      the chain can still be verified cryptographically from genesis. Since
+      proof-of-stake sync already starts from a weak-subjectivity checkpoint
+      rather than executing from genesis, dropping old bodies does not change the
+      default trust model. Availability relies on a 1-of-N assumption: as long as
+      someone serves the history (institutional archives, torrents, peers that
+      keep it, the Portal network), nodes can retrieve it out of protocol. A
+      complete answer must say pre-Merge block bodies and receipts are dropped
+      (headers kept) per EIP-4444 and mention the reliance on at least one
+      provider still serving history.
+  metadata:
+    section: misc
+    type: open
+    difficulty: recall
+    source: https://blog.ethereum.org/2025/07/08/partial-history-exp
+  assert:
+    - type: llm-rubric
+      value: '{{answer}}'
+      metric: misc
 
-- id: mev-timing-games
-  type: open
-  question: |
-    What are "timing games" in Ethereum block production, and why are they a
-    concern for the protocol?
-  answer: |
-    A proposer using MEV-Boost can delay requesting and publishing its block
-    until late in the slot, because builder bids keep rising as more
-    transactions and MEV opportunities arrive; publishing later captures more
-    value. This is a timing game. It is a concern because attesters must vote by
-    the 4-second mark, so late blocks risk missing attestations and being
-    reorged, degrading network health, and because the extra revenue accrues
-    disproportionately to sophisticated or well-connected operators, pressuring
-    honest validators to play the same game and pushing toward centralisation.
-    Relays' timing restrictions and protocol changes such as ePBS or shorter
-    slots are responses. A complete answer must describe deliberately delaying
-    block publication to capture higher bids and mention the harm to attestation
-    or network health or the centralising pressure.
-  difficulty: reasoning
-  source: https://ethresear.ch/t/timing-games-implications-and-possible-mitigations/17612
+- description: misc/mev-timing-games
+  vars:
+    type: open
+    question: |-
+      What are "timing games" in Ethereum block production, and why are they a
+      concern for the protocol?
+    answer: |-
+      A proposer using MEV-Boost can delay requesting and publishing its block
+      until late in the slot, because builder bids keep rising as more
+      transactions and MEV opportunities arrive; publishing later captures more
+      value. This is a timing game. It is a concern because attesters must vote by
+      the 4-second mark, so late blocks risk missing attestations and being
+      reorged, degrading network health, and because the extra revenue accrues
+      disproportionately to sophisticated or well-connected operators, pressuring
+      honest validators to play the same game and pushing toward centralisation.
+      Relays' timing restrictions and protocol changes such as ePBS or shorter
+      slots are responses. A complete answer must describe deliberately delaying
+      block publication to capture higher bids and mention the harm to attestation
+      or network health or the centralising pressure.
+  metadata:
+    section: misc
+    type: open
+    difficulty: reasoning
+    source: https://ethresear.ch/t/timing-games-implications-and-possible-mitigations/17612
+  assert:
+    - type: llm-rubric
+      value: '{{answer}}'
+      metric: misc
 
-- id: l2-optimistic-challenge-window
-  type: multiple_choice
-  question: |
-    How long is the standard challenge window for withdrawals from OP Mainnet's
-    optimistic rollup before a proposed output can be finalized on L1?
-  choices:
-    - 1 hour
-    - 24 hours
-    - 7 days
-    - 14 days
-  answer: C
-  difficulty: recall
-  source: https://docs.optimism.io/stack/rollup/overview
+- description: misc/l2-optimistic-challenge-window
+  vars:
+    type: multiple_choice
+    question: |-
+      How long is the standard challenge window for withdrawals from OP Mainnet's
+      optimistic rollup before a proposed output can be finalized on L1?
+    choices:
+      - 7 days
+      - 24 hours
+      - 14 days
+      - 1 hour
+    answer: A
+  metadata:
+    section: misc
+    type: multiple_choice
+    difficulty: recall
+    source: https://docs.optimism.io/stack/rollup/overview
+  assert:
+    - type: javascript
+      value: file://src/multiple_choice.js
+      metric: misc
 
-- id: glamsterdam-not-scheduled
-  type: multiple_choice
-  question: |
-    As of September 2026, which of these EIPs is NOT scheduled for inclusion in
-    the Glamsterdam upgrade according to its meta EIP (EIP-7773)?
-  choices:
-    - EIP-7732 Enshrined Proposer-Builder Separation
-    - EIP-7928 Block-Level Access Lists
-    - EIP-7805 Fork-choice enforced Inclusion Lists (FOCIL)
-    - EIP-7708 ETH transfers emit a log
-  answer: C
-  difficulty: recall
-  source: https://eips.ethereum.org/EIPS/eip-7773
+- description: misc/glamsterdam-not-scheduled
+  vars:
+    type: multiple_choice
+    question: |-
+      As of September 2026, which of these EIPs is NOT scheduled for inclusion in
+      the Glamsterdam upgrade according to its meta EIP (EIP-7773)?
+    choices:
+      - EIP-7928 Block-Level Access Lists
+      - EIP-7732 Enshrined Proposer-Builder Separation
+      - EIP-7708 ETH transfers emit a log
+      - EIP-7805 Fork-choice enforced Inclusion Lists (FOCIL)
+    answer: D
+  metadata:
+    section: misc
+    type: multiple_choice
+    difficulty: recall
+    source: https://eips.ethereum.org/EIPS/eip-7773
+  assert:
+    - type: javascript
+      value: file://src/multiple_choice.js
+      metric: misc
 
-- id: rpc-eth-getproof
-  type: multiple_choice
-  question: |
-    Which JSON-RPC method returns Merkle proofs for an account and selected
-    storage slots against a block's state root, so a light client can verify
-    them?
-  choices:
-    - eth_getProof
-    - eth_getStorageAt
-    - eth_getAccount
-    - debug_traceState
-  answer: A
-  difficulty: recall
-  source: https://eips.ethereum.org/EIPS/eip-1186
+- description: misc/rpc-eth-getproof
+  vars:
+    type: multiple_choice
+    question: |-
+      Which JSON-RPC method returns Merkle proofs for an account and selected
+      storage slots against a block's state root, so a light client can verify
+      them?
+    choices:
+      - eth_getStorageAt
+      - eth_getProof
+      - debug_traceState
+      - eth_getAccount
+    answer: B
+  metadata:
+    section: misc
+    type: multiple_choice
+    difficulty: recall
+    source: https://eips.ethereum.org/EIPS/eip-1186
+  assert:
+    - type: javascript
+      value: file://src/multiple_choice.js
+      metric: misc
 
-- id: rpc-block-tags-safe-finalized
-  type: multiple_choice
-  question: |
-    Post-Merge JSON-RPC calls accept the block tags "safe" and "finalized" in
-    addition to "latest", "earliest", and "pending". What does "safe" mean?
-  choices:
-    - The most recent block that is justified or otherwise very unlikely to be reorged under normal network conditions, but not yet finalized
-    - The latest block that has been finalized by two thirds of validators
-    - The most recent block seen by the local node, identical to "latest"
-    - A block at least 64 blocks behind the head
-  answer: A
-  difficulty: understanding
-  source: https://github.com/ethereum/execution-apis
+- description: misc/rpc-block-tags-safe-finalized
+  vars:
+    type: multiple_choice
+    question: |-
+      Post-Merge JSON-RPC calls accept the block tags "safe" and "finalized" in
+      addition to "latest", "earliest", and "pending". What does "safe" mean?
+    choices:
+      - |-
+        The most recent block that is justified or otherwise very unlikely to be reorged under normal network conditions, but not yet finalized
+      - A block at least 64 blocks behind the head
+      - The latest block that has been finalized by two thirds of validators
+      - The most recent block seen by the local node, identical to "latest"
+    answer: A
+  metadata:
+    section: misc
+    type: multiple_choice
+    difficulty: understanding
+    source: https://github.com/ethereum/execution-apis
+  assert:
+    - type: javascript
+      value: file://src/multiple_choice.js
+      metric: misc
 
-- id: sync-snap-sync
-  type: open
-  question: |
-    How does snap sync let an execution client reach the head of the chain
-    without executing every historical block?
-  answer: |
-    Snap sync downloads block headers to the head, verifies the chain of
-    headers, then fetches the current state directly: peers serve contiguous
-    ranges of accounts and storage slots from a flat snapshot along with Merkle
-    proofs for the range boundaries, so the syncing node can verify each chunk
-    against a recent state root without replaying transactions. Because the
-    head moves while downloading, the state arrives from slightly different
-    roots, so a final "healing" phase walks the trie and requests the missing
-    or stale nodes to converge on a single consistent root, after which the
-    node executes only the latest blocks. A complete answer must say the state
-    is downloaded in verified ranges against a recent root rather than
-    reconstructed by executing history, and mention the healing step or the
-    verification by Merkle proofs.
-  difficulty: understanding
-  source: https://github.com/ethereum/devp2p/blob/master/caps/snap.md
+- description: misc/sync-snap-sync
+  vars:
+    type: open
+    question: |-
+      How does snap sync let an execution client reach the head of the chain
+      without executing every historical block?
+    answer: |-
+      Snap sync downloads block headers to the head, verifies the chain of
+      headers, then fetches the current state directly: peers serve contiguous
+      ranges of accounts and storage slots from a flat snapshot along with Merkle
+      proofs for the range boundaries, so the syncing node can verify each chunk
+      against a recent state root without replaying transactions. Because the
+      head moves while downloading, the state arrives from slightly different
+      roots, so a final "healing" phase walks the trie and requests the missing
+      or stale nodes to converge on a single consistent root, after which the
+      node executes only the latest blocks. A complete answer must say the state
+      is downloaded in verified ranges against a recent root rather than
+      reconstructed by executing history, and mention the healing step or the
+      verification by Merkle proofs.
+  metadata:
+    section: misc
+    type: open
+    difficulty: understanding
+    source: https://github.com/ethereum/devp2p/blob/master/caps/snap.md
+  assert:
+    - type: llm-rubric
+      value: '{{answer}}'
+      metric: misc
 
-- id: mev-boost-message-flow
-  type: open
-  question: |
-    Walk through the messages a validator exchanges with a relay when
-    proposing a block through MEV-Boost, and explain what the proposer signs.
-  answer: |
-    Ahead of time the validator registers with relays (registerValidator),
-    signing its fee recipient and gas limit preferences. When its slot arrives
-    it requests the best bid (getHeader) and receives a signed builder bid
-    containing only the execution payload header and the bid value, not the
-    transactions. The proposer signs a blinded beacon block that commits to
-    that header and returns it to the relay (getPayload / submitBlindedBlock).
-    Only then does the relay reveal the full execution payload, which the
-    proposer publishes as a complete signed beacon block. Because the proposer
-    has signed the header before seeing the contents, it cannot steal the
-    builder's transactions, and because the relay withholds the payload until
-    it has a signature, the builder is protected; the relay is the trusted
-    party in the middle. A complete answer must mention that the proposer
-    receives a header (blinded block) and signs it before the relay releases
-    the full payload.
-  difficulty: understanding
-  source: https://github.com/ethereum/builder-specs
+- description: misc/mev-boost-message-flow
+  vars:
+    type: open
+    question: |-
+      Walk through the messages a validator exchanges with a relay when
+      proposing a block through MEV-Boost, and explain what the proposer signs.
+    answer: |-
+      Ahead of time the validator registers with relays (registerValidator),
+      signing its fee recipient and gas limit preferences. When its slot arrives
+      it requests the best bid (getHeader) and receives a signed builder bid
+      containing only the execution payload header and the bid value, not the
+      transactions. The proposer signs a blinded beacon block that commits to
+      that header and returns it to the relay (getPayload / submitBlindedBlock).
+      Only then does the relay reveal the full execution payload, which the
+      proposer publishes as a complete signed beacon block. Because the proposer
+      has signed the header before seeing the contents, it cannot steal the
+      builder's transactions, and because the relay withholds the payload until
+      it has a signature, the builder is protected; the relay is the trusted
+      party in the middle. A complete answer must mention that the proposer
+      receives a header (blinded block) and signs it before the relay releases
+      the full payload.
+  metadata:
+    section: misc
+    type: open
+    difficulty: understanding
+    source: https://github.com/ethereum/builder-specs
+  assert:
+    - type: llm-rubric
+      value: '{{answer}}'
+      metric: misc
 
-- id: l2-based-rollups
-  type: open
-  question: |
-    What is a "based" rollup, and what does it gain and give up compared with a
-    rollup that runs its own sequencer?
-  answer: |
-    A based rollup (based sequencing) has no separate sequencer: its blocks are
-    ordered by whichever Ethereum L1 proposer is producing the current L1
-    block, with anyone able to submit batches and the L1 proposer (or builders
-    it uses) choosing the ordering. It inherits L1's liveness and censorship
-    resistance directly, needs no sequencer governance or failover, avoids
-    sequencer MEV capture by the rollup team (MEV flows to L1), and gets
-    simpler synchronous composability with L1. It gives up fast pre-confirmations
-    (block times are tied to L1's 12-second slots unless preconfirmation
-    protocols are layered on), and it forgoes sequencing revenue as a business
-    model. A complete answer must say the L1 proposer sequences the rollup and
-    give one gain (L1 liveness or censorship resistance or decentralisation)
-    and one cost (slower confirmations or lost sequencer revenue).
-  difficulty: understanding
-  source: https://ethresear.ch/t/based-rollups-superpowers-from-l1-sequencing/15016
+- description: misc/l2-based-rollups
+  vars:
+    type: open
+    question: |-
+      What is a "based" rollup, and what does it gain and give up compared with a
+      rollup that runs its own sequencer?
+    answer: |-
+      A based rollup (based sequencing) has no separate sequencer: its blocks are
+      ordered by whichever Ethereum L1 proposer is producing the current L1
+      block, with anyone able to submit batches and the L1 proposer (or builders
+      it uses) choosing the ordering. It inherits L1's liveness and censorship
+      resistance directly, needs no sequencer governance or failover, avoids
+      sequencer MEV capture by the rollup team (MEV flows to L1), and gets
+      simpler synchronous composability with L1. It gives up fast pre-confirmations
+      (block times are tied to L1's 12-second slots unless preconfirmation
+      protocols are layered on), and it forgoes sequencing revenue as a business
+      model. A complete answer must say the L1 proposer sequences the rollup and
+      give one gain (L1 liveness or censorship resistance or decentralisation)
+      and one cost (slower confirmations or lost sequencer revenue).
+  metadata:
+    section: misc
+    type: open
+    difficulty: understanding
+    source: https://ethresear.ch/t/based-rollups-superpowers-from-l1-sequencing/15016
+  assert:
+    - type: llm-rubric
+      value: '{{answer}}'
+      metric: misc
 
-- id: l2-op-stack-fault-proof-vm
-  type: multiple_choice
-  question: |
-    In the OP Stack's fault proof system, disputed execution is ultimately
-    settled by running a single instruction step on-chain. Which instruction
-    set does the on-chain VM (Cannon) implement?
-  choices:
-    - MIPS
-    - WebAssembly
-    - RISC-V
-    - The EVM itself, re-executed opcode by opcode
-  answer: A
-  difficulty: recall
-  source: https://specs.optimism.io/fault-proof/cannon-fault-proof-vm.html
+- description: misc/l2-op-stack-fault-proof-vm
+  vars:
+    type: multiple_choice
+    question: |-
+      In the OP Stack's fault proof system, disputed execution is ultimately
+      settled by running a single instruction step on-chain. Which instruction
+      set does the on-chain VM (Cannon) implement?
+    choices:
+      - WebAssembly
+      - RISC-V
+      - The EVM itself, re-executed opcode by opcode
+      - MIPS
+    answer: D
+  metadata:
+    section: misc
+    type: multiple_choice
+    difficulty: recall
+    source: https://specs.optimism.io/fault-proof/cannon-fault-proof-vm.html
+  assert:
+    - type: javascript
+      value: file://src/multiple_choice.js
+      metric: misc
 
-- id: l2-zkevm-types
-  type: multiple_choice
-  question: |
-    In Vitalik Buterin's classification of zkEVMs, what distinguishes a
-    "Type 1" zkEVM?
-  choices:
-    - It is fully Ethereum-equivalent, proving unmodified Ethereum blocks including the existing state trie and hashing, at the cost of slow proving
-    - It is language-equivalent, compiling Solidity to a custom proving-friendly VM
-    - It is EVM-equivalent except for changing gas costs and precompiles
-    - It runs a modified state tree and hash function but keeps EVM bytecode compatibility
-  answer: A
-  difficulty: understanding
-  source: https://vitalik.eth.limo/general/2022/08/04/zkevm.html
+- description: misc/l2-zkevm-types
+  vars:
+    type: multiple_choice
+    question: |-
+      In Vitalik Buterin's classification of zkEVMs, what distinguishes a
+      "Type 1" zkEVM?
+    choices:
+      - |-
+        It is fully Ethereum-equivalent, proving unmodified Ethereum blocks including the existing state trie and hashing, at the cost of slow proving
+      - It is EVM-equivalent except for changing gas costs and precompiles
+      - It is language-equivalent, compiling Solidity to a custom proving-friendly VM
+      - |-
+        It runs a modified state tree and hash function but keeps EVM bytecode compatibility
+    answer: A
+  metadata:
+    section: misc
+    type: multiple_choice
+    difficulty: understanding
+    source: https://vitalik.eth.limo/general/2022/08/04/zkevm.html
+  assert:
+    - type: javascript
+      value: file://src/multiple_choice.js
+      metric: misc
 
-- id: da-blob-field-elements
-  type: multiple_choice
-  question: |
-    An EIP-4844 blob is a vector of field elements over the BLS12-381 scalar
-    field. How many field elements does one blob contain, and how large is each?
-  choices:
-    - 4096 elements of 32 bytes (about 128 KiB per blob)
-    - 2048 elements of 64 bytes
-    - 1024 elements of 128 bytes
-    - 8192 elements of 16 bytes
-  answer: A
-  difficulty: recall
-  source: https://eips.ethereum.org/EIPS/eip-4844
+- description: misc/da-blob-field-elements
+  vars:
+    type: multiple_choice
+    question: |-
+      An EIP-4844 blob is a vector of field elements over the BLS12-381 scalar
+      field. How many field elements does one blob contain, and how large is each?
+    choices:
+      - 1024 elements of 128 bytes
+      - 8192 elements of 16 bytes
+      - 4096 elements of 32 bytes (about 128 KiB per blob)
+      - 2048 elements of 64 bytes
+    answer: C
+  metadata:
+    section: misc
+    type: multiple_choice
+    difficulty: recall
+    source: https://eips.ethereum.org/EIPS/eip-4844
+  assert:
+    - type: javascript
+      value: file://src/multiple_choice.js
+      metric: misc
 
-- id: roadmap-state-vs-history-expiry
-  type: open
-  question: |
-    What is the difference between history expiry and state expiry, and why
-    has one shipped while the other has not?
-  answer: |
-    History expiry (EIP-4444) lets nodes discard old block bodies, receipts,
-    and eventually headers past a retention window; it affects only data needed
-    to re-derive the past, not to validate new blocks, so the protocol's state
-    transition is untouched and nodes can drop it unilaterally with the data
-    still retrievable from archives or peers (partial history expiry shipped in
-    2025). State expiry would remove or make inaccessible parts of the current
-    state (accounts and storage untouched for a long time) so that state stops
-    growing; that changes what a block can access, requires a way for users to
-    revive expired state with proofs, and interacts with address space and
-    tree design, making it a deep consensus change that is still research.
-    A complete answer must distinguish discarding historical chain data
-    (shipped) from expiring live state needed for execution (not shipped) and
-    give the reason that state expiry changes execution semantics or requires
-    resurrection proofs.
-  difficulty: understanding
-  source: https://eips.ethereum.org/EIPS/eip-4444
+- description: misc/roadmap-state-vs-history-expiry
+  vars:
+    type: open
+    question: |-
+      What is the difference between history expiry and state expiry, and why
+      has one shipped while the other has not?
+    answer: |-
+      History expiry (EIP-4444) lets nodes discard old block bodies, receipts,
+      and eventually headers past a retention window; it affects only data needed
+      to re-derive the past, not to validate new blocks, so the protocol's state
+      transition is untouched and nodes can drop it unilaterally with the data
+      still retrievable from archives or peers (partial history expiry shipped in
+      2025). State expiry would remove or make inaccessible parts of the current
+      state (accounts and storage untouched for a long time) so that state stops
+      growing; that changes what a block can access, requires a way for users to
+      revive expired state with proofs, and interacts with address space and
+      tree design, making it a deep consensus change that is still research.
+      A complete answer must distinguish discarding historical chain data
+      (shipped) from expiring live state needed for execution (not shipped) and
+      give the reason that state expiry changes execution semantics or requires
+      resurrection proofs.
+  metadata:
+    section: misc
+    type: open
+    difficulty: understanding
+    source: https://eips.ethereum.org/EIPS/eip-4444
+  assert:
+    - type: llm-rubric
+      value: '{{answer}}'
+      metric: misc
 
-- id: roadmap-verkle-to-binary-pivot
-  type: multiple_choice
-  question: |
-    Verkle trees were the planned replacement for Ethereum's Merkle Patricia
-    trie for years. Why did core developers pivot toward a binary hash tree
-    (EIP-7864) instead?
-  choices:
-    - Verkle commitments rely on elliptic curve cryptography that is not post-quantum secure and is awkward inside SNARKs, whereas a hash-based binary tree is quantum-resistant and prover-friendly
-    - Verkle proofs turned out to be larger than Merkle Patricia proofs
-    - Verkle trees could not represent contract storage, only account balances
-    - Binary trees allow validators to skip storing state entirely
-  answer: A
-  difficulty: understanding
-  source: https://eips.ethereum.org/EIPS/eip-7864
+- description: misc/roadmap-verkle-to-binary-pivot
+  vars:
+    type: multiple_choice
+    question: |-
+      Verkle trees were the planned replacement for Ethereum's Merkle Patricia
+      trie for years. Why did core developers pivot toward a binary hash tree
+      (EIP-7864) instead?
+    choices:
+      - Verkle trees could not represent contract storage, only account balances
+      - Binary trees allow validators to skip storing state entirely
+      - |-
+        Verkle commitments rely on elliptic curve cryptography that is not post-quantum secure and is awkward inside SNARKs, whereas a hash-based binary tree is quantum-resistant and prover-friendly
+      - Verkle proofs turned out to be larger than Merkle Patricia proofs
+    answer: C
+  metadata:
+    section: misc
+    type: multiple_choice
+    difficulty: understanding
+    source: https://eips.ethereum.org/EIPS/eip-7864
+  assert:
+    - type: javascript
+      value: file://src/multiple_choice.js
+      metric: misc
 
-- id: rpc-quantity-leading-zero-rejection
-  type: multiple_choice
-  question: |-
-    Under EIP-1474's JSON-RPC encoding rules, which representation is valid
-    for a QUANTITY whose numerical value is zero?
-  choices:
-  - 0x
-  - '0x0'
-  - '0x00'
-  - '0x0000'
-  answer: B
-  difficulty: recall
-  source: https://eips.ethereum.org/EIPS/eip-1474
-- id: rpc-blockhash-canonicality-error-distinction
-  type: open
-  question: |-
-    Under EIP-1898, an eth_getBalance request identifies its block using
-    {"blockHash": H, "requireCanonical": true}. Compare the recommended
-    JSON-RPC errors when H is unknown and when H is known but noncanonical.
-    If both existence and canonicality checks would fail, which takes precedence?
-  answer: |-
-    An unknown block should produce a block-not-found error, with recommended
-    code -32001 (Resource not found). A known but noncanonical block should
-    produce a distinct error, with recommended code -32000 (Invalid input).
-    The block-not-found check takes precedence over the canonicality check.
-    A complete answer must distinguish the two cases, give the recommended
-    codes, and state that block-not-found takes precedence. These codes are
-    recommendations, not mandatory choices of error code.
-  difficulty: reasoning
-  source: https://eips.ethereum.org/EIPS/eip-1898
-- id: rpc-log-topic-position-filter
-  type: multiple_choice
-  question: |-
-    In an Ethereum JSON-RPC eth_getLogs filter, the topics field is
-    [[A, B], null, C], where A, B, C, D, and X denote distinct valid
-    32-byte topics. Assuming all other filter conditions match, which
-    log's ordered topic list matches this filter?
-  choices:
-  - '[B, X, C]'
-  - '[A, C, X]'
-  - '[X, B, C]'
-  - '[B, X, D]'
-  answer: A
-  difficulty: reasoning
-  source: https://ethereum.org/en/developers/docs/apis/json-rpc/#eth_getlogs
-- id: engine-forkchoice-invalid-attributes-side-effect
-  type: open
-  question: |-
-    Under the Paris Engine API specification, engine_forkchoiceUpdatedV1
-    receives a valid forkchoiceState that the execution client can apply,
-    but its non-null payloadAttributes are invalid because their timestamp
-    is not greater than the head block's timestamp. Does rejecting those
-    payload attributes also prevent the forkchoice update from taking effect?
-  answer: |-
-    No. The execution client must apply the valid forkchoice-state update
-    even though the payload attributes are invalid. Invalid payload attributes
-    prevent the requested payload build and produce an Invalid payload
-    attributes error; they do not roll back the forkchoice update.
-    A complete answer must state that the forkchoice update still takes effect.
-    The numeric error code is not required.
-  difficulty: understanding
-  source: https://github.com/ethereum/execution-apis/blob/main/src/engine/paris.md
-- id: engine-payload-bodies-range-head-truncation
-  type: multiple_choice
-  question: |-
-    Under the Shanghai Engine API specification, an execution client's
-    canonical head is block 100. All canonical bodies through that block
-    are available. What does engine_getPayloadBodiesByRangeV1 return for
-    start = 98 and count = 5?
-  choices:
-  - |-
-    A five-element array containing bodies 98, 99, and 100, followed by two null entries
-  - A three-element array containing bodies 98, 99, and 100
-  - An Invalid params error because the requested range extends beyond the head
-  - An empty array because the complete requested range is unavailable
-  answer: B
-  difficulty: reasoning
-  source: https://github.com/ethereum/execution-apis/blob/main/src/engine/shanghai.md
-- id: engine-newpayload-blob-hash-order
-  type: open
-  question: |-
-    Under the Cancun Engine API specification, the blob versioned hashes
-    extracted from an otherwise valid payload's transactions, in transaction
-    order and then in each transaction's hash order, are [h1, h2], with
-    h1 != h2. engine_newPayloadV3 is called with expectedBlobVersionedHashes
-    equal to [h2, h1]. What payload status must it return, and why?
-  answer: |-
-    It must return INVALID. The expectedBlobVersionedHashes parameter must
-    match the ordered list extracted from the payload exactly; equality as
-    a set is insufficient. A complete answer must identify INVALID and
-    explain that reversing the distinct hashes violates the ordering check.
-    No latestValidHash or validationError detail is required.
-  difficulty: reasoning
-  source: https://github.com/ethereum/execution-apis/blob/main/src/engine/cancun.md
-- id: networking-rlpx-frame-padding-total
-  type: multiple_choice
-  question: |-
-    Under the RLPx transport framing specification, an established connection
-    sends a frame whose frame-size field is 17 bytes. Excluding the connection
-    handshake, how many bytes does the complete frame occupy on the wire,
-    including the encrypted header, both MACs, and frame-data padding?
-  choices:
-  - '49'
-  - '65'
-  - '80'
-  - '96'
-  answer: C
-  difficulty: reasoning
-  source: https://github.com/ethereum/devp2p/blob/master/rlpx.md
-- id: networking-eth68-pooled-transaction-sizes
-  type: multiple_choice
-  question: |-
-    In eth/68, NewPooledTransactionHashes announces parallel lists of
-    transaction types, sizes, and hashes. For a transaction encoded using
-    EIP-2718, what does its announced size measure?
-  choices:
-  - The transaction's gas limit
-  - The transaction's intrinsic gas cost
-  - The encoded transaction size, including its transaction-type byte
-  - The encoded transaction payload size, excluding its transaction-type byte
-  answer: C
-  difficulty: recall
-  source: https://github.com/ethereum/devp2p/blob/master/caps/eth.md
-- id: networking-discv4-pong-ping-hash
-  type: multiple_choice
-  question: |-
-    In the Ethereum Discovery v4 wire protocol, which value must the
-    ping-hash field of a Pong packet contain?
-  choices:
-  - |-
-    The hash of the entire corresponding Ping packet, including its leading hash field
-  - The leading 32-byte packet hash from the corresponding Ping packet
-  - The Keccak-256 hash of the Ping sender's public key
-  - The hash of the Pong packet's RLP payload
-  answer: B
-  difficulty: recall
-  source: https://github.com/ethereum/devp2p/blob/master/discv4.md
-- id: l2-op-deposit-alias-modular-wrap
-  type: open
-  question: |-
-    Under the OP Stack deposit specification's L1-to-L2 address-aliasing
-    rule, consider a deposit whose sender is subject to aliasing. If its
-    L1 sender address is 0xffffffffffffffffffffffffffffffffffffffff,
-    what is the aliased L2 sender address? Show how the rule handles overflow.
-  answer: |-
-    The aliasing offset is 0x1111000000000000000000000000000000001111.
-    The rule adds this offset to the L1 address modulo 2^160.
-    Since the supplied address is 2^160 - 1, the result is the offset
-    minus one: 0x1111000000000000000000000000000000001110.
-    A complete answer must give that address and explain that addition wraps
-    modulo 2^160 rather than reverting or retaining a 161st bit.
-  difficulty: reasoning
-  source: https://specs.optimism.io/protocol/deposits.html#address-aliasing
+- description: misc/rpc-quantity-leading-zero-rejection
+  vars:
+    type: multiple_choice
+    question: |-
+      Under EIP-1474's JSON-RPC encoding rules, which representation is valid
+      for a QUANTITY whose numerical value is zero?
+    choices:
+      - '0x0000'
+      - '0x00'
+      - 0x
+      - '0x0'
+    answer: D
+  metadata:
+    section: misc
+    type: multiple_choice
+    difficulty: recall
+    source: https://eips.ethereum.org/EIPS/eip-1474
+  assert:
+    - type: javascript
+      value: file://src/multiple_choice.js
+      metric: misc
+
+- description: misc/rpc-blockhash-canonicality-error-distinction
+  vars:
+    type: open
+    question: |-
+      Under EIP-1898, an eth_getBalance request identifies its block using
+      {"blockHash": H, "requireCanonical": true}. Compare the recommended
+      JSON-RPC errors when H is unknown and when H is known but noncanonical.
+      If both existence and canonicality checks would fail, which takes precedence?
+    answer: |-
+      An unknown block should produce a block-not-found error, with recommended
+      code -32001 (Resource not found). A known but noncanonical block should
+      produce a distinct error, with recommended code -32000 (Invalid input).
+      The block-not-found check takes precedence over the canonicality check.
+      A complete answer must distinguish the two cases, give the recommended
+      codes, and state that block-not-found takes precedence. These codes are
+      recommendations, not mandatory choices of error code.
+  metadata:
+    section: misc
+    type: open
+    difficulty: reasoning
+    source: https://eips.ethereum.org/EIPS/eip-1898
+  assert:
+    - type: llm-rubric
+      value: '{{answer}}'
+      metric: misc
+
+- description: misc/rpc-log-topic-position-filter
+  vars:
+    type: multiple_choice
+    question: |-
+      In an Ethereum JSON-RPC eth_getLogs filter, the topics field is
+      [[A, B], null, C], where A, B, C, D, and X denote distinct valid
+      32-byte topics. Assuming all other filter conditions match, which
+      log's ordered topic list matches this filter?
+    choices:
+      - '[B, X, D]'
+      - '[B, X, C]'
+      - '[A, C, X]'
+      - '[X, B, C]'
+    answer: B
+  metadata:
+    section: misc
+    type: multiple_choice
+    difficulty: reasoning
+    source: https://ethereum.org/en/developers/docs/apis/json-rpc/#eth_getlogs
+  assert:
+    - type: javascript
+      value: file://src/multiple_choice.js
+      metric: misc
+
+- description: misc/engine-forkchoice-invalid-attributes-side-effect
+  vars:
+    type: open
+    question: |-
+      Under the Paris Engine API specification, engine_forkchoiceUpdatedV1
+      receives a valid forkchoiceState that the execution client can apply,
+      but its non-null payloadAttributes are invalid because their timestamp
+      is not greater than the head block's timestamp. Does rejecting those
+      payload attributes also prevent the forkchoice update from taking effect?
+    answer: |-
+      No. The execution client must apply the valid forkchoice-state update
+      even though the payload attributes are invalid. Invalid payload attributes
+      prevent the requested payload build and produce an Invalid payload
+      attributes error; they do not roll back the forkchoice update.
+      A complete answer must state that the forkchoice update still takes effect.
+      The numeric error code is not required.
+  metadata:
+    section: misc
+    type: open
+    difficulty: understanding
+    source: https://github.com/ethereum/execution-apis/blob/main/src/engine/paris.md
+  assert:
+    - type: llm-rubric
+      value: '{{answer}}'
+      metric: misc
+
+- description: misc/engine-payload-bodies-range-head-truncation
+  vars:
+    type: multiple_choice
+    question: |-
+      Under the Shanghai Engine API specification, an execution client's
+      canonical head is block 100. All canonical bodies through that block
+      are available. What does engine_getPayloadBodiesByRangeV1 return for
+      start = 98 and count = 5?
+    choices:
+      - |-
+        A five-element array containing bodies 98, 99, and 100, followed by two null entries
+      - A three-element array containing bodies 98, 99, and 100
+      - An empty array because the complete requested range is unavailable
+      - An Invalid params error because the requested range extends beyond the head
+    answer: B
+  metadata:
+    section: misc
+    type: multiple_choice
+    difficulty: reasoning
+    source: https://github.com/ethereum/execution-apis/blob/main/src/engine/shanghai.md
+  assert:
+    - type: javascript
+      value: file://src/multiple_choice.js
+      metric: misc
+
+- description: misc/engine-newpayload-blob-hash-order
+  vars:
+    type: open
+    question: |-
+      Under the Cancun Engine API specification, the blob versioned hashes
+      extracted from an otherwise valid payload's transactions, in transaction
+      order and then in each transaction's hash order, are [h1, h2], with
+      h1 != h2. engine_newPayloadV3 is called with expectedBlobVersionedHashes
+      equal to [h2, h1]. What payload status must it return, and why?
+    answer: |-
+      It must return INVALID. The expectedBlobVersionedHashes parameter must
+      match the ordered list extracted from the payload exactly; equality as
+      a set is insufficient. A complete answer must identify INVALID and
+      explain that reversing the distinct hashes violates the ordering check.
+      No latestValidHash or validationError detail is required.
+  metadata:
+    section: misc
+    type: open
+    difficulty: reasoning
+    source: https://github.com/ethereum/execution-apis/blob/main/src/engine/cancun.md
+  assert:
+    - type: llm-rubric
+      value: '{{answer}}'
+      metric: misc
+
+- description: misc/networking-rlpx-frame-padding-total
+  vars:
+    type: multiple_choice
+    question: |-
+      Under the RLPx transport framing specification, an established connection
+      sends a frame whose frame-size field is 17 bytes. Excluding the connection
+      handshake, how many bytes does the complete frame occupy on the wire,
+      including the encrypted header, both MACs, and frame-data padding?
+    choices:
+      - '96'
+      - '65'
+      - '49'
+      - '80'
+    answer: D
+  metadata:
+    section: misc
+    type: multiple_choice
+    difficulty: reasoning
+    source: https://github.com/ethereum/devp2p/blob/master/rlpx.md
+  assert:
+    - type: javascript
+      value: file://src/multiple_choice.js
+      metric: misc
+
+- description: misc/networking-eth68-pooled-transaction-sizes
+  vars:
+    type: multiple_choice
+    question: |-
+      In eth/68, NewPooledTransactionHashes announces parallel lists of
+      transaction types, sizes, and hashes. For a transaction encoded using
+      EIP-2718, what does its announced size measure?
+    choices:
+      - The encoded transaction size, including its transaction-type byte
+      - The transaction's intrinsic gas cost
+      - The encoded transaction payload size, excluding its transaction-type byte
+      - The transaction's gas limit
+    answer: A
+  metadata:
+    section: misc
+    type: multiple_choice
+    difficulty: recall
+    source: https://github.com/ethereum/devp2p/blob/master/caps/eth.md
+  assert:
+    - type: javascript
+      value: file://src/multiple_choice.js
+      metric: misc
+
+- description: misc/networking-discv4-pong-ping-hash
+  vars:
+    type: multiple_choice
+    question: |-
+      In the Ethereum Discovery v4 wire protocol, which value must the
+      ping-hash field of a Pong packet contain?
+    choices:
+      - The hash of the Pong packet's RLP payload
+      - The leading 32-byte packet hash from the corresponding Ping packet
+      - |-
+        The hash of the entire corresponding Ping packet, including its leading hash field
+      - The Keccak-256 hash of the Ping sender's public key
+    answer: B
+  metadata:
+    section: misc
+    type: multiple_choice
+    difficulty: recall
+    source: https://github.com/ethereum/devp2p/blob/master/discv4.md
+  assert:
+    - type: javascript
+      value: file://src/multiple_choice.js
+      metric: misc
+
+- description: misc/l2-op-deposit-alias-modular-wrap
+  vars:
+    type: open
+    question: |-
+      Under the OP Stack deposit specification's L1-to-L2 address-aliasing
+      rule, consider a deposit whose sender is subject to aliasing. If its
+      L1 sender address is 0xffffffffffffffffffffffffffffffffffffffff,
+      what is the aliased L2 sender address? Show how the rule handles overflow.
+    answer: |-
+      The aliasing offset is 0x1111000000000000000000000000000000001111.
+      The rule adds this offset to the L1 address modulo 2^160.
+      Since the supplied address is 2^160 - 1, the result is the offset
+      minus one: 0x1111000000000000000000000000000000001110.
+      A complete answer must give that address and explain that addition wraps
+      modulo 2^160 rather than reverting or retaining a 161st bit.
+  metadata:
+    section: misc
+    type: open
+    difficulty: reasoning
+    source: https://specs.optimism.io/protocol/deposits.html#address-aliasing
+  assert:
+    - type: llm-rubric
+      value: '{{answer}}'
+      metric: misc

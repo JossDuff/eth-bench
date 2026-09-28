@@ -1,15 +1,22 @@
-# Imported from https://github.com/clawdbotatg/eth-evals (MIT, Austin Griffith)
-# by scripts/import_ethevals.py. Edit the script, not this file.
+# Imported from https://github.com/clawdbotatg/eth-evals (MIT, Austin Griffith).
 
-- id: security-k-02
-  type: open
-  question: |
-    How many decimals does the USDC token contract use?
-    End your reply with a line of the form "Answer: <integer>".
-  answer: |
-    The response's final answer must be the integer 6 (decimal or the equivalent hex). Reference from ethskills: "**USDC has 6 decimals, not 18.** This is the #1 source of "where did my money go?" bugs."
-  difficulty: recall
-  source: https://github.com/clawdbotatg/eth-evals/blob/main/tasks/skill-security.jsonl
-  tags:
-  - eth-evals
-  - security
+- description: security/security-k-02
+  vars:
+    type: open
+    question: |-
+      How many decimals does the USDC token contract use?
+      End your reply with a line of the form "Answer: <integer>".
+    answer: |-
+      The response's final answer must be the integer 6 (decimal or the equivalent hex). Reference from ethskills: "**USDC has 6 decimals, not 18.** This is the #1 source of "where did my money go?" bugs."
+  metadata:
+    section: security
+    type: open
+    difficulty: recall
+    source: https://github.com/clawdbotatg/eth-evals/blob/main/tasks/skill-security.jsonl
+    tags:
+      - eth-evals
+      - security
+  assert:
+    - type: llm-rubric
+      value: '{{answer}}'
+      metric: security

@@ -1,206 +1,339 @@
-# Imported from https://github.com/clawdbotatg/eth-evals (MIT, Austin Griffith)
-# by scripts/import_ethevals.py. Edit the script, not this file.
+# Imported from https://github.com/clawdbotatg/eth-evals (MIT, Austin Griffith).
 
-- id: crops-k-10
-  type: multiple_choice
-  question: |
-    A smart wallet (e.g. Coinbase Smart Wallet) uses a WebAuthn passkey synced through iCloud Keychain as its only signer. What is the actual custody risk of this design?
-  choices:
-  - Apple can extract the passkey and unilaterally move the user's funds
-  - The wallet vendor holds an MPC key share and can co-sign without the user
-  - |-
-    Passkeys use secp256r1, which is cryptographically weaker than secp256k1 and can be brute-forced
-  - |-
-    Availability, not seizure — the passkey is end-to-end encrypted and not extractable by the platform, but access depends on the user's Apple account staying reachable
-  answer: D
-  difficulty: understanding
-  source: https://github.com/clawdbotatg/eth-evals/blob/main/tasks/skill-crops.jsonl
-  tags:
-  - eth-evals
-  - crops
-- id: crops-k-12
-  type: open
-  question: |
-    Wallet-connection UI libraries can ship analytics/telemetry whose defaults change between versions, so a privacy review must audit the actual dependency versions. In which version did RainbowKit turn connector telemetry OFF by default?
-    End your reply with a line of the form "Answer: <version>".
-  answer: |
-    The response's answer must match the pattern `2\.2\.10` (that is, it must name the concept the pattern captures). The reference answer is: Answer: 2.2.10. Reference from ethskills: "analytics and telemetry in wallet/UI dependencies (WalletConnect, RainbowKit, Privy, Alchemy SDK) and error-reporting SDKs (Sentry); defaults change between versions (RainbowKit turned connector telemetry off by default in 2.2.10)"
-  difficulty: recall
-  source: https://github.com/clawdbotatg/eth-evals/blob/main/tasks/skill-crops.jsonl
-  tags:
-  - eth-evals
-  - crops
-- id: cryptoecon-k-04
-  type: open
-  question: |
-    A decentralized stablecoin is redeemable for exactly $1 of collateral, yet no operator manages its market price. When it trades at $0.99 people buy and redeem it; when it trades at $1.01 people mint more and sell. Self-interest maintains the peg through what economic mechanism? Answer with a single word.
-    End your reply with a line of the form "Answer: <word>".
-  answer: |
-    The response's answer must match the pattern `arbitrag` (that is, it must name the concept the pattern captures). The reference answer is: Answer: arbitrage. Reference from ethskills: ""How does a token stay worth $1 with nobody controlling it? Arbitrage. If it drops to $0.99, people buy it because they can redeem it for $1 of collateral. If it goes to $1.01, people mint more and sell. Self-interest maintains the peg.""
-  difficulty: recall
-  source: https://github.com/clawdbotatg/eth-evals/blob/main/tasks/skill-cryptoecon.jsonl
-  tags:
-  - eth-evals
-  - cryptoecon
-- id: cryptoecon-k-07
-  type: open
-  question: |
-    In a proof-of-work or proof-of-stake chain whose protocol issuance (block subsidy) is designed to decline toward zero over time, which revenue source must increasingly fund the security budget — i.e., keep paying miners or validators to secure the chain?
-    End your reply with a line of the form "Answer: <revenue source>".
-  answer: |
-    The response's answer must match the pattern `transaction fees|tx fees|\bfees\b` (that is, it must name the concept the pattern captures). The reference answer is: Answer: transaction fees. Reference from ethskills: "Canon (Bitcoin whitepaper, section 6): "Once a predetermined number of coins have entered circulation, the incentive can transition entirely to transaction fees and be completely inflation free.""
-  difficulty: recall
-  source: https://github.com/clawdbotatg/eth-evals/blob/main/tasks/skill-cryptoecon.jsonl
-  tags:
-  - eth-evals
-  - cryptoecon
-- id: cryptoecon-k-09
-  type: open
-  question: |
-    A decentralized oracle asks many independent parties to submit the answer to a question (say, an asset price). Submissions near the median are rewarded; outliers lose their deposit. With no way to collude, each participant's best strategy is to report the truth, because the truth is the one obvious value everyone can expect everyone else to converge on. What is the game-theory term for such a natural coordination target?
-    End your reply with a line of the form "Answer: <term>".
-  answer: |
-    The response's answer must match the pattern `schelling|focal point` (that is, it must name the concept the pattern captures). The reference answer is: Answer: Schelling point. Reference from ethskills: "Canon (Thomas Schelling, 'The Strategy of Conflict', 1960; applied to oracles in Vitalik Buterin's 2014 'SchellingCoin: A Minimal-Trust Universal Data Feed'): a focal or 'Schelling' point is the option parties converge on without communication; SchellingCoin rewards reporters who match the median because truth is the natural Schelling point."
-  difficulty: recall
-  source: https://github.com/clawdbotatg/eth-evals/blob/main/tasks/skill-cryptoecon.jsonl
-  tags:
-  - eth-evals
-  - cryptoecon
-- id: cryptoecon-k-10
-  type: multiple_choice
-  question: |
-    A lending protocol with $200M of collateral at risk sources its prices from a single oracle operator who is paid a fee per update by the protocol itself and has posted a $50,000 bond that is slashed for provably false reports. In cryptoeconomic security terms, what is the core flaw in this design?
-  choices:
-  - |-
-    The profit from corruption dwarfs the cost of corruption: one false report could extract a large share of the $200M while the operator loses only the $50k bond, so lying (or accepting a bribe) is economically rational
-  - Per-update fees are taxable income, which discourages professional operators
-  - |-
-    Slashing is impossible for oracles because price reports can never be proven false
-  - |-
-    A single operator cannot physically submit updates fast enough for a lending market
-  answer: A
-  difficulty: understanding
-  source: https://github.com/clawdbotatg/eth-evals/blob/main/tasks/skill-cryptoecon.jsonl
-  tags:
-  - eth-evals
-  - cryptoecon
-- id: cypherpunk-k-01
-  type: open
-  question: |
-    Which cryptographer authored "A Cypherpunk's Manifesto" (March 1993), the founding document of the cypherpunk movement?
-    End your reply with a line of the form "Answer: <name>".
-  answer: |
-    The response's answer must match the pattern `\bhughes\b` (that is, it must name the concept the pattern captures). The reference answer is: Answer: Eric Hughes. Reference from ethskills: "A Cypherpunk's Manifesto, Eric Hughes, 9 March 1993."
-  difficulty: recall
-  source: https://github.com/clawdbotatg/eth-evals/blob/main/tasks/skill-cypherpunk.jsonl
-  tags:
-  - eth-evals
-  - cypherpunk
-- id: cypherpunk-k-02
-  type: open
-  question: |
-    "A Cypherpunk's Manifesto" (1993) draws a sharp line between privacy and secrecy: a private matter is something one doesn't want the whole world to know, while a secret matter is something one doesn't want anybody to know. It then defines privacy itself: "Privacy is the power to ___ oneself to the world." Fill in the missing two-word phrase.
-    End your reply with a line of the form "Answer: <two words>".
-  answer: |
-    The response's answer must match the pattern `selectively\s+reveal` (that is, it must name the concept the pattern captures). The reference answer is: Answer: selectively reveal. Reference from ethskills: "Eric Hughes, A Cypherpunk's Manifesto (1993): "Privacy is the power to selectively reveal oneself to the world.""
-  difficulty: recall
-  source: https://github.com/clawdbotatg/eth-evals/blob/main/tasks/skill-cypherpunk.jsonl
-  tags:
-  - eth-evals
-  - cypherpunk
-- id: cypherpunk-k-03
-  type: open
-  question: |
-    "A Cypherpunk's Manifesto" (1993) states the movement's method in a famous three-word sentence: rather than petitioning governments or corporations for privacy, cypherpunks build the defending software themselves. Complete the sentence: "Cypherpunks ___ ___."
-    End your reply with a line of the form "Answer: <two words>".
-  answer: |
-    The response's answer must match the pattern `write\s+code` (that is, it must name the concept the pattern captures). The reference answer is: Answer: write code. Reference from ethskills: "Eric Hughes, A Cypherpunk's Manifesto (1993): "Cypherpunks write code. We know that someone has to write software to defend privacy, and since we can't get privacy unless we all do, we're going to write it.""
-  difficulty: recall
-  source: https://github.com/clawdbotatg/eth-evals/blob/main/tasks/skill-cypherpunk.jsonl
-  tags:
-  - eth-evals
-  - cypherpunk
-- id: cypherpunk-k-04
-  type: open
-  question: |
-    In a paper presented at Crypto '82, David Chaum introduced a cryptographic primitive that lets a bank sign a token without seeing its contents, enabling untraceable digital payments — the foundation of his later ecash/DigiCash system. What is this primitive called?
-    End your reply with a line of the form "Answer: <name>".
-  answer: |
-    The response's answer must match the pattern `blind\s+signatures?` (that is, it must name the concept the pattern captures). The reference answer is: Answer: blind signatures. Reference from ethskills: "David Chaum, "Blind Signatures for Untraceable Payments" (Crypto '82), the basis of his ecash system commercialized via DigiCash."
-  difficulty: recall
-  source: https://github.com/clawdbotatg/eth-evals/blob/main/tasks/skill-cypherpunk.jsonl
-  tags:
-  - eth-evals
-  - cypherpunk
-- id: cypherpunk-k-05
-  type: multiple_choice
-  question: |
-    Phil Zimmermann released PGP in 1991 and subsequently became the target of a multi-year US federal criminal investigation. What was the legal basis of that investigation?
-  choices:
-  - Copyright infringement for distributing patented RSA code
-  - |-
-    Strong cryptographic software was classified as a munition, so its spread abroad was treated as unlicensed arms export
-  - Facilitating money laundering through encrypted communications
-  - Wire fraud for distributing the software free of charge
-  answer: B
-  difficulty: understanding
-  source: https://github.com/clawdbotatg/eth-evals/blob/main/tasks/skill-cypherpunk.jsonl
-  tags:
-  - eth-evals
-  - cypherpunk
-- id: cypherpunk-k-06
-  type: open
-  question: |
-    Nick Szabo coined the term "smart contract" in the 1990s. He also designed a decentralized digital-money scheme based on chains of proof-of-work puzzles, widely cited as a direct intellectual precursor to Bitcoin. What did he call that scheme?
-    End your reply with a line of the form "Answer: <name>".
-  answer: |
-    The response's answer must match the pattern `bit\s*gold` (that is, it must name the concept the pattern captures). The reference answer is: Answer: bit gold. Reference from ethskills: "Nick Szabo, "Bit Gold" (proposed 1998, published 2005): a decentralized money scheme chaining proof-of-work strings, a direct precursor to Bitcoin."
-  difficulty: recall
-  source: https://github.com/clawdbotatg/eth-evals/blob/main/tasks/skill-cypherpunk.jsonl
-  tags:
-  - eth-evals
-  - cypherpunk
-- id: cypherpunk-k-07
-  type: open
-  question: |
-    In his 1990s essays introducing the smart-contract idea, Nick Szabo pointed to an everyday coin-operated machine as the "primitive ancestor" of smart contracts — it takes payment and irreversibly delivers the goods per its embedded logic, with no human intermediary. Which machine?
-    End your reply with a line of the form "Answer: <machine>".
-  answer: |
-    The response's answer must match the pattern `vending\s+machine` (that is, it must name the concept the pattern captures). The reference answer is: Answer: the vending machine. Reference from ethskills: "Nick Szabo, "Smart Contracts: Building Blocks for Digital Markets" (1996): the humble vending machine as the primitive ancestor of smart contracts."
-  difficulty: recall
-  source: https://github.com/clawdbotatg/eth-evals/blob/main/tasks/skill-cypherpunk.jsonl
-  tags:
-  - eth-evals
-  - cypherpunk
-- id: cypherpunk-k-09
-  type: multiple_choice
-  question: |
-    The blockchain maxim "Don't trust, verify" prescribes a concrete practice for users who want the strongest possible guarantee that the chain state they see is correct. Which practice?
-  choices:
-  - Use only block explorers operated by reputable companies
-  - Read security audits before interacting with any protocol
-  - |-
-    Run your own node and validate the chain's rules yourself instead of trusting a third party
-  - Keep all funds in a multisig wallet
-  answer: C
-  difficulty: understanding
-  source: https://github.com/clawdbotatg/eth-evals/blob/main/tasks/skill-cypherpunk.jsonl
-  tags:
-  - eth-evals
-  - cypherpunk
-- id: cypherpunk-k-10
-  type: multiple_choice
-  question: |
-    According to the argument for building autonomous AI agents on Ethereum, why does the network's permissionless nature matter for an agent-operated service?
-  choices:
-  - Agent accounts are exempt from gas fees
-  - Agents receive priority inclusion in blocks
-  - |-
-    There are no API keys to revoke and no accounts to ban — the service runs without depending on any company's cooperation
-  - Contracts can schedule themselves to execute automatically for agents
-  answer: C
-  difficulty: understanding
-  source: https://github.com/clawdbotatg/eth-evals/blob/main/tasks/skill-cypherpunk.jsonl
-  tags:
-  - eth-evals
-  - cypherpunk
+- description: crops/crops-k-10
+  vars:
+    type: multiple_choice
+    question: |-
+      A smart wallet (e.g. Coinbase Smart Wallet) uses a WebAuthn passkey synced through iCloud Keychain as its only signer. What is the actual custody risk of this design?
+    choices:
+      - The wallet vendor holds an MPC key share and can co-sign without the user
+      - Apple can extract the passkey and unilaterally move the user's funds
+      - |-
+        Availability, not seizure — the passkey is end-to-end encrypted and not extractable by the platform, but access depends on the user's Apple account staying reachable
+      - |-
+        Passkeys use secp256r1, which is cryptographically weaker than secp256k1 and can be brute-forced
+    answer: C
+  metadata:
+    section: crops
+    type: multiple_choice
+    difficulty: understanding
+    source: https://github.com/clawdbotatg/eth-evals/blob/main/tasks/skill-crops.jsonl
+    tags:
+      - eth-evals
+      - crops
+  assert:
+    - type: javascript
+      value: file://src/multiple_choice.js
+      metric: crops
+
+- description: crops/crops-k-12
+  vars:
+    type: open
+    question: |-
+      Wallet-connection UI libraries can ship analytics/telemetry whose defaults change between versions, so a privacy review must audit the actual dependency versions. In which version did RainbowKit turn connector telemetry OFF by default?
+      End your reply with a line of the form "Answer: <version>".
+    answer: |-
+      The response's answer must match the pattern `2\.2\.10` (that is, it must name the concept the pattern captures). The reference answer is: Answer: 2.2.10. Reference from ethskills: "analytics and telemetry in wallet/UI dependencies (WalletConnect, RainbowKit, Privy, Alchemy SDK) and error-reporting SDKs (Sentry); defaults change between versions (RainbowKit turned connector telemetry off by default in 2.2.10)"
+  metadata:
+    section: crops
+    type: open
+    difficulty: recall
+    source: https://github.com/clawdbotatg/eth-evals/blob/main/tasks/skill-crops.jsonl
+    tags:
+      - eth-evals
+      - crops
+  assert:
+    - type: llm-rubric
+      value: '{{answer}}'
+      metric: crops
+
+- description: crops/cryptoecon-k-04
+  vars:
+    type: open
+    question: |-
+      A decentralized stablecoin is redeemable for exactly $1 of collateral, yet no operator manages its market price. When it trades at $0.99 people buy and redeem it; when it trades at $1.01 people mint more and sell. Self-interest maintains the peg through what economic mechanism? Answer with a single word.
+      End your reply with a line of the form "Answer: <word>".
+    answer: |-
+      The response's answer must match the pattern `arbitrag` (that is, it must name the concept the pattern captures). The reference answer is: Answer: arbitrage. Reference from ethskills: ""How does a token stay worth $1 with nobody controlling it? Arbitrage. If it drops to $0.99, people buy it because they can redeem it for $1 of collateral. If it goes to $1.01, people mint more and sell. Self-interest maintains the peg.""
+  metadata:
+    section: crops
+    type: open
+    difficulty: recall
+    source: https://github.com/clawdbotatg/eth-evals/blob/main/tasks/skill-cryptoecon.jsonl
+    tags:
+      - eth-evals
+      - cryptoecon
+  assert:
+    - type: llm-rubric
+      value: '{{answer}}'
+      metric: crops
+
+- description: crops/cryptoecon-k-07
+  vars:
+    type: open
+    question: |-
+      In a proof-of-work or proof-of-stake chain whose protocol issuance (block subsidy) is designed to decline toward zero over time, which revenue source must increasingly fund the security budget — i.e., keep paying miners or validators to secure the chain?
+      End your reply with a line of the form "Answer: <revenue source>".
+    answer: |-
+      The response's answer must match the pattern `transaction fees|tx fees|\bfees\b` (that is, it must name the concept the pattern captures). The reference answer is: Answer: transaction fees. Reference from ethskills: "Canon (Bitcoin whitepaper, section 6): "Once a predetermined number of coins have entered circulation, the incentive can transition entirely to transaction fees and be completely inflation free.""
+  metadata:
+    section: crops
+    type: open
+    difficulty: recall
+    source: https://github.com/clawdbotatg/eth-evals/blob/main/tasks/skill-cryptoecon.jsonl
+    tags:
+      - eth-evals
+      - cryptoecon
+  assert:
+    - type: llm-rubric
+      value: '{{answer}}'
+      metric: crops
+
+- description: crops/cryptoecon-k-09
+  vars:
+    type: open
+    question: |-
+      A decentralized oracle asks many independent parties to submit the answer to a question (say, an asset price). Submissions near the median are rewarded; outliers lose their deposit. With no way to collude, each participant's best strategy is to report the truth, because the truth is the one obvious value everyone can expect everyone else to converge on. What is the game-theory term for such a natural coordination target?
+      End your reply with a line of the form "Answer: <term>".
+    answer: |-
+      The response's answer must match the pattern `schelling|focal point` (that is, it must name the concept the pattern captures). The reference answer is: Answer: Schelling point. Reference from ethskills: "Canon (Thomas Schelling, 'The Strategy of Conflict', 1960; applied to oracles in Vitalik Buterin's 2014 'SchellingCoin: A Minimal-Trust Universal Data Feed'): a focal or 'Schelling' point is the option parties converge on without communication; SchellingCoin rewards reporters who match the median because truth is the natural Schelling point."
+  metadata:
+    section: crops
+    type: open
+    difficulty: recall
+    source: https://github.com/clawdbotatg/eth-evals/blob/main/tasks/skill-cryptoecon.jsonl
+    tags:
+      - eth-evals
+      - cryptoecon
+  assert:
+    - type: llm-rubric
+      value: '{{answer}}'
+      metric: crops
+
+- description: crops/cryptoecon-k-10
+  vars:
+    type: multiple_choice
+    question: |-
+      A lending protocol with $200M of collateral at risk sources its prices from a single oracle operator who is paid a fee per update by the protocol itself and has posted a $50,000 bond that is slashed for provably false reports. In cryptoeconomic security terms, what is the core flaw in this design?
+    choices:
+      - Per-update fees are taxable income, which discourages professional operators
+      - |-
+        A single operator cannot physically submit updates fast enough for a lending market
+      - |-
+        The profit from corruption dwarfs the cost of corruption: one false report could extract a large share of the $200M while the operator loses only the $50k bond, so lying (or accepting a bribe) is economically rational
+      - |-
+        Slashing is impossible for oracles because price reports can never be proven false
+    answer: C
+  metadata:
+    section: crops
+    type: multiple_choice
+    difficulty: understanding
+    source: https://github.com/clawdbotatg/eth-evals/blob/main/tasks/skill-cryptoecon.jsonl
+    tags:
+      - eth-evals
+      - cryptoecon
+  assert:
+    - type: javascript
+      value: file://src/multiple_choice.js
+      metric: crops
+
+- description: crops/cypherpunk-k-01
+  vars:
+    type: open
+    question: |-
+      Which cryptographer authored "A Cypherpunk's Manifesto" (March 1993), the founding document of the cypherpunk movement?
+      End your reply with a line of the form "Answer: <name>".
+    answer: |-
+      The response's answer must match the pattern `\bhughes\b` (that is, it must name the concept the pattern captures). The reference answer is: Answer: Eric Hughes. Reference from ethskills: "A Cypherpunk's Manifesto, Eric Hughes, 9 March 1993."
+  metadata:
+    section: crops
+    type: open
+    difficulty: recall
+    source: https://github.com/clawdbotatg/eth-evals/blob/main/tasks/skill-cypherpunk.jsonl
+    tags:
+      - eth-evals
+      - cypherpunk
+  assert:
+    - type: llm-rubric
+      value: '{{answer}}'
+      metric: crops
+
+- description: crops/cypherpunk-k-02
+  vars:
+    type: open
+    question: |-
+      "A Cypherpunk's Manifesto" (1993) draws a sharp line between privacy and secrecy: a private matter is something one doesn't want the whole world to know, while a secret matter is something one doesn't want anybody to know. It then defines privacy itself: "Privacy is the power to ___ oneself to the world." Fill in the missing two-word phrase.
+      End your reply with a line of the form "Answer: <two words>".
+    answer: |-
+      The response's answer must match the pattern `selectively\s+reveal` (that is, it must name the concept the pattern captures). The reference answer is: Answer: selectively reveal. Reference from ethskills: "Eric Hughes, A Cypherpunk's Manifesto (1993): "Privacy is the power to selectively reveal oneself to the world.""
+  metadata:
+    section: crops
+    type: open
+    difficulty: recall
+    source: https://github.com/clawdbotatg/eth-evals/blob/main/tasks/skill-cypherpunk.jsonl
+    tags:
+      - eth-evals
+      - cypherpunk
+  assert:
+    - type: llm-rubric
+      value: '{{answer}}'
+      metric: crops
+
+- description: crops/cypherpunk-k-03
+  vars:
+    type: open
+    question: |-
+      "A Cypherpunk's Manifesto" (1993) states the movement's method in a famous three-word sentence: rather than petitioning governments or corporations for privacy, cypherpunks build the defending software themselves. Complete the sentence: "Cypherpunks ___ ___."
+      End your reply with a line of the form "Answer: <two words>".
+    answer: |-
+      The response's answer must match the pattern `write\s+code` (that is, it must name the concept the pattern captures). The reference answer is: Answer: write code. Reference from ethskills: "Eric Hughes, A Cypherpunk's Manifesto (1993): "Cypherpunks write code. We know that someone has to write software to defend privacy, and since we can't get privacy unless we all do, we're going to write it.""
+  metadata:
+    section: crops
+    type: open
+    difficulty: recall
+    source: https://github.com/clawdbotatg/eth-evals/blob/main/tasks/skill-cypherpunk.jsonl
+    tags:
+      - eth-evals
+      - cypherpunk
+  assert:
+    - type: llm-rubric
+      value: '{{answer}}'
+      metric: crops
+
+- description: crops/cypherpunk-k-04
+  vars:
+    type: open
+    question: |-
+      In a paper presented at Crypto '82, David Chaum introduced a cryptographic primitive that lets a bank sign a token without seeing its contents, enabling untraceable digital payments — the foundation of his later ecash/DigiCash system. What is this primitive called?
+      End your reply with a line of the form "Answer: <name>".
+    answer: |-
+      The response's answer must match the pattern `blind\s+signatures?` (that is, it must name the concept the pattern captures). The reference answer is: Answer: blind signatures. Reference from ethskills: "David Chaum, "Blind Signatures for Untraceable Payments" (Crypto '82), the basis of his ecash system commercialized via DigiCash."
+  metadata:
+    section: crops
+    type: open
+    difficulty: recall
+    source: https://github.com/clawdbotatg/eth-evals/blob/main/tasks/skill-cypherpunk.jsonl
+    tags:
+      - eth-evals
+      - cypherpunk
+  assert:
+    - type: llm-rubric
+      value: '{{answer}}'
+      metric: crops
+
+- description: crops/cypherpunk-k-05
+  vars:
+    type: multiple_choice
+    question: |-
+      Phil Zimmermann released PGP in 1991 and subsequently became the target of a multi-year US federal criminal investigation. What was the legal basis of that investigation?
+    choices:
+      - Copyright infringement for distributing patented RSA code
+      - |-
+        Strong cryptographic software was classified as a munition, so its spread abroad was treated as unlicensed arms export
+      - Wire fraud for distributing the software free of charge
+      - Facilitating money laundering through encrypted communications
+    answer: B
+  metadata:
+    section: crops
+    type: multiple_choice
+    difficulty: understanding
+    source: https://github.com/clawdbotatg/eth-evals/blob/main/tasks/skill-cypherpunk.jsonl
+    tags:
+      - eth-evals
+      - cypherpunk
+  assert:
+    - type: javascript
+      value: file://src/multiple_choice.js
+      metric: crops
+
+- description: crops/cypherpunk-k-06
+  vars:
+    type: open
+    question: |-
+      Nick Szabo coined the term "smart contract" in the 1990s. He also designed a decentralized digital-money scheme based on chains of proof-of-work puzzles, widely cited as a direct intellectual precursor to Bitcoin. What did he call that scheme?
+      End your reply with a line of the form "Answer: <name>".
+    answer: |-
+      The response's answer must match the pattern `bit\s*gold` (that is, it must name the concept the pattern captures). The reference answer is: Answer: bit gold. Reference from ethskills: "Nick Szabo, "Bit Gold" (proposed 1998, published 2005): a decentralized money scheme chaining proof-of-work strings, a direct precursor to Bitcoin."
+  metadata:
+    section: crops
+    type: open
+    difficulty: recall
+    source: https://github.com/clawdbotatg/eth-evals/blob/main/tasks/skill-cypherpunk.jsonl
+    tags:
+      - eth-evals
+      - cypherpunk
+  assert:
+    - type: llm-rubric
+      value: '{{answer}}'
+      metric: crops
+
+- description: crops/cypherpunk-k-07
+  vars:
+    type: open
+    question: |-
+      In his 1990s essays introducing the smart-contract idea, Nick Szabo pointed to an everyday coin-operated machine as the "primitive ancestor" of smart contracts — it takes payment and irreversibly delivers the goods per its embedded logic, with no human intermediary. Which machine?
+      End your reply with a line of the form "Answer: <machine>".
+    answer: |-
+      The response's answer must match the pattern `vending\s+machine` (that is, it must name the concept the pattern captures). The reference answer is: Answer: the vending machine. Reference from ethskills: "Nick Szabo, "Smart Contracts: Building Blocks for Digital Markets" (1996): the humble vending machine as the primitive ancestor of smart contracts."
+  metadata:
+    section: crops
+    type: open
+    difficulty: recall
+    source: https://github.com/clawdbotatg/eth-evals/blob/main/tasks/skill-cypherpunk.jsonl
+    tags:
+      - eth-evals
+      - cypherpunk
+  assert:
+    - type: llm-rubric
+      value: '{{answer}}'
+      metric: crops
+
+- description: crops/cypherpunk-k-09
+  vars:
+    type: multiple_choice
+    question: |-
+      The blockchain maxim "Don't trust, verify" prescribes a concrete practice for users who want the strongest possible guarantee that the chain state they see is correct. Which practice?
+    choices:
+      - Read security audits before interacting with any protocol
+      - |-
+        Run your own node and validate the chain's rules yourself instead of trusting a third party
+      - Use only block explorers operated by reputable companies
+      - Keep all funds in a multisig wallet
+    answer: B
+  metadata:
+    section: crops
+    type: multiple_choice
+    difficulty: understanding
+    source: https://github.com/clawdbotatg/eth-evals/blob/main/tasks/skill-cypherpunk.jsonl
+    tags:
+      - eth-evals
+      - cypherpunk
+  assert:
+    - type: javascript
+      value: file://src/multiple_choice.js
+      metric: crops
+
+- description: crops/cypherpunk-k-10
+  vars:
+    type: multiple_choice
+    question: |-
+      According to the argument for building autonomous AI agents on Ethereum, why does the network's permissionless nature matter for an agent-operated service?
+    choices:
+      - Agents receive priority inclusion in blocks
+      - Agent accounts are exempt from gas fees
+      - Contracts can schedule themselves to execute automatically for agents
+      - |-
+        There are no API keys to revoke and no accounts to ban — the service runs without depending on any company's cooperation
+    answer: D
+  metadata:
+    section: crops
+    type: multiple_choice
+    difficulty: understanding
+    source: https://github.com/clawdbotatg/eth-evals/blob/main/tasks/skill-cypherpunk.jsonl
+    tags:
+      - eth-evals
+      - cypherpunk
+  assert:
+    - type: javascript
+      value: file://src/multiple_choice.js
+      metric: crops

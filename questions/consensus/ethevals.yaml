@@ -1,21 +1,28 @@
-# Imported from https://github.com/austintgriffith/ethevals by
-# scripts/import_ethevals.py. Edit the script, not this file.
+# Imported from https://github.com/austintgriffith/ethevals (MIT, Austin Griffith).
 
-- id: concepts-19-why-slashing
-  type: multiple_choice
-  question: |
-    Ethereum proof-of-stake requires validators to lock a deposit that can be destroyed (slashed) if they provably violate the rules, e.g. by signing two conflicting blocks. Why is a slashable bond required at all — what does it add that paying honest-behavior rewards alone cannot?
-  choices:
-  - It funds the block rewards paid to other validators
-  - |-
-    It gives misbehavior a concrete, attributable cost: with only rewards, an attacker who signs conflicting messages has nothing at stake to lose, so attacks on finality would be nearly free
-  - It compensates users whose transactions get censored
-  - |-
-    It exists purely to limit the validator set size to keep consensus messages small
-  answer: B
-  difficulty: understanding
-  source: |-
-    https://github.com/austintgriffith/ethevals/blob/main/evals/concepts/concepts-19-why-slashing.yaml
-  tags:
-  - ethevals
-  - concepts
+- description: consensus/concepts-19-why-slashing
+  vars:
+    type: multiple_choice
+    question: |-
+      Ethereum proof-of-stake requires validators to lock a deposit that can be destroyed (slashed) if they provably violate the rules, e.g. by signing two conflicting blocks. Why is a slashable bond required at all — what does it add that paying honest-behavior rewards alone cannot?
+    choices:
+      - It compensates users whose transactions get censored
+      - It funds the block rewards paid to other validators
+      - |-
+        It gives misbehavior a concrete, attributable cost: with only rewards, an attacker who signs conflicting messages has nothing at stake to lose, so attacks on finality would be nearly free
+      - |-
+        It exists purely to limit the validator set size to keep consensus messages small
+    answer: C
+  metadata:
+    section: consensus
+    type: multiple_choice
+    difficulty: understanding
+    source: |-
+      https://github.com/austintgriffith/ethevals/blob/main/evals/concepts/concepts-19-why-slashing.yaml
+    tags:
+      - ethevals
+      - concepts
+  assert:
+    - type: javascript
+      value: file://src/multiple_choice.js
+      metric: consensus

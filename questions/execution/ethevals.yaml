@@ -1,159 +1,247 @@
-# Imported from https://github.com/austintgriffith/ethevals by
-# scripts/import_ethevals.py. Edit the script, not this file.
+# Imported from https://github.com/austintgriffith/ethevals (MIT, Austin Griffith).
 
-- id: transactions-10-read-a-receipt
-  type: multiple_choice
-  question: |
-    A user deposited into a vault. The transaction receipt shows status 0x1, gasUsed 51203, and the user's share balance now reads zero. What does status 0x1 actually guarantee?
-  choices:
-  - The deposit did what the user intended; the balance read must be stale
-  - |-
-    The transaction executed to completion without reverting — nothing more; the outcome has to be read from the logs and state
-  - Every internal call inside the transaction succeeded
-  - The funds were credited to the sender
-  answer: B
-  difficulty: understanding
-  source: |-
-    https://github.com/austintgriffith/ethevals/blob/main/evals/transactions/transactions-10-read-a-receipt.yaml
-  tags:
-  - ethevals
-  - transactions
-- id: transactions-11-internal-transactions
-  type: multiple_choice
-  question: |
-    A block explorer lists several "internal transactions" under one transaction hash, each moving ETH between contracts. What are they?
-  choices:
-  - Separate transactions the contract signed and broadcast during execution
-  - |-
-    Value-carrying message calls made during the transaction's execution, reconstructed by tracing the EVM; they are not signed, have no hash of their own, and never appear in the block's transaction list
-  - Pending transactions queued by the contract for a later block
-  - Log events emitted with the Transfer signature
-  answer: B
-  difficulty: understanding
-  source: |-
-    https://github.com/austintgriffith/ethevals/blob/main/evals/transactions/transactions-11-internal-transactions.yaml
-  tags:
-  - ethevals
-  - transactions
-- id: transactions-12-effective-gas-price
-  type: open
-  question: |
-    A type-2 transaction sets maxFeePerGas = 50 gwei and maxPriorityFeePerGas = 2 gwei. It is included in a block whose base fee is 30 gwei. What effective gas price, in gwei, does the sender pay per unit of gas?
-    End your reply with a line of the form "Answer: <integer>".
-  answer: |
-    The response's final answer must be the integer 32 (decimal or the equivalent hex). Grade INCORRECT for these tempting wrong answers: `Answer: 50`; `Answer: 30`; `Answer: 52`
-  difficulty: reasoning
-  source: |-
-    https://github.com/austintgriffith/ethevals/blob/main/evals/transactions/transactions-12-effective-gas-price.yaml
-  tags:
-  - ethevals
-  - transactions
-- id: transactions-13-nonce-replacement
-  type: multiple_choice
-  question: |
-    Your transaction with nonce 41 has been pending for an hour at a fee far below the current base fee. You want it gone. What do you send?
-  choices:
-  - |-
-    A new transaction with nonce 42 at a high fee; the stuck one is dropped once it is skipped
-  - |-
-    A transaction with the same nonce 41 (for example 0 ETH to yourself) with maxFeePerGas and maxPriorityFeePerGas raised by at least ~10% over the stuck one; whichever nonce-41 transaction is included first replaces the other
-  - A cancel request to the RPC node that holds it
-  - Nothing; pending transactions expire after 30 minutes
-  answer: B
-  difficulty: understanding
-  source: |-
-    https://github.com/austintgriffith/ethevals/blob/main/evals/transactions/transactions-13-nonce-replacement.yaml
-  tags:
-  - ethevals
-  - transactions
-- id: transactions-14-gwei-to-wei
-  type: open
-  question: |
-    Convert 412.5 gwei to wei.
+- description: execution/transactions-10-read-a-receipt
+  vars:
+    type: multiple_choice
+    question: |-
+      A user deposited into a vault. The transaction receipt shows status 0x1, gasUsed 51203, and the user's share balance now reads zero. What does status 0x1 actually guarantee?
+    choices:
+      - |-
+        The transaction executed to completion without reverting — nothing more; the outcome has to be read from the logs and state
+      - Every internal call inside the transaction succeeded
+      - The funds were credited to the sender
+      - The deposit did what the user intended; the balance read must be stale
+    answer: A
+  metadata:
+    section: execution
+    type: multiple_choice
+    difficulty: understanding
+    source: |-
+      https://github.com/austintgriffith/ethevals/blob/main/evals/transactions/transactions-10-read-a-receipt.yaml
+    tags:
+      - ethevals
+      - transactions
+  assert:
+    - type: javascript
+      value: file://src/multiple_choice.js
+      metric: execution
 
-    End your reply with a line of the form "Answer: <integer>" (plain decimal, no separators).
-  answer: |
-    The response's final answer must be the integer 412500000000 (decimal or the equivalent hex).
-  difficulty: reasoning
-  source: |-
-    https://github.com/austintgriffith/ethevals/blob/main/evals/transactions/transactions-14-gwei-to-wei.yaml
-  tags:
-  - ethevals
-  - transactions
-- id: transactions-15-intrinsic-gas
-  type: open
-  question: |
-    A simple value-transfer transaction to an EOA carries this calldata:
-    0x0046be6100d30000677700c4000000960022ac00009f76123a0000e8001b00ec00b54500e699
+- description: execution/transactions-11-internal-transactions
+  vars:
+    type: multiple_choice
+    question: |-
+      A block explorer lists several "internal transactions" under one transaction hash, each moving ETH between contracts. What are they?
+    choices:
+      - |-
+        Value-carrying message calls made during the transaction's execution, reconstructed by tracing the EVM; they are not signed, have no hash of their own, and never appear in the block's transaction list
+      - Separate transactions the contract signed and broadcast during execution
+      - Pending transactions queued by the contract for a later block
+      - Log events emitted with the Transfer signature
+    answer: A
+  metadata:
+    section: execution
+    type: multiple_choice
+    difficulty: understanding
+    source: |-
+      https://github.com/austintgriffith/ethevals/blob/main/evals/transactions/transactions-11-internal-transactions.yaml
+    tags:
+      - ethevals
+      - transactions
+  assert:
+    - type: javascript
+      value: file://src/multiple_choice.js
+      metric: execution
 
-    Using EIP-2028 calldata pricing (ignore the EIP-7623 floor and access lists), what is the transaction's intrinsic gas?
+- description: execution/transactions-12-effective-gas-price
+  vars:
+    type: open
+    question: |-
+      A type-2 transaction sets maxFeePerGas = 50 gwei and maxPriorityFeePerGas = 2 gwei. It is included in a block whose base fee is 30 gwei. What effective gas price, in gwei, does the sender pay per unit of gas?
+      End your reply with a line of the form "Answer: <integer>".
+    answer: |-
+      The response's final answer must be the integer 32 (decimal or the equivalent hex). Grade INCORRECT for these tempting wrong answers: `Answer: 50`; `Answer: 30`; `Answer: 52`
+  metadata:
+    section: execution
+    type: open
+    difficulty: reasoning
+    source: |-
+      https://github.com/austintgriffith/ethevals/blob/main/evals/transactions/transactions-12-effective-gas-price.yaml
+    tags:
+      - ethevals
+      - transactions
+  assert:
+    - type: llm-rubric
+      value: '{{answer}}'
+      metric: execution
 
-    End your reply with a line of the form "Answer: <integer>".
-  answer: |
-    The response's final answer must be the integer 21404 (decimal or the equivalent hex).
-  difficulty: reasoning
-  source: |-
-    https://github.com/austintgriffith/ethevals/blob/main/evals/transactions/transactions-15-intrinsic-gas.yaml
-  tags:
-  - ethevals
-  - transactions
-- id: transactions-16-create2-truncation
-  type: open
-  question: |
-    In a CREATE2 derivation, keccak256(0xff ++ deployer ++ salt ++ keccak256(init_code)) evaluates to:
-    0xcae80d92883b9ab8ccd30dbb60fe96ffb50be955748dcc275be17314ff75a345
+- description: execution/transactions-13-nonce-replacement
+  vars:
+    type: multiple_choice
+    question: |-
+      Your transaction with nonce 41 has been pending for an hour at a fee far below the current base fee. You want it gone. What do you send?
+    choices:
+      - A cancel request to the RPC node that holds it
+      - |-
+        A transaction with the same nonce 41 (for example 0 ETH to yourself) with maxFeePerGas and maxPriorityFeePerGas raised by at least ~10% over the stuck one; whichever nonce-41 transaction is included first replaces the other
+      - |-
+        A new transaction with nonce 42 at a high fee; the stuck one is dropped once it is skipped
+      - Nothing; pending transactions expire after 30 minutes
+    answer: B
+  metadata:
+    section: execution
+    type: multiple_choice
+    difficulty: understanding
+    source: |-
+      https://github.com/austintgriffith/ethevals/blob/main/evals/transactions/transactions-13-nonce-replacement.yaml
+    tags:
+      - ethevals
+      - transactions
+  assert:
+    - type: javascript
+      value: file://src/multiple_choice.js
+      metric: execution
 
-    What address is the contract deployed at?
+- description: execution/transactions-14-gwei-to-wei
+  vars:
+    type: open
+    question: |-
+      Convert 412.5 gwei to wei.
 
-    Answer with only the address (any casing).
-  answer: |
-    The response's final answer must be exactly `0x60fe96ffb50be955748dcc275be17314ff75a345` (case-insensitive). Grade INCORRECT for these tempting wrong answers: `Answer: 0xcae80d92883b9ab8ccd30dbb60fe96ffb50be955748dcc275be17314ff75a345`
-  difficulty: reasoning
-  source: |-
-    https://github.com/austintgriffith/ethevals/blob/main/evals/transactions/transactions-16-create2-truncation.yaml
-  tags:
-  - ethevals
-  - transactions
-- id: transactions-21-decode-raw-tx
-  type: open
-  question: |
-    A wallet is handed this signed raw transaction to broadcast:
+      End your reply with a line of the form "Answer: <integer>" (plain decimal, no separators).
+    answer: |-
+      The response's final answer must be the integer 412500000000 (decimal or the equivalent hex).
+  metadata:
+    section: execution
+    type: open
+    difficulty: reasoning
+    source: |-
+      https://github.com/austintgriffith/ethevals/blob/main/evals/transactions/transactions-14-gwei-to-wei.yaml
+    tags:
+      - ethevals
+      - transactions
+  assert:
+    - type: llm-rubric
+      value: '{{answer}}'
+      metric: execution
 
-    0x02f8720182031184773594008477359400809470997970c51812dc3a010c7d01b50e0d17dc79c8880de0b6b3a764000080c001a0ce18214ff9d06ecaacb61811f9d6dc2be922e8cebddeaf6df0b30d5c498f6d33a05f0487c6dbbf2139f7c705d8054dbb16ecac8ae6256ce2c4c6f2e7ef35b3a496
+- description: execution/transactions-15-intrinsic-gas
+  vars:
+    type: open
+    question: |-
+      A simple value-transfer transaction to an EOA carries this calldata:
+      0x0046be6100d30000677700c4000000960022ac00009f76123a0000e8001b00ec00b54500e699
 
-    Decode it. Reply with JSON only:
-    {"type": <transaction type as an integer>, "chainId": <integer>, "nonce": <integer>, "to": "<address>", "valueWei": <integer>, "maxFeePerGas": <integer, wei>, "maxPriorityFeePerGas": <integer, wei>, "from": "<the sender address, recovered from the signature>"}
-  answer: |
-    The response must give a JSON object matching {"type": 2, "chainId": 1, "nonce": 785, "to": "0x70997970C51812dc3A010C7d01b50e0d17dc79C8", "valueWei": 1000000000000000000, "maxFeePerGas": 2000000000, "maxPriorityFeePerGas": 2000000000, "from": "0xf39Fd6e51aad88F6F4ce6aB8827279cffFb92266"} (other keys may be present). Grade INCORRECT for these tempting wrong answers: `{"type": 2, "chainId": 1, "nonce": 785, "to": "0x70997970C51812dc3A010C7d01b50e0d17dc79C8", "valueWei": 1000000000000000000, "maxFeePerGas": 2000000000, "maxPriorityFeePerGas": 2000000000, "from": "0x70997970C51812dc3A010C7d01b50e0d17dc79C8"}`; `{"type": 2, "chainId": 1, "nonce": 311, "to": "0x70997970C51812dc3A010C7d01b50e0d17dc79C8", "valueWei": 1000000000000000000, "maxFeePerGas": 2000000000, "maxPriorityFeePerGas": 2000000000, "from": "0xf39Fd6e51aad88F6F4ce6aB8827279cffFb92266"}`
-  difficulty: reasoning
-  source: |-
-    https://github.com/austintgriffith/ethevals/blob/main/evals/transactions/transactions-21-decode-raw-tx.yaml
-  tags:
-  - ethevals
-  - transactions
-- id: transactions-22-legacy-v-chainid
-  type: open
-  question: |
-    A legacy (type 0) transaction carries v = 1811 in its signature. Which chain id was it signed for?
-    End your reply with a line of the form "Answer: <integer>".
-  answer: |
-    The response's final answer must be the integer 888 (decimal or the equivalent hex). Grade INCORRECT for these tempting wrong answers: `Answer: 1776`; `Answer: 905`; `Answer: 1811`
-  difficulty: reasoning
-  source: |-
-    https://github.com/austintgriffith/ethevals/blob/main/evals/transactions/transactions-22-legacy-v-chainid.yaml
-  tags:
-  - ethevals
-  - transactions
-- id: transactions-23-serialize-zero-tx
-  type: open
-  question: |
-    Serialize, unsigned and ready for hashing, an EIP-1559 transaction with these fields: chainId 1, nonce 0, maxPriorityFeePerGas 0, maxFeePerGas 0, gasLimit 0, to 0x70997970C51812dc3A010C7d01b50e0d17dc79C8, value 0, empty data, empty access list. Give the exact typed-envelope bytes as one hex string.
-    End your reply with a line of the form "Answer: 0x<hex>".
-  answer: |
-    The response's final answer must be exactly `0x02dd01808080809470997970c51812dc3a010c7d01b50e0d17dc79c88080c0` (case-insensitive). Grade INCORRECT for these tempting wrong answers: `Answer: 0x02e1010000000000009470997970c51812dc3a010c7d01b50e0d17dc79c8000000c0`; `Answer: 02dd01808080809470997970c51812dc3a010c7d01b50e0d17dc79c88080c0`
-  difficulty: reasoning
-  source: |-
-    https://github.com/austintgriffith/ethevals/blob/main/evals/transactions/transactions-23-serialize-zero-tx.yaml
-  tags:
-  - ethevals
-  - transactions
+      Using EIP-2028 calldata pricing (ignore the EIP-7623 floor and access lists), what is the transaction's intrinsic gas?
+
+      End your reply with a line of the form "Answer: <integer>".
+    answer: |-
+      The response's final answer must be the integer 21404 (decimal or the equivalent hex).
+  metadata:
+    section: execution
+    type: open
+    difficulty: reasoning
+    source: |-
+      https://github.com/austintgriffith/ethevals/blob/main/evals/transactions/transactions-15-intrinsic-gas.yaml
+    tags:
+      - ethevals
+      - transactions
+  assert:
+    - type: llm-rubric
+      value: '{{answer}}'
+      metric: execution
+
+- description: execution/transactions-16-create2-truncation
+  vars:
+    type: open
+    question: |-
+      In a CREATE2 derivation, keccak256(0xff ++ deployer ++ salt ++ keccak256(init_code)) evaluates to:
+      0xcae80d92883b9ab8ccd30dbb60fe96ffb50be955748dcc275be17314ff75a345
+
+      What address is the contract deployed at?
+
+      Answer with only the address (any casing).
+    answer: |-
+      The response's final answer must be exactly `0x60fe96ffb50be955748dcc275be17314ff75a345` (case-insensitive). Grade INCORRECT for these tempting wrong answers: `Answer: 0xcae80d92883b9ab8ccd30dbb60fe96ffb50be955748dcc275be17314ff75a345`
+  metadata:
+    section: execution
+    type: open
+    difficulty: reasoning
+    source: |-
+      https://github.com/austintgriffith/ethevals/blob/main/evals/transactions/transactions-16-create2-truncation.yaml
+    tags:
+      - ethevals
+      - transactions
+  assert:
+    - type: llm-rubric
+      value: '{{answer}}'
+      metric: execution
+
+- description: execution/transactions-21-decode-raw-tx
+  vars:
+    type: open
+    question: |-
+      A wallet is handed this signed raw transaction to broadcast:
+
+      0x02f8720182031184773594008477359400809470997970c51812dc3a010c7d01b50e0d17dc79c8880de0b6b3a764000080c001a0ce18214ff9d06ecaacb61811f9d6dc2be922e8cebddeaf6df0b30d5c498f6d33a05f0487c6dbbf2139f7c705d8054dbb16ecac8ae6256ce2c4c6f2e7ef35b3a496
+
+      Decode it. Reply with JSON only:
+      {"type": <transaction type as an integer>, "chainId": <integer>, "nonce": <integer>, "to": "<address>", "valueWei": <integer>, "maxFeePerGas": <integer, wei>, "maxPriorityFeePerGas": <integer, wei>, "from": "<the sender address, recovered from the signature>"}
+    answer: |-
+      The response must give a JSON object matching {"type": 2, "chainId": 1, "nonce": 785, "to": "0x70997970C51812dc3A010C7d01b50e0d17dc79C8", "valueWei": 1000000000000000000, "maxFeePerGas": 2000000000, "maxPriorityFeePerGas": 2000000000, "from": "0xf39Fd6e51aad88F6F4ce6aB8827279cffFb92266"} (other keys may be present). Grade INCORRECT for these tempting wrong answers: `{"type": 2, "chainId": 1, "nonce": 785, "to": "0x70997970C51812dc3A010C7d01b50e0d17dc79C8", "valueWei": 1000000000000000000, "maxFeePerGas": 2000000000, "maxPriorityFeePerGas": 2000000000, "from": "0x70997970C51812dc3A010C7d01b50e0d17dc79C8"}`; `{"type": 2, "chainId": 1, "nonce": 311, "to": "0x70997970C51812dc3A010C7d01b50e0d17dc79C8", "valueWei": 1000000000000000000, "maxFeePerGas": 2000000000, "maxPriorityFeePerGas": 2000000000, "from": "0xf39Fd6e51aad88F6F4ce6aB8827279cffFb92266"}`
+  metadata:
+    section: execution
+    type: open
+    difficulty: reasoning
+    source: |-
+      https://github.com/austintgriffith/ethevals/blob/main/evals/transactions/transactions-21-decode-raw-tx.yaml
+    tags:
+      - ethevals
+      - transactions
+  assert:
+    - type: llm-rubric
+      value: '{{answer}}'
+      metric: execution
+
+- description: execution/transactions-22-legacy-v-chainid
+  vars:
+    type: open
+    question: |-
+      A legacy (type 0) transaction carries v = 1811 in its signature. Which chain id was it signed for?
+      End your reply with a line of the form "Answer: <integer>".
+    answer: |-
+      The response's final answer must be the integer 888 (decimal or the equivalent hex). Grade INCORRECT for these tempting wrong answers: `Answer: 1776`; `Answer: 905`; `Answer: 1811`
+  metadata:
+    section: execution
+    type: open
+    difficulty: reasoning
+    source: |-
+      https://github.com/austintgriffith/ethevals/blob/main/evals/transactions/transactions-22-legacy-v-chainid.yaml
+    tags:
+      - ethevals
+      - transactions
+  assert:
+    - type: llm-rubric
+      value: '{{answer}}'
+      metric: execution
+
+- description: execution/transactions-23-serialize-zero-tx
+  vars:
+    type: open
+    question: |-
+      Serialize, unsigned and ready for hashing, an EIP-1559 transaction with these fields: chainId 1, nonce 0, maxPriorityFeePerGas 0, maxFeePerGas 0, gasLimit 0, to 0x70997970C51812dc3A010C7d01b50e0d17dc79C8, value 0, empty data, empty access list. Give the exact typed-envelope bytes as one hex string.
+      End your reply with a line of the form "Answer: 0x<hex>".
+    answer: |-
+      The response's final answer must be exactly `0x02dd01808080809470997970c51812dc3a010c7d01b50e0d17dc79c88080c0` (case-insensitive). Grade INCORRECT for these tempting wrong answers: `Answer: 0x02e1010000000000009470997970c51812dc3a010c7d01b50e0d17dc79c8000000c0`; `Answer: 02dd01808080809470997970c51812dc3a010c7d01b50e0d17dc79c88080c0`
+  metadata:
+    section: execution
+    type: open
+    difficulty: reasoning
+    source: |-
+      https://github.com/austintgriffith/ethevals/blob/main/evals/transactions/transactions-23-serialize-zero-tx.yaml
+    tags:
+      - ethevals
+      - transactions
+  assert:
+    - type: llm-rubric
+      value: '{{answer}}'
+      metric: execution

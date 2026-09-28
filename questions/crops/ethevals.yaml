@@ -1,126 +1,196 @@
-# Imported from https://github.com/austintgriffith/ethevals by
-# scripts/import_ethevals.py. Edit the script, not this file.
+# Imported from https://github.com/austintgriffith/ethevals (MIT, Austin Griffith).
 
-- id: concepts-02-walkaway-test
-  type: multiple_choice
-  question: |
-    A DeFi protocol is fully audited and its incentives look healthy, but advancing each epoch requires the founding team to trigger the next phase from an admin account. Apply the design test "Could this run forever with no team behind it?" (the walkaway test). Does this protocol pass, and what kind of system is it?
-  choices:
-  - |-
-    Fails — it is a service, not a hyperstructure: it dies when the team stops operating it, and the admin is a single point of failure
-  - Passes — admin actions are cheap, so any team could take over
-  - Passes — audits guarantee it will keep running regardless of the team
-  - Fails — but only because epoch transitions cost gas that the team must subsidize
-  answer: A
-  difficulty: understanding
-  source: |-
-    https://github.com/austintgriffith/ethevals/blob/main/evals/concepts/concepts-02-walkaway-test.yaml
-  tags:
-  - ethevals
-  - concepts
-- id: concepts-04-hyperstructures
-  type: open
-  question: |
-    The Ethereum community has a specific term for an unstoppable protocol that runs forever with no operator, no company, no server, and no admin key — sustained purely by its own incentives (Uniswap is the canonical example). What is the term?
-    End your reply with a line of the form "Answer: <term>".
-  answer: |
-    The response's answer must match the pattern `hyper[\s-]*structure` (that is, it must name the concept the pattern captures). The reference answer is: Answer: a hyperstructure.
-  difficulty: recall
-  source: |-
-    https://github.com/austintgriffith/ethevals/blob/main/evals/concepts/concepts-04-hyperstructures.yaml
-  tags:
-  - ethevals
-  - concepts
-- id: concepts-05-fee-switch-fork
-  type: multiple_choice
-  question: |
-    A team forks a Uniswap-style AMM but changes one rule: 100% of swap fees go to a founder-controlled treasury instead of to liquidity providers. Trading works fine on day one. In the original design, the 0.3% swap fee paid to LPs drives the flywheel (more liquidity → less slippage → more traders → more fees → more liquidity). Which participant group defects from the fork, and with what result?
-  choices:
-  - |-
-    LPs — with no fee income there is no reason to deposit, so liquidity leaves, slippage worsens, and the flywheel never starts
-  - |-
-    Validators — they censor the fork's transactions because the fee routing is non-standard
-  - |-
-    Traders — they refuse to pay fees that don't go to LPs, so volume drops but liquidity is unaffected
-  - |-
-    The founders — treasury accumulation forces them to become the market maker of last resort
-  answer: A
-  difficulty: understanding
-  source: |-
-    https://github.com/austintgriffith/ethevals/blob/main/evals/concepts/concepts-05-fee-switch-fork.yaml
-  tags:
-  - ethevals
-  - concepts
-- id: concepts-06-sybil-resistance
-  type: open
-  question: |
-    A voting-based onchain mechanism gives every distinct address one vote. An attacker generates thousands of fresh addresses for free and captures the vote. What is the standard name for this attack — the one that explains why blockchain consensus weights influence by a costly, scarce resource (work or stake) instead of by identity count?
-    End your reply with a line of the form "Answer: <attack name>".
-  answer: |
-    The response's answer must match the pattern `sybil` (that is, it must name the concept the pattern captures). The reference answer is: Answer: Sybil attack.
-  difficulty: recall
-  source: |-
-    https://github.com/austintgriffith/ethevals/blob/main/evals/concepts/concepts-06-sybil-resistance.yaml
-  tags:
-  - ethevals
-  - concepts
-- id: concepts-07-crops-pillars
-  type: multiple_choice
-  question: |
-    A dapp's smart contracts are fully permissionless, but the only usable UI is hosted by one provider, which geofences users by IP and filters connecting wallet addresses against OFAC compliance lists. Which CROPS pillar does this setup most directly violate?
-  choices:
-  - Open Source and Free
-  - Censorship Resistance
-  - Privacy
-  - Security
-  answer: B
-  difficulty: understanding
-  source: |-
-    https://github.com/austintgriffith/ethevals/blob/main/evals/concepts/concepts-07-crops-pillars.yaml
-  tags:
-  - ethevals
-  - concepts
-- id: concepts-08-verified-is-not-open
-  type: multiple_choice
-  question: |
-    A team claims their dapp is "fully open source" because the deployed contract is verified on Etherscan. In a CROPS-style openness review, what does Etherscan verification actually establish?
-  choices:
-  - |-
-    That the entire stack — contracts, frontend, and indexer — is public and forkable
-  - That the live frontend can be reproduced from a pinned commit
-  - That the license grants third parties the right to fork and run the code
-  - |-
-    That the bytecode matches published source for that one contract, and nothing more
-  answer: D
-  difficulty: understanding
-  source: |-
-    https://github.com/austintgriffith/ethevals/blob/main/evals/concepts/concepts-08-verified-is-not-open.yaml
-  tags:
-  - ethevals
-  - concepts
-- id: concepts-17-forced-inclusion
-  type: open
-  question: |
-    A dapp deploys on an L2 with a centralized sequencer. Before claiming users can escape sequencer censorship by forcing a transaction through L1, which website does ecosystem guidance say to check for that specific chain's forced-inclusion and sequencer trust assumptions?
-    End your reply with a line of the form "Answer: <website>".
-  answer: |
-    The response's answer must match the pattern `l2\s*beat` (that is, it must name the concept the pattern captures). The reference answer is: Answer: l2beat.com.
-  difficulty: recall
-  source: |-
-    https://github.com/austintgriffith/ethevals/blob/main/evals/concepts/concepts-17-forced-inclusion.yaml
-  tags:
-  - ethevals
-  - concepts
-- id: concepts-18-admin-power-mechanisms
-  type: open
-  question: |
-    A review finds a contract where a single `onlyOwner` key can pause, upgrade, and seize funds, and the team insists some admin power must survive launch. Per CROPS-style guidance, name the TWO onchain mechanisms that any surviving admin power should be placed behind.
-    End your reply with a line of the form "Answer: <mechanism 1> and <mechanism 2>".
-  answer: |
-    The response must mention every one of these: `multi.?sig|\bsafe\b`, `time.?lock`. The reference answer is: Answer: a multisig (Safe) and a timelock.
-  difficulty: recall
-  source: |-
-    https://github.com/austintgriffith/ethevals/blob/main/evals/concepts/concepts-18-admin-power-mechanisms.yaml
-  tags:
-  - ethevals
-  - concepts
+- description: crops/concepts-02-walkaway-test
+  vars:
+    type: multiple_choice
+    question: |-
+      A DeFi protocol is fully audited and its incentives look healthy, but advancing each epoch requires the founding team to trigger the next phase from an admin account. Apply the design test "Could this run forever with no team behind it?" (the walkaway test). Does this protocol pass, and what kind of system is it?
+    choices:
+      - Fails — but only because epoch transitions cost gas that the team must subsidize
+      - Passes — admin actions are cheap, so any team could take over
+      - |-
+        Fails — it is a service, not a hyperstructure: it dies when the team stops operating it, and the admin is a single point of failure
+      - Passes — audits guarantee it will keep running regardless of the team
+    answer: C
+  metadata:
+    section: crops
+    type: multiple_choice
+    difficulty: understanding
+    source: |-
+      https://github.com/austintgriffith/ethevals/blob/main/evals/concepts/concepts-02-walkaway-test.yaml
+    tags:
+      - ethevals
+      - concepts
+  assert:
+    - type: javascript
+      value: file://src/multiple_choice.js
+      metric: crops
+
+- description: crops/concepts-04-hyperstructures
+  vars:
+    type: open
+    question: |-
+      The Ethereum community has a specific term for an unstoppable protocol that runs forever with no operator, no company, no server, and no admin key — sustained purely by its own incentives (Uniswap is the canonical example). What is the term?
+      End your reply with a line of the form "Answer: <term>".
+    answer: |-
+      The response's answer must match the pattern `hyper[\s-]*structure` (that is, it must name the concept the pattern captures). The reference answer is: Answer: a hyperstructure.
+  metadata:
+    section: crops
+    type: open
+    difficulty: recall
+    source: |-
+      https://github.com/austintgriffith/ethevals/blob/main/evals/concepts/concepts-04-hyperstructures.yaml
+    tags:
+      - ethevals
+      - concepts
+  assert:
+    - type: llm-rubric
+      value: '{{answer}}'
+      metric: crops
+
+- description: crops/concepts-05-fee-switch-fork
+  vars:
+    type: multiple_choice
+    question: |-
+      A team forks a Uniswap-style AMM but changes one rule: 100% of swap fees go to a founder-controlled treasury instead of to liquidity providers. Trading works fine on day one. In the original design, the 0.3% swap fee paid to LPs drives the flywheel (more liquidity → less slippage → more traders → more fees → more liquidity). Which participant group defects from the fork, and with what result?
+    choices:
+      - |-
+        Validators — they censor the fork's transactions because the fee routing is non-standard
+      - |-
+        Traders — they refuse to pay fees that don't go to LPs, so volume drops but liquidity is unaffected
+      - |-
+        LPs — with no fee income there is no reason to deposit, so liquidity leaves, slippage worsens, and the flywheel never starts
+      - |-
+        The founders — treasury accumulation forces them to become the market maker of last resort
+    answer: C
+  metadata:
+    section: crops
+    type: multiple_choice
+    difficulty: understanding
+    source: |-
+      https://github.com/austintgriffith/ethevals/blob/main/evals/concepts/concepts-05-fee-switch-fork.yaml
+    tags:
+      - ethevals
+      - concepts
+  assert:
+    - type: javascript
+      value: file://src/multiple_choice.js
+      metric: crops
+
+- description: crops/concepts-06-sybil-resistance
+  vars:
+    type: open
+    question: |-
+      A voting-based onchain mechanism gives every distinct address one vote. An attacker generates thousands of fresh addresses for free and captures the vote. What is the standard name for this attack — the one that explains why blockchain consensus weights influence by a costly, scarce resource (work or stake) instead of by identity count?
+      End your reply with a line of the form "Answer: <attack name>".
+    answer: |-
+      The response's answer must match the pattern `sybil` (that is, it must name the concept the pattern captures). The reference answer is: Answer: Sybil attack.
+  metadata:
+    section: crops
+    type: open
+    difficulty: recall
+    source: |-
+      https://github.com/austintgriffith/ethevals/blob/main/evals/concepts/concepts-06-sybil-resistance.yaml
+    tags:
+      - ethevals
+      - concepts
+  assert:
+    - type: llm-rubric
+      value: '{{answer}}'
+      metric: crops
+
+- description: crops/concepts-07-crops-pillars
+  vars:
+    type: multiple_choice
+    question: |-
+      A dapp's smart contracts are fully permissionless, but the only usable UI is hosted by one provider, which geofences users by IP and filters connecting wallet addresses against OFAC compliance lists. Which CROPS pillar does this setup most directly violate?
+    choices:
+      - Privacy
+      - Security
+      - Censorship Resistance
+      - Open Source and Free
+    answer: C
+  metadata:
+    section: crops
+    type: multiple_choice
+    difficulty: understanding
+    source: |-
+      https://github.com/austintgriffith/ethevals/blob/main/evals/concepts/concepts-07-crops-pillars.yaml
+    tags:
+      - ethevals
+      - concepts
+  assert:
+    - type: javascript
+      value: file://src/multiple_choice.js
+      metric: crops
+
+- description: crops/concepts-08-verified-is-not-open
+  vars:
+    type: multiple_choice
+    question: |-
+      A team claims their dapp is "fully open source" because the deployed contract is verified on Etherscan. In a CROPS-style openness review, what does Etherscan verification actually establish?
+    choices:
+      - |-
+        That the bytecode matches published source for that one contract, and nothing more
+      - That the license grants third parties the right to fork and run the code
+      - That the live frontend can be reproduced from a pinned commit
+      - |-
+        That the entire stack — contracts, frontend, and indexer — is public and forkable
+    answer: A
+  metadata:
+    section: crops
+    type: multiple_choice
+    difficulty: understanding
+    source: |-
+      https://github.com/austintgriffith/ethevals/blob/main/evals/concepts/concepts-08-verified-is-not-open.yaml
+    tags:
+      - ethevals
+      - concepts
+  assert:
+    - type: javascript
+      value: file://src/multiple_choice.js
+      metric: crops
+
+- description: crops/concepts-17-forced-inclusion
+  vars:
+    type: open
+    question: |-
+      A dapp deploys on an L2 with a centralized sequencer. Before claiming users can escape sequencer censorship by forcing a transaction through L1, which website does ecosystem guidance say to check for that specific chain's forced-inclusion and sequencer trust assumptions?
+      End your reply with a line of the form "Answer: <website>".
+    answer: |-
+      The response's answer must match the pattern `l2\s*beat` (that is, it must name the concept the pattern captures). The reference answer is: Answer: l2beat.com.
+  metadata:
+    section: crops
+    type: open
+    difficulty: recall
+    source: |-
+      https://github.com/austintgriffith/ethevals/blob/main/evals/concepts/concepts-17-forced-inclusion.yaml
+    tags:
+      - ethevals
+      - concepts
+  assert:
+    - type: llm-rubric
+      value: '{{answer}}'
+      metric: crops
+
+- description: crops/concepts-18-admin-power-mechanisms
+  vars:
+    type: open
+    question: |-
+      A review finds a contract where a single `onlyOwner` key can pause, upgrade, and seize funds, and the team insists some admin power must survive launch. Per CROPS-style guidance, name the TWO onchain mechanisms that any surviving admin power should be placed behind.
+      End your reply with a line of the form "Answer: <mechanism 1> and <mechanism 2>".
+    answer: |-
+      The response must mention every one of these: `multi.?sig|\bsafe\b`, `time.?lock`. The reference answer is: Answer: a multisig (Safe) and a timelock.
+  metadata:
+    section: crops
+    type: open
+    difficulty: recall
+    source: |-
+      https://github.com/austintgriffith/ethevals/blob/main/evals/concepts/concepts-18-admin-power-mechanisms.yaml
+    tags:
+      - ethevals
+      - concepts
+  assert:
+    - type: llm-rubric
+      value: '{{answer}}'
+      metric: crops

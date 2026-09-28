@@ -1,608 +1,930 @@
-- id: consensus-slots-per-epoch
-  type: multiple_choice
-  question: |
-    How many slots are in one beacon chain epoch on Ethereum mainnet?
-  choices:
-    - 16
-    - 32
-    - 64
-    - 128
-  answer: B
-  difficulty: recall
-  source: https://github.com/ethereum/consensus-specs/blob/dev/specs/phase0/beacon-chain.md
+- description: consensus/consensus-slots-per-epoch
+  vars:
+    type: multiple_choice
+    question: How many slots are in one beacon chain epoch on Ethereum mainnet?
+    choices:
+      - '32'
+      - '64'
+      - '16'
+      - '128'
+    answer: A
+  metadata:
+    section: consensus
+    type: multiple_choice
+    difficulty: recall
+    source: |-
+      https://github.com/ethereum/consensus-specs/blob/dev/specs/phase0/beacon-chain.md
+  assert:
+    - type: javascript
+      value: file://src/multiple_choice.js
+      metric: consensus
 
-- id: consensus-fork-choice-head
-  type: multiple_choice
-  question: |
-    Which fork choice rule does the Ethereum beacon chain use to select the head
-    of the chain?
-  choices:
-    - Casper FFG
-    - LMD-GHOST
-    - Longest chain (Nakamoto consensus)
-    - GRANDPA
-  answer: B
-  difficulty: recall
-  source: https://github.com/ethereum/consensus-specs/blob/dev/specs/phase0/fork-choice.md
+- description: consensus/consensus-fork-choice-head
+  vars:
+    type: multiple_choice
+    question: |-
+      Which fork choice rule does the Ethereum beacon chain use to select the head
+      of the chain?
+    choices:
+      - Longest chain (Nakamoto consensus)
+      - GRANDPA
+      - LMD-GHOST
+      - Casper FFG
+    answer: C
+  metadata:
+    section: consensus
+    type: multiple_choice
+    difficulty: recall
+    source: https://github.com/ethereum/consensus-specs/blob/dev/specs/phase0/fork-choice.md
+  assert:
+    - type: javascript
+      value: file://src/multiple_choice.js
+      metric: consensus
 
-- id: consensus-justified-vs-finalized
-  type: open
-  question: |
-    What is the difference between a justified checkpoint and a finalized
-    checkpoint in Ethereum's consensus protocol?
-  answer: |
-    A checkpoint is justified when attestations from validators controlling at
-    least two thirds of the total active effective balance use it as their
-    target. A justified checkpoint becomes finalized when the checkpoint in the
-    next epoch is also justified with it as the source (the common case; the spec
-    also allows finalization across two epochs). Finalized means the protocol
-    considers it irreversible without at least one third of stake being slashed.
-    A complete answer must mention the two-thirds supermajority for justification
-    and that finalization requires a subsequent justified checkpoint building on
-    the justified one.
-  difficulty: understanding
-  source: https://github.com/ethereum/consensus-specs/blob/dev/specs/phase0/beacon-chain.md
+- description: consensus/consensus-justified-vs-finalized
+  vars:
+    type: open
+    question: |-
+      What is the difference between a justified checkpoint and a finalized
+      checkpoint in Ethereum's consensus protocol?
+    answer: |-
+      A checkpoint is justified when attestations from validators controlling at
+      least two thirds of the total active effective balance use it as their
+      target. A justified checkpoint becomes finalized when the checkpoint in the
+      next epoch is also justified with it as the source (the common case; the spec
+      also allows finalization across two epochs). Finalized means the protocol
+      considers it irreversible without at least one third of stake being slashed.
+      A complete answer must mention the two-thirds supermajority for justification
+      and that finalization requires a subsequent justified checkpoint building on
+      the justified one.
+  metadata:
+    section: consensus
+    type: open
+    difficulty: understanding
+    source: |-
+      https://github.com/ethereum/consensus-specs/blob/dev/specs/phase0/beacon-chain.md
+  assert:
+    - type: llm-rubric
+      value: '{{answer}}'
+      metric: consensus
 
-- id: consensus-inactivity-leak
-  type: open
-  question: |
-    What is the inactivity leak and why does it exist?
-  answer: |
-    When the chain has not finalized for more than four epochs, validators who
-    fail to attest correctly start losing balance at a rate that grows the longer
-    they stay inactive, while active validators are not penalized in the same way.
-    Its purpose is to restore liveness: if a large fraction of validators goes
-    offline, their stake shrinks until the remaining online validators control
-    two thirds of the active balance and can finalize again. A complete answer
-    must mention that it triggers when finality stalls and that it exists to
-    recover finality by reducing the balance of inactive validators.
-  difficulty: understanding
-  source: https://github.com/ethereum/consensus-specs/blob/dev/specs/phase0/beacon-chain.md
+- description: consensus/consensus-inactivity-leak
+  vars:
+    type: open
+    question: What is the inactivity leak and why does it exist?
+    answer: |-
+      When the chain has not finalized for more than four epochs, validators who
+      fail to attest correctly start losing balance at a rate that grows the longer
+      they stay inactive, while active validators are not penalized in the same way.
+      Its purpose is to restore liveness: if a large fraction of validators goes
+      offline, their stake shrinks until the remaining online validators control
+      two thirds of the active balance and can finalize again. A complete answer
+      must mention that it triggers when finality stalls and that it exists to
+      recover finality by reducing the balance of inactive validators.
+  metadata:
+    section: consensus
+    type: open
+    difficulty: understanding
+    source: |-
+      https://github.com/ethereum/consensus-specs/blob/dev/specs/phase0/beacon-chain.md
+  assert:
+    - type: llm-rubric
+      value: '{{answer}}'
+      metric: consensus
 
-- id: consensus-validator-duties
-  type: open
-  question: |
-    What duties does an Ethereum validator perform?
-  answer: |
-    A validator attests once per epoch, casting a vote for the chain head (used by
-    LMD-GHOST fork choice) and for the source and target checkpoints (used by
-    Casper FFG for justification and finality). When selected, it proposes a block
-    for its slot, including an execution payload it either built locally or
-    obtained from a builder. Some validators are chosen to aggregate attestations
-    for their committee, and a small rotating sync committee signs block headers so
-    light clients can follow the chain. A complete answer must mention attesting
-    and proposing blocks; aggregation and sync committee duties are a bonus.
-  difficulty: understanding
-  source: https://github.com/ethereum/consensus-specs/blob/dev/specs/phase0/validator.md
+- description: consensus/consensus-validator-duties
+  vars:
+    type: open
+    question: What duties does an Ethereum validator perform?
+    answer: |-
+      A validator attests once per epoch, casting a vote for the chain head (used by
+      LMD-GHOST fork choice) and for the source and target checkpoints (used by
+      Casper FFG for justification and finality). When selected, it proposes a block
+      for its slot, including an execution payload it either built locally or
+      obtained from a builder. Some validators are chosen to aggregate attestations
+      for their committee, and a small rotating sync committee signs block headers so
+      light clients can follow the chain. A complete answer must mention attesting
+      and proposing blocks; aggregation and sync committee duties are a bonus.
+  metadata:
+    section: consensus
+    type: open
+    difficulty: understanding
+    source: https://github.com/ethereum/consensus-specs/blob/dev/specs/phase0/validator.md
+  assert:
+    - type: llm-rubric
+      value: '{{answer}}'
+      metric: consensus
 
-- id: consensus-compounding-max-effective-balance
-  type: multiple_choice
-  question: |
-    What is the maximum effective balance of a validator with compounding (0x02)
-    withdrawal credentials?
-  choices:
-    - 32 ETH
-    - 64 ETH
-    - 2048 ETH
-    - 4096 ETH
-  answer: C
-  difficulty: recall
-  source: https://github.com/ethereum/consensus-specs/blob/master/specs/electra/beacon-chain.md
+- description: consensus/consensus-compounding-max-effective-balance
+  vars:
+    type: multiple_choice
+    question: |-
+      What is the maximum effective balance of a validator with compounding (0x02)
+      withdrawal credentials?
+    choices:
+      - 4096 ETH
+      - 32 ETH
+      - 2048 ETH
+      - 64 ETH
+    answer: C
+  metadata:
+    section: consensus
+    type: multiple_choice
+    difficulty: recall
+    source: |-
+      https://github.com/ethereum/consensus-specs/blob/master/specs/electra/beacon-chain.md
+  assert:
+    - type: javascript
+      value: file://src/multiple_choice.js
+      metric: consensus
 
-- id: consensus-electra-deposit-processing
-  type: open
-  question: |
-    How did the Electra upgrade change the way deposits are processed on the
-    beacon chain?
-  answer: |
-    Two changes. First, with EIP-6110 deposits are delivered in-protocol as
-    execution layer requests carried in the execution payload, replacing the old
-    Eth1 data voting mechanism and its long follow-distance delay. Second, with
-    EIP-7251 deposits are no longer applied immediately: they are appended to a
-    pending deposits queue in the beacon state and processed each epoch subject
-    to a churn limit, which is what allows balance top-ups and new validators to
-    be rate-limited consistently. A complete answer must mention that deposits
-    now come from the execution layer directly (EIP-6110) and go through a
-    pending deposit queue rather than being applied at once.
-  difficulty: reasoning
-  source: https://github.com/ethereum/consensus-specs/blob/master/specs/electra/beacon-chain.md
+- description: consensus/consensus-electra-deposit-processing
+  vars:
+    type: open
+    question: |-
+      How did the Electra upgrade change the way deposits are processed on the
+      beacon chain?
+    answer: |-
+      Two changes. First, with EIP-6110 deposits are delivered in-protocol as
+      execution layer requests carried in the execution payload, replacing the old
+      Eth1 data voting mechanism and its long follow-distance delay. Second, with
+      EIP-7251 deposits are no longer applied immediately: they are appended to a
+      pending deposits queue in the beacon state and processed each epoch subject
+      to a churn limit, which is what allows balance top-ups and new validators to
+      be rate-limited consistently. A complete answer must mention that deposits
+      now come from the execution layer directly (EIP-6110) and go through a
+      pending deposit queue rather than being applied at once.
+  metadata:
+    section: consensus
+    type: open
+    difficulty: reasoning
+    source: |-
+      https://github.com/ethereum/consensus-specs/blob/master/specs/electra/beacon-chain.md
+  assert:
+    - type: llm-rubric
+      value: '{{answer}}'
+      metric: consensus
 
-- id: consensus-weak-subjectivity-period
-  type: open
-  question: |
-    What is the weak subjectivity period, and what determines its length?
-  answer: |
-    It is the window of recent epochs within which a node syncing from a trusted
-    finalized checkpoint is safe. If the checkpoint is older than this, an
-    attacker who controlled enough stake in the past could have exited and then
-    finalized a conflicting chain without being slashable, because the exited
-    validators are no longer accountable. Its length is computed from the active
-    validator count, average validator balance, the validator churn limit, and a
-    safety decay parameter (how much of the one-third safety margin may erode),
-    with MIN_VALIDATOR_WITHDRAWABILITY_DELAY as a floor. It works out to a few
-    days to a couple of weeks on mainnet. A complete answer must explain it as
-    how old a trusted checkpoint may be before exited validators could have
-    finalized a conflicting chain unslashably, and mention that churn and validator
-    set size drive its length.
-  difficulty: reasoning
-  source: https://github.com/ethereum/consensus-specs/blob/master/specs/phase0/weak-subjectivity.md
+- description: consensus/consensus-weak-subjectivity-period
+  vars:
+    type: open
+    question: What is the weak subjectivity period, and what determines its length?
+    answer: |-
+      It is the window of recent epochs within which a node syncing from a trusted
+      finalized checkpoint is safe. If the checkpoint is older than this, an
+      attacker who controlled enough stake in the past could have exited and then
+      finalized a conflicting chain without being slashable, because the exited
+      validators are no longer accountable. Its length is computed from the active
+      validator count, average validator balance, the validator churn limit, and a
+      safety decay parameter (how much of the one-third safety margin may erode),
+      with MIN_VALIDATOR_WITHDRAWABILITY_DELAY as a floor. It works out to a few
+      days to a couple of weeks on mainnet. A complete answer must explain it as
+      how old a trusted checkpoint may be before exited validators could have
+      finalized a conflicting chain unslashably, and mention that churn and validator
+      set size drive its length.
+  metadata:
+    section: consensus
+    type: open
+    difficulty: reasoning
+    source: |-
+      https://github.com/ethereum/consensus-specs/blob/master/specs/phase0/weak-subjectivity.md
+  assert:
+    - type: llm-rubric
+      value: '{{answer}}'
+      metric: consensus
 
-- id: consensus-slashable-attestation-conditions
-  type: open
-  question: |
-    Under what conditions can a validator be slashed for its attestations?
-  answer: |
-    Two attestation offences are slashable. A double vote: signing two different
-    attestations with the same target epoch but different data (for example
-    different target roots). A surround vote: signing an attestation whose
-    source and target span strictly around another of the validator's
-    attestations, or is spanned by one (source1 < source2 and target2 <
-    target1). Separately, a proposer is slashed for signing two different
-    beacon blocks for the same slot. A complete answer must name both the double
-    vote (same target epoch, different data) and the surround vote.
-  difficulty: understanding
-  source: https://github.com/ethereum/consensus-specs/blob/dev/specs/phase0/beacon-chain.md
+- description: consensus/consensus-slashable-attestation-conditions
+  vars:
+    type: open
+    question: Under what conditions can a validator be slashed for its attestations?
+    answer: |-
+      Two attestation offences are slashable. A double vote: signing two different
+      attestations with the same target epoch but different data (for example
+      different target roots). A surround vote: signing an attestation whose
+      source and target span strictly around another of the validator's
+      attestations, or is spanned by one (source1 < source2 and target2 <
+      target1). Separately, a proposer is slashed for signing two different
+      beacon blocks for the same slot. A complete answer must name both the double
+      vote (same target epoch, different data) and the surround vote.
+  metadata:
+    section: consensus
+    type: open
+    difficulty: understanding
+    source: |-
+      https://github.com/ethereum/consensus-specs/blob/dev/specs/phase0/beacon-chain.md
+  assert:
+    - type: llm-rubric
+      value: '{{answer}}'
+      metric: consensus
 
-- id: consensus-electra-initial-slashing-penalty
-  type: multiple_choice
-  question: |
-    Since Electra, what fraction of a validator's effective balance is burned as
-    the initial penalty when it is slashed (before any correlation penalty)?
-  choices:
-    - 1/32
-    - 1/64
-    - 1/128
-    - 1/4096
-  answer: D
-  difficulty: recall
-  source: https://github.com/ethereum/consensus-specs/blob/dev/specs/electra/beacon-chain.md
+- description: consensus/consensus-electra-initial-slashing-penalty
+  vars:
+    type: multiple_choice
+    question: |-
+      Since Electra, what fraction of a validator's effective balance is burned as
+      the initial penalty when it is slashed (before any correlation penalty)?
+    choices:
+      - 1/64
+      - 1/128
+      - 1/4096
+      - 1/32
+    answer: C
+  metadata:
+    section: consensus
+    type: multiple_choice
+    difficulty: recall
+    source: |-
+      https://github.com/ethereum/consensus-specs/blob/dev/specs/electra/beacon-chain.md
+  assert:
+    - type: javascript
+      value: file://src/multiple_choice.js
+      metric: consensus
 
-- id: consensus-effective-balance-hysteresis
-  type: multiple_choice
-  question: |
-    A validator with compounding (0x02) credentials has an effective balance of
-    32 ETH. Because of hysteresis, its actual balance must exceed which value
-    before its effective balance rises to 33 ETH?
-  choices:
-    - 33.00 ETH
-    - 33.25 ETH
-    - 32.25 ETH
-    - 33.50 ETH
-  answer: B
-  difficulty: reasoning
-  source: https://github.com/ethereum/consensus-specs/blob/dev/specs/phase0/beacon-chain.md
+- description: consensus/consensus-effective-balance-hysteresis
+  vars:
+    type: multiple_choice
+    question: |-
+      A validator with compounding (0x02) credentials has an effective balance of
+      32 ETH. Because of hysteresis, its actual balance must exceed which value
+      before its effective balance rises to 33 ETH?
+    choices:
+      - 33.50 ETH
+      - 32.25 ETH
+      - 33.25 ETH
+      - 33.00 ETH
+    answer: C
+  metadata:
+    section: consensus
+    type: multiple_choice
+    difficulty: reasoning
+    source: |-
+      https://github.com/ethereum/consensus-specs/blob/dev/specs/phase0/beacon-chain.md
+  assert:
+    - type: javascript
+      value: file://src/multiple_choice.js
+      metric: consensus
 
-- id: consensus-randao-bias
-  type: open
-  question: |
-    How much influence does a block proposer have over the beacon chain's
-    RANDAO output, and why is it so limited?
-  answer: |
-    Very little: essentially one bit per block. The proposer's randao_reveal is
-    a BLS signature over the epoch number with the validator's key, so its value
-    is deterministic and the proposer cannot choose it; the only choice is to
-    publish the block (mixing the reveal in) or withhold it (losing the proposal
-    reward and leaving the mix unchanged). A proposer controlling the last k
-    consecutive slots of an epoch can therefore pick among 2^k outcomes for the
-    seed that will be used one epoch later (MIN_SEED_LOOKAHEAD). A complete
-    answer must say the reveal is a deterministic signature so the proposer can
-    only choose whether to publish, giving about one bit of bias per block.
-  difficulty: reasoning
-  source: https://github.com/ethereum/consensus-specs/blob/dev/specs/phase0/beacon-chain.md
+- description: consensus/consensus-randao-bias
+  vars:
+    type: open
+    question: |-
+      How much influence does a block proposer have over the beacon chain's
+      RANDAO output, and why is it so limited?
+    answer: |-
+      Very little: essentially one bit per block. The proposer's randao_reveal is
+      a BLS signature over the epoch number with the validator's key, so its value
+      is deterministic and the proposer cannot choose it; the only choice is to
+      publish the block (mixing the reveal in) or withhold it (losing the proposal
+      reward and leaving the mix unchanged). A proposer controlling the last k
+      consecutive slots of an epoch can therefore pick among 2^k outcomes for the
+      seed that will be used one epoch later (MIN_SEED_LOOKAHEAD). A complete
+      answer must say the reveal is a deterministic signature so the proposer can
+      only choose whether to publish, giving about one bit of bias per block.
+  metadata:
+    section: consensus
+    type: open
+    difficulty: reasoning
+    source: |-
+      https://github.com/ethereum/consensus-specs/blob/dev/specs/phase0/beacon-chain.md
+  assert:
+    - type: llm-rubric
+      value: '{{answer}}'
+      metric: consensus
 
-- id: consensus-issuance-sqrt-scaling
-  type: multiple_choice
-  question: |
-    Suppose the total ETH staked on the beacon chain quadruples while
-    everything else stays the same. Under the beacon chain's reward formula,
-    what happens to total issuance per epoch and to the reward earned by one
-    32 ETH validator?
-  choices:
-    - Total issuance doubles; the per-validator reward halves
-    - Total issuance quadruples; the per-validator reward is unchanged
-    - Total issuance is unchanged; the per-validator reward falls to a quarter
-    - Total issuance and the per-validator reward both quadruple
-  answer: A
-  difficulty: reasoning
-  source: https://github.com/ethereum/consensus-specs/blob/dev/specs/altair/beacon-chain.md
+- description: consensus/consensus-issuance-sqrt-scaling
+  vars:
+    type: multiple_choice
+    question: |-
+      Suppose the total ETH staked on the beacon chain quadruples while
+      everything else stays the same. Under the beacon chain's reward formula,
+      what happens to total issuance per epoch and to the reward earned by one
+      32 ETH validator?
+    choices:
+      - Total issuance and the per-validator reward both quadruple
+      - Total issuance doubles; the per-validator reward halves
+      - Total issuance quadruples; the per-validator reward is unchanged
+      - Total issuance is unchanged; the per-validator reward falls to a quarter
+    answer: B
+  metadata:
+    section: consensus
+    type: multiple_choice
+    difficulty: reasoning
+    source: |-
+      https://github.com/ethereum/consensus-specs/blob/dev/specs/altair/beacon-chain.md
+  assert:
+    - type: javascript
+      value: file://src/multiple_choice.js
+      metric: consensus
 
-- id: consensus-sync-committee-size-period
-  type: multiple_choice
-  question: |
-    How large is a sync committee and how long does each one serve?
-  choices:
-    - 512 validators for 256 epochs (about 27 hours)
-    - 512 validators for 32 epochs (about 3.4 hours)
-    - 1024 validators for 256 epochs (about 27 hours)
-    - 128 validators for 256 epochs (about 27 hours)
-  answer: A
-  difficulty: recall
-  source: https://github.com/ethereum/consensus-specs/blob/dev/specs/altair/beacon-chain.md
+- description: consensus/consensus-sync-committee-size-period
+  vars:
+    type: multiple_choice
+    question: How large is a sync committee and how long does each one serve?
+    choices:
+      - 512 validators for 32 epochs (about 3.4 hours)
+      - 512 validators for 256 epochs (about 27 hours)
+      - 128 validators for 256 epochs (about 27 hours)
+      - 1024 validators for 256 epochs (about 27 hours)
+    answer: B
+  metadata:
+    section: consensus
+    type: multiple_choice
+    difficulty: recall
+    source: |-
+      https://github.com/ethereum/consensus-specs/blob/dev/specs/altair/beacon-chain.md
+  assert:
+    - type: javascript
+      value: file://src/multiple_choice.js
+      metric: consensus
 
-- id: consensus-largest-reward-weight
-  type: multiple_choice
-  question: |
-    Of the reward components a validator can earn each epoch, which carries the
-    largest weight in the Altair reward formula?
-  choices:
-    - Timely source vote
-    - Timely target vote
-    - Timely head vote
-    - Block proposal
-  answer: B
-  difficulty: recall
-  source: https://github.com/ethereum/consensus-specs/blob/dev/specs/altair/beacon-chain.md
+- description: consensus/consensus-largest-reward-weight
+  vars:
+    type: multiple_choice
+    question: |-
+      Of the reward components a validator can earn each epoch, which carries the
+      largest weight in the Altair reward formula?
+    choices:
+      - Timely head vote
+      - Block proposal
+      - Timely source vote
+      - Timely target vote
+    answer: D
+  metadata:
+    section: consensus
+    type: multiple_choice
+    difficulty: recall
+    source: |-
+      https://github.com/ethereum/consensus-specs/blob/dev/specs/altair/beacon-chain.md
+  assert:
+    - type: javascript
+      value: file://src/multiple_choice.js
+      metric: consensus
 
-- id: consensus-deneb-attestation-inclusion-window
-  type: open
-  question: |
-    How did the Deneb upgrade (EIP-7045) change how late an attestation can be
-    included in a block, and why?
-  answer: |
-    Before Deneb an attestation could be included only within 32 slots of the
-    slot it attested to. Deneb removed that rolling upper bound: an attestation
-    can now be included in any block up to the end of the epoch after the one it
-    was made in, as long as its target is the current or previous epoch, and
-    such late attestations still earn the target reward. The change was made
-    because the LMD-GHOST security analysis and the confirmation rule (fast
-    block confirmation in a few slots) rely on votes from a whole epoch being
-    includable through the following epoch. A complete answer must say the
-    window became "through the end of the next epoch" instead of a fixed 32
-    slots, and connect it to fork choice security or the confirmation rule.
-  difficulty: understanding
-  source: https://eips.ethereum.org/EIPS/eip-7045
+- description: consensus/consensus-deneb-attestation-inclusion-window
+  vars:
+    type: open
+    question: |-
+      How did the Deneb upgrade (EIP-7045) change how late an attestation can be
+      included in a block, and why?
+    answer: |-
+      Before Deneb an attestation could be included only within 32 slots of the
+      slot it attested to. Deneb removed that rolling upper bound: an attestation
+      can now be included in any block up to the end of the epoch after the one it
+      was made in, as long as its target is the current or previous epoch, and
+      such late attestations still earn the target reward. The change was made
+      because the LMD-GHOST security analysis and the confirmation rule (fast
+      block confirmation in a few slots) rely on votes from a whole epoch being
+      includable through the following epoch. A complete answer must say the
+      window became "through the end of the next epoch" instead of a fixed 32
+      slots, and connect it to fork choice security or the confirmation rule.
+  metadata:
+    section: consensus
+    type: open
+    difficulty: understanding
+    source: https://eips.ethereum.org/EIPS/eip-7045
+  assert:
+    - type: llm-rubric
+      value: '{{answer}}'
+      metric: consensus
 
-- id: consensus-peerdas-custody-minimum
-  type: multiple_choice
-  question: |
-    Under PeerDAS (Fulu), the extended blob data is divided into 128 custody
-    groups. What is the minimum number of groups an honest full node without
-    validators must custody and serve?
-  choices:
-    - 4
-    - 8
-    - 16
-    - 64
-  answer: A
-  difficulty: recall
-  source: https://github.com/ethereum/consensus-specs/blob/dev/specs/fulu/das-core.md
+- description: consensus/consensus-peerdas-custody-minimum
+  vars:
+    type: multiple_choice
+    question: |-
+      Under PeerDAS (Fulu), the extended blob data is divided into 128 custody
+      groups. What is the minimum number of groups an honest full node without
+      validators must custody and serve?
+    choices:
+      - '64'
+      - '8'
+      - '16'
+      - '4'
+    answer: D
+  metadata:
+    section: consensus
+    type: multiple_choice
+    difficulty: recall
+    source: https://github.com/ethereum/consensus-specs/blob/dev/specs/fulu/das-core.md
+  assert:
+    - type: javascript
+      value: file://src/multiple_choice.js
+      metric: consensus
 
-- id: consensus-exit-vs-slashed-withdrawability
-  type: open
-  question: |
-    Compare how long a validator waits between its exit epoch and becoming
-    withdrawable when it exits voluntarily versus when it is slashed. What
-    happens partway through the slashed validator's wait?
-  answer: |
-    A voluntarily exited validator becomes withdrawable
-    MIN_VALIDATOR_WITHDRAWABILITY_DELAY = 256 epochs (about 27 hours) after its
-    exit epoch. A slashed validator's withdrawable epoch is pushed out to
-    EPOCHS_PER_SLASHINGS_VECTOR = 8192 epochs (about 36 days) after slashing.
-    Halfway through that period (4096 epochs) the correlation penalty is applied:
-    a further loss proportional to the total balance slashed across the network
-    in the surrounding 36-day window, scaled by the proportional slashing
-    multiplier, so slashings that many validators suffer at once are punished
-    far more heavily than an isolated one. A complete answer must give roughly
-    27 hours (256 epochs) versus roughly 36 days (8192 epochs) and mention the
-    correlation penalty applied during the slashed validator's wait.
-  difficulty: reasoning
-  source: https://github.com/ethereum/consensus-specs/blob/dev/specs/phase0/beacon-chain.md
+- description: consensus/consensus-exit-vs-slashed-withdrawability
+  vars:
+    type: open
+    question: |-
+      Compare how long a validator waits between its exit epoch and becoming
+      withdrawable when it exits voluntarily versus when it is slashed. What
+      happens partway through the slashed validator's wait?
+    answer: |-
+      A voluntarily exited validator becomes withdrawable
+      MIN_VALIDATOR_WITHDRAWABILITY_DELAY = 256 epochs (about 27 hours) after its
+      exit epoch. A slashed validator's withdrawable epoch is pushed out to
+      EPOCHS_PER_SLASHINGS_VECTOR = 8192 epochs (about 36 days) after slashing.
+      Halfway through that period (4096 epochs) the correlation penalty is applied:
+      a further loss proportional to the total balance slashed across the network
+      in the surrounding 36-day window, scaled by the proportional slashing
+      multiplier, so slashings that many validators suffer at once are punished
+      far more heavily than an isolated one. A complete answer must give roughly
+      27 hours (256 epochs) versus roughly 36 days (8192 epochs) and mention the
+      correlation penalty applied during the slashed validator's wait.
+  metadata:
+    section: consensus
+    type: open
+    difficulty: reasoning
+    source: |-
+      https://github.com/ethereum/consensus-specs/blob/dev/specs/phase0/beacon-chain.md
+  assert:
+    - type: llm-rubric
+      value: '{{answer}}'
+      metric: consensus
 
-- id: consensus-proposer-selection-weighting
-  type: multiple_choice
-  question: |
-    How does a validator's effective balance affect its chance of being chosen
-    as the block proposer for a slot?
-  choices:
-    - The probability is proportional to its effective balance
-    - Every active validator has an equal probability regardless of balance
-    - Only validators with the maximum effective balance can be selected
-    - The probability is proportional to the square root of its effective balance
-  answer: A
-  difficulty: understanding
-  source: https://github.com/ethereum/consensus-specs/blob/dev/specs/phase0/beacon-chain.md
+- description: consensus/consensus-proposer-selection-weighting
+  vars:
+    type: multiple_choice
+    question: |-
+      How does a validator's effective balance affect its chance of being chosen
+      as the block proposer for a slot?
+    choices:
+      - Every active validator has an equal probability regardless of balance
+      - Only validators with the maximum effective balance can be selected
+      - The probability is proportional to the square root of its effective balance
+      - The probability is proportional to its effective balance
+    answer: D
+  metadata:
+    section: consensus
+    type: multiple_choice
+    difficulty: understanding
+    source: |-
+      https://github.com/ethereum/consensus-specs/blob/dev/specs/phase0/beacon-chain.md
+  assert:
+    - type: javascript
+      value: file://src/multiple_choice.js
+      metric: consensus
 
-- id: consensus-aggregator-selection
-  type: multiple_choice
-  question: |
-    How does a validator learn that it has been selected as an attestation
-    aggregator for its committee in a slot, and roughly how many aggregators
-    does each committee have?
-  choices:
-    - It signs the slot with its key and checks the signature's hash modulo a target; about 16 aggregators per committee are expected
-    - The block proposer for the slot appoints aggregators in the block body; exactly one per committee
-    - The beacon state lists aggregators for each slot, computed from RANDAO; exactly 4 per committee
-    - Every committee member aggregates; there is no selection
-  answer: A
-  difficulty: understanding
-  source: https://github.com/ethereum/consensus-specs/blob/dev/specs/phase0/validator.md
+- description: consensus/consensus-aggregator-selection
+  vars:
+    type: multiple_choice
+    question: |-
+      How does a validator learn that it has been selected as an attestation
+      aggregator for its committee in a slot, and roughly how many aggregators
+      does each committee have?
+    choices:
+      - Every committee member aggregates; there is no selection
+      - |-
+        It signs the slot with its key and checks the signature's hash modulo a target; about 16 aggregators per committee are expected
+      - |-
+        The beacon state lists aggregators for each slot, computed from RANDAO; exactly 4 per committee
+      - |-
+        The block proposer for the slot appoints aggregators in the block body; exactly one per committee
+    answer: B
+  metadata:
+    section: consensus
+    type: multiple_choice
+    difficulty: understanding
+    source: https://github.com/ethereum/consensus-specs/blob/dev/specs/phase0/validator.md
+  assert:
+    - type: javascript
+      value: file://src/multiple_choice.js
+      metric: consensus
 
-- id: consensus-proposer-boost
-  type: multiple_choice
-  question: |
-    In the beacon chain fork choice, a block that arrives on time receives a
-    temporary "proposer boost". How large is it?
-  choices:
-    - Equivalent to 40% of the total attesting weight of one committee slot
-    - Equivalent to 100% of one slot's committee weight
-    - Equivalent to 10% of one slot's committee weight
-    - A fixed 32 ETH of weight
-  answer: A
-  difficulty: recall
-  source: https://github.com/ethereum/consensus-specs/blob/dev/specs/phase0/fork-choice.md
+- description: consensus/consensus-proposer-boost
+  vars:
+    type: multiple_choice
+    question: |-
+      In the beacon chain fork choice, a block that arrives on time receives a
+      temporary "proposer boost". How large is it?
+    choices:
+      - A fixed 32 ETH of weight
+      - Equivalent to 10% of one slot's committee weight
+      - Equivalent to 100% of one slot's committee weight
+      - Equivalent to 40% of the total attesting weight of one committee slot
+    answer: D
+  metadata:
+    section: consensus
+    type: multiple_choice
+    difficulty: recall
+    source: https://github.com/ethereum/consensus-specs/blob/dev/specs/phase0/fork-choice.md
+  assert:
+    - type: javascript
+      value: file://src/multiple_choice.js
+      metric: consensus
 
-- id: consensus-electra-activation-churn
-  type: multiple_choice
-  question: |
-    Since Electra, the activation and exit churn limits are denominated in ETH
-    rather than validator count. What is the maximum amount of ETH that can be
-    activated per epoch?
-  choices:
-    - 256 ETH
-    - 128 ETH
-    - 8 validators' worth (256 ETH at 32 ETH each, but counted per validator)
-    - 2048 ETH
-  answer: A
-  difficulty: recall
-  source: https://github.com/ethereum/consensus-specs/blob/dev/specs/electra/beacon-chain.md
+- description: consensus/consensus-electra-activation-churn
+  vars:
+    type: multiple_choice
+    question: |-
+      Since Electra, the activation and exit churn limits are denominated in ETH
+      rather than validator count. What is the maximum amount of ETH that can be
+      activated per epoch?
+    choices:
+      - 2048 ETH
+      - 8 validators' worth (256 ETH at 32 ETH each, but counted per validator)
+      - 128 ETH
+      - 256 ETH
+    answer: D
+  metadata:
+    section: consensus
+    type: multiple_choice
+    difficulty: recall
+    source: |-
+      https://github.com/ethereum/consensus-specs/blob/dev/specs/electra/beacon-chain.md
+  assert:
+    - type: javascript
+      value: file://src/multiple_choice.js
+      metric: consensus
 
-- id: consensus-whistleblower-reward
-  type: open
-  question: |
-    When a slashing is included in a block, who is rewarded and how is the
-    reward computed after Electra?
-  answer: |
-    The slashed validator loses an initial penalty (effective balance divided
-    by MIN_SLASHING_PENALTY_QUOTIENT_ELECTRA = 4096). Separately, a
-    whistleblower reward of effective balance divided by
-    WHISTLEBLOWER_REWARD_QUOTIENT_ELECTRA = 4096 is paid: the block proposer
-    who includes the slashing receives PROPOSER_WEIGHT / WEIGHT_DENOMINATOR
-    (8/64, one eighth) of it and the whistleblower receives the rest. In
-    practice the spec sets the whistleblower to the proposer when none is
-    specified, so the proposer collects the whole reward, which is why
-    including slashings is profitable for proposers. A complete answer must say
-    the proposer including the slashing is rewarded with a share of a
-    whistleblower reward proportional to the slashed validator's effective
-    balance (1/4096 after Electra), and that in practice the proposer receives
-    it all.
-  difficulty: understanding
-  source: https://github.com/ethereum/consensus-specs/blob/dev/specs/electra/beacon-chain.md
+- description: consensus/consensus-whistleblower-reward
+  vars:
+    type: open
+    question: |-
+      When a slashing is included in a block, who is rewarded and how is the
+      reward computed after Electra?
+    answer: |-
+      The slashed validator loses an initial penalty (effective balance divided
+      by MIN_SLASHING_PENALTY_QUOTIENT_ELECTRA = 4096). Separately, a
+      whistleblower reward of effective balance divided by
+      WHISTLEBLOWER_REWARD_QUOTIENT_ELECTRA = 4096 is paid: the block proposer
+      who includes the slashing receives PROPOSER_WEIGHT / WEIGHT_DENOMINATOR
+      (8/64, one eighth) of it and the whistleblower receives the rest. In
+      practice the spec sets the whistleblower to the proposer when none is
+      specified, so the proposer collects the whole reward, which is why
+      including slashings is profitable for proposers. A complete answer must say
+      the proposer including the slashing is rewarded with a share of a
+      whistleblower reward proportional to the slashed validator's effective
+      balance (1/4096 after Electra), and that in practice the proposer receives
+      it all.
+  metadata:
+    section: consensus
+    type: open
+    difficulty: understanding
+    source: |-
+      https://github.com/ethereum/consensus-specs/blob/dev/specs/electra/beacon-chain.md
+  assert:
+    - type: llm-rubric
+      value: '{{answer}}'
+      metric: consensus
 
-- id: consensus-inactivity-leak-quadratic
-  type: open
-  question: |
-    Why does a validator's balance loss during an inactivity leak grow
-    quadratically with time rather than linearly?
-  answer: |
-    Each validator has an inactivity score. During a leak (no finality for more
-    than four epochs) the score rises by INACTIVITY_SCORE_BIAS = 4 for every
-    epoch the validator misses its target vote, and only falls by 1 per epoch
-    when it participates (and only outside a leak). The per-epoch inactivity
-    penalty is effective balance times the current inactivity score, divided
-    by INACTIVITY_SCORE_BIAS times INACTIVITY_PENALTY_QUOTIENT_BELLATRIX
-    (2^24). Because the per-epoch penalty is itself proportional to a score that
-    grows linearly with time offline, the cumulative loss is quadratic. This
-    makes sustained non-participation increasingly expensive so that stake of
-    offline validators drains fast enough for the remaining validators to
-    regain a two-thirds majority and finalize. A complete answer must say the
-    penalty each epoch scales with an inactivity score that accumulates while
-    offline, so total loss is quadratic, and mention the goal of restoring
-    finality.
-  difficulty: reasoning
-  source: https://github.com/ethereum/consensus-specs/blob/dev/specs/altair/beacon-chain.md
+- description: consensus/consensus-inactivity-leak-quadratic
+  vars:
+    type: open
+    question: |-
+      Why does a validator's balance loss during an inactivity leak grow
+      quadratically with time rather than linearly?
+    answer: |-
+      Each validator has an inactivity score. During a leak (no finality for more
+      than four epochs) the score rises by INACTIVITY_SCORE_BIAS = 4 for every
+      epoch the validator misses its target vote, and only falls by 1 per epoch
+      when it participates (and only outside a leak). The per-epoch inactivity
+      penalty is effective balance times the current inactivity score, divided
+      by INACTIVITY_SCORE_BIAS times INACTIVITY_PENALTY_QUOTIENT_BELLATRIX
+      (2^24). Because the per-epoch penalty is itself proportional to a score that
+      grows linearly with time offline, the cumulative loss is quadratic. This
+      makes sustained non-participation increasingly expensive so that stake of
+      offline validators drains fast enough for the remaining validators to
+      regain a two-thirds majority and finalize. A complete answer must say the
+      penalty each epoch scales with an inactivity score that accumulates while
+      offline, so total loss is quadratic, and mention the goal of restoring
+      finality.
+  metadata:
+    section: consensus
+    type: open
+    difficulty: reasoning
+    source: |-
+      https://github.com/ethereum/consensus-specs/blob/dev/specs/altair/beacon-chain.md
+  assert:
+    - type: llm-rubric
+      value: '{{answer}}'
+      metric: consensus
 
-- id: consensus-exit-epoch-computation
-  type: multiple_choice
-  question: |
-    A voluntary exit is processed in a block during epoch N, and the exit queue
-    is empty. Ignoring churn, what is the earliest exit_epoch the validator can
-    be assigned?
-  choices:
-    - N + 5
-    - N + 1
-    - N + 4
-    - N + 256
-  answer: A
-  difficulty: reasoning
-  source: https://github.com/ethereum/consensus-specs/blob/dev/specs/phase0/beacon-chain.md
+- description: consensus/consensus-exit-epoch-computation
+  vars:
+    type: multiple_choice
+    question: |-
+      A voluntary exit is processed in a block during epoch N, and the exit queue
+      is empty. Ignoring churn, what is the earliest exit_epoch the validator can
+      be assigned?
+    choices:
+      - N + 5
+      - N + 4
+      - N + 256
+      - N + 1
+    answer: A
+  metadata:
+    section: consensus
+    type: multiple_choice
+    difficulty: reasoning
+    source: |-
+      https://github.com/ethereum/consensus-specs/blob/dev/specs/phase0/beacon-chain.md
+  assert:
+    - type: javascript
+      value: file://src/multiple_choice.js
+      metric: consensus
 
-- id: consensus-attestation-timing
-  type: multiple_choice
-  question: |
-    At what point within a 12-second slot is an honest validator expected to
-    publish its attestation if it has not yet seen a block for that slot?
-  choices:
-    - 4 seconds in (one third of the slot)
-    - Immediately at the start of the slot
-    - 8 seconds in (two thirds of the slot)
-    - At the end of the slot, 12 seconds in
-  answer: A
-  difficulty: recall
-  source: https://github.com/ethereum/consensus-specs/blob/dev/specs/phase0/validator.md
+- description: consensus/consensus-attestation-timing
+  vars:
+    type: multiple_choice
+    question: |-
+      At what point within a 12-second slot is an honest validator expected to
+      publish its attestation if it has not yet seen a block for that slot?
+    choices:
+      - Immediately at the start of the slot
+      - 8 seconds in (two thirds of the slot)
+      - At the end of the slot, 12 seconds in
+      - 4 seconds in (one third of the slot)
+    answer: D
+  metadata:
+    section: consensus
+    type: multiple_choice
+    difficulty: recall
+    source: https://github.com/ethereum/consensus-specs/blob/dev/specs/phase0/validator.md
+  assert:
+    - type: javascript
+      value: file://src/multiple_choice.js
+      metric: consensus
 
-- id: consensus-timely-source-inclusion-limit
-  type: multiple_choice
-  question: |
-    Under the Altair reward rules, an attestation earns the timely source
-    reward only if it is included within a certain number of slots of the slot
-    it attests to. What is that limit?
-  choices:
-    - 5 slots (the integer square root of SLOTS_PER_EPOCH)
-    - 1 slot
-    - 32 slots
-    - 8 slots
-  answer: A
-  difficulty: recall
-  source: https://github.com/ethereum/consensus-specs/blob/dev/specs/altair/beacon-chain.md
+- description: consensus/consensus-timely-source-inclusion-limit
+  vars:
+    type: multiple_choice
+    question: |-
+      Under the Altair reward rules, an attestation earns the timely source
+      reward only if it is included within a certain number of slots of the slot
+      it attests to. What is that limit?
+    choices:
+      - 5 slots (the integer square root of SLOTS_PER_EPOCH)
+      - 8 slots
+      - 1 slot
+      - 32 slots
+    answer: A
+  metadata:
+    section: consensus
+    type: multiple_choice
+    difficulty: recall
+    source: |-
+      https://github.com/ethereum/consensus-specs/blob/dev/specs/altair/beacon-chain.md
+  assert:
+    - type: javascript
+      value: file://src/multiple_choice.js
+      metric: consensus
 
-- id: consensus-attestation-data-fields
-  type: multiple_choice
-  question: |
-    Which of the following is NOT a field of AttestationData, the message a
-    validator signs when attesting?
-  choices:
-    - The validator's own effective balance
-    - The slot of the attestation
-    - The beacon block root the validator considers the head
-    - The source and target checkpoints (epoch and root)
-  answer: A
-  difficulty: recall
-  source: https://github.com/ethereum/consensus-specs/blob/dev/specs/phase0/beacon-chain.md
+- description: consensus/consensus-attestation-data-fields
+  vars:
+    type: multiple_choice
+    question: |-
+      Which of the following is NOT a field of AttestationData, the message a
+      validator signs when attesting?
+    choices:
+      - The beacon block root the validator considers the head
+      - The slot of the attestation
+      - The validator's own effective balance
+      - The source and target checkpoints (epoch and root)
+    answer: C
+  metadata:
+    section: consensus
+    type: multiple_choice
+    difficulty: recall
+    source: |-
+      https://github.com/ethereum/consensus-specs/blob/dev/specs/phase0/beacon-chain.md
+  assert:
+    - type: javascript
+      value: file://src/multiple_choice.js
+      metric: consensus
 
-- id: consensus-finalization-without-current-target-supermajority
-  type: open
-  question: |-
-    In the Phase 0 justification and finalization algorithm, the current epoch
-    is 100. The saved old previous justified checkpoint is at epoch 98, and
-    the saved old current justified checkpoint is at epoch 99. After shifting
-    justification_bits and applying this epoch's justification results, the
-    bits at indices 0 through 3 are [false, true, true, false].
-    Which checkpoint does the finalization logic finalize, and why?
-  answer: |-
-    It finalizes the saved old previous justified checkpoint at epoch 98.
-    The condition all(bits[1:3]) is true, and
-    old_previous_justified_checkpoint.epoch + 2 == current_epoch.
-    The other finalization conditions do not match. A complete answer must
-    identify epoch 98 and explain that bits 1 and 2, together with the
-    two-epoch distance, satisfy a finalization condition despite bit 0 being
-    false.
-  difficulty: reasoning
-  source: |-
-    https://github.com/ethereum/consensus-specs/blob/master/specs/phase0/beacon-chain.md#justification-and-finalization
-- id: consensus-inactivity-score-recovery-order
-  type: multiple_choice
-  question: |-
-    Under Altair's inactivity-score update rules on mainnet, an eligible
-    validator starts an epoch transition with inactivity_score = 20 and is
-    absent from the previous epoch's unslashed timely-target participants.
-    The chain is not in an inactivity leak. What is its inactivity score
-    after process_inactivity_updates?
-  choices:
-  - '24'
-  - '20'
-  - '8'
-  - '4'
-  answer: C
-  difficulty: reasoning
-  source: |-
-    https://github.com/ethereum/consensus-specs/blob/master/specs/altair/beacon-chain.md#inactivity-scores
-- id: consensus-sync-committee-repeated-validator-positions
-  type: open
-  question: |-
-    Under Altair's sync-aggregate processing rules, a validator occupies two
-    positions in the current sync committee. A valid aggregate has the
-    participation bit set for one of those positions and unset for the
-    other. How does the protocol apply participant rewards and penalties
-    to that validator?
-  answer: |-
-    Processing is per committee position, not per distinct validator. The
-    validator receives one participant reward for the set bit and one
-    participant penalty for the unset bit. These have equal magnitude,
-    giving a net-zero participant balance change if its balance can absorb
-    the penalty. A complete answer must state that both positions are
-    processed separately, producing one reward and one penalty; it need
-    not discuss any separate reward earned as block proposer.
-  difficulty: understanding
-  source: |-
-    https://github.com/ethereum/consensus-specs/blob/master/specs/altair/beacon-chain.md#sync-aggregate-processing
-- id: consensus-missing-timely-head-direct-penalty
-  type: multiple_choice
-  question: |-
-    Under Altair's participation-flag reward rules, an unslashed validator
-    earns timely-source and timely-target participation but not timely-head
-    participation. Outside an inactivity leak, what direct balance penalty
-    does get_flag_index_deltas assign for the missing timely-head flag?
-  choices:
-  - A penalty equal to its full base reward
-  - A penalty equal to its base reward multiplied by 14/64
-  - A penalty equal to its base reward multiplied by 26/64
-  - No direct penalty; the validator forgoes the timely-head reward
-  answer: D
-  difficulty: understanding
-  source: |-
-    https://github.com/ethereum/consensus-specs/blob/master/specs/altair/beacon-chain.md#rewards-and-penalties
-- id: consensus-deneb-voluntary-exit-domain-version
-  type: multiple_choice
-  question: |-
-    Under Deneb's modified voluntary-exit signature verification, which fork
-    version is used to construct the DOMAIN_VOLUNTARY_EXIT signing domain,
-    regardless of the epoch specified in the exit?
-  choices:
-  - GENESIS_FORK_VERSION
-  - CAPELLA_FORK_VERSION
-  - DENEB_FORK_VERSION
-  - The fork version active at the exit's specified epoch
-  answer: B
-  difficulty: recall
-  source: |-
-    https://github.com/ethereum/consensus-specs/blob/master/specs/deneb/beacon-chain.md#modified-process_voluntary_exit
-- id: consensus-capella-withdrawal-sweep-pointer-advance
-  type: open
-  question: |-
-    Under Capella's withdrawal-processing rules on mainnet, the validator
-    registry contains 50,000 validators and next_withdrawal_validator_index
-    starts at 100. The expected withdrawal list contains exactly one
-    withdrawal, for validator 150, and the payload supplies that list.
-    What is next_withdrawal_validator_index after processing the payload,
-    and why is it not 151?
-  answer: |-
-    The new index is 16,484. Because the withdrawal list has fewer than
-    MAX_WITHDRAWALS_PER_PAYLOAD entries, the pointer advances from its old
-    value by MAX_VALIDATORS_PER_WITHDRAWALS_SWEEP, which is 16,384:
-    (100 + 16,384) % 50,000 = 16,484. Advancing to the index after the last
-    withdrawal applies when the withdrawal list reaches the payload limit.
-    A complete answer must give 16,484 and connect it to the non-full-list
-    sweep-advance rule.
-  difficulty: reasoning
-  source: |-
-    https://github.com/ethereum/consensus-specs/blob/master/specs/capella/beacon-chain.md#new-process_withdrawals
-- id: consensus-light-client-supermajority-integer-boundary
-  type: multiple_choice
-  question: |-
-    In Altair's light-client update processing, a sync committee has 512
-    positions. What is the smallest number of set participation bits that
-    satisfies the has_supermajority test?
-  choices:
-  - '256'
-  - '341'
-  - '342'
-  - '343'
-  answer: C
-  difficulty: reasoning
-  source: |-
-    https://github.com/ethereum/consensus-specs/blob/master/specs/altair/light-client/sync-protocol.md#process_light_client_update
-- id: consensus-seed-randao-mix-vector-index
-  type: multiple_choice
-  question: |-
-    Using the Phase 0 mainnet get_seed rule, with
-    EPOCHS_PER_HISTORICAL_VECTOR = 65,536 and MIN_SEED_LOOKAHEAD = 1,
-    which index of state.randao_mixes supplies the mix when computing a
-    seed for epoch 100?
-  choices:
-  - '98'
-  - '99'
-  - '100'
-  - '101'
-  answer: A
-  difficulty: recall
-  source: |-
-    https://github.com/ethereum/consensus-specs/blob/master/specs/phase0/beacon-chain.md#get_seed
-- id: consensus-activation-eligibility-finalized-checkpoint-gate
-  type: open
-  question: |-
-    On the Deneb beacon chain, a validator has effective_balance = 32 ETH,
-    activation_eligibility_epoch = 80, and activation_epoch =
-    FAR_FUTURE_EPOCH. The current epoch is 84, but the finalized checkpoint
-    is still at epoch 79. Does this validator pass is_eligible_for_activation
-    for entry into the activation queue? Explain the decisive condition.
-  answer: |-
-    No. Entry into the activation queue requires
-    activation_eligibility_epoch <= state.finalized_checkpoint.epoch,
-    as well as activation_epoch == FAR_FUTURE_EPOCH. Here 80 is greater
-    than 79, so the finalized-checkpoint condition fails even though the
-    current epoch is 84 and the validator has 32 ETH effective balance.
-    A complete answer must reject eligibility and identify the comparison
-    against the finalized checkpoint's epoch, not the current epoch.
-  difficulty: understanding
-  source: |-
-    https://github.com/ethereum/consensus-specs/blob/master/specs/phase0/beacon-chain.md#is_eligible_for_activation
+- description: consensus/consensus-finalization-without-current-target-supermajority
+  vars:
+    type: open
+    question: |-
+      In the Phase 0 justification and finalization algorithm, the current epoch
+      is 100. The saved old previous justified checkpoint is at epoch 98, and
+      the saved old current justified checkpoint is at epoch 99. After shifting
+      justification_bits and applying this epoch's justification results, the
+      bits at indices 0 through 3 are [false, true, true, false].
+      Which checkpoint does the finalization logic finalize, and why?
+    answer: |-
+      It finalizes the saved old previous justified checkpoint at epoch 98.
+      The condition all(bits[1:3]) is true, and
+      old_previous_justified_checkpoint.epoch + 2 == current_epoch.
+      The other finalization conditions do not match. A complete answer must
+      identify epoch 98 and explain that bits 1 and 2, together with the
+      two-epoch distance, satisfy a finalization condition despite bit 0 being
+      false.
+  metadata:
+    section: consensus
+    type: open
+    difficulty: reasoning
+    source: |-
+      https://github.com/ethereum/consensus-specs/blob/master/specs/phase0/beacon-chain.md#justification-and-finalization
+  assert:
+    - type: llm-rubric
+      value: '{{answer}}'
+      metric: consensus
+
+- description: consensus/consensus-inactivity-score-recovery-order
+  vars:
+    type: multiple_choice
+    question: |-
+      Under Altair's inactivity-score update rules on mainnet, an eligible
+      validator starts an epoch transition with inactivity_score = 20 and is
+      absent from the previous epoch's unslashed timely-target participants.
+      The chain is not in an inactivity leak. What is its inactivity score
+      after process_inactivity_updates?
+    choices:
+      - '8'
+      - '4'
+      - '24'
+      - '20'
+    answer: A
+  metadata:
+    section: consensus
+    type: multiple_choice
+    difficulty: reasoning
+    source: |-
+      https://github.com/ethereum/consensus-specs/blob/master/specs/altair/beacon-chain.md#inactivity-scores
+  assert:
+    - type: javascript
+      value: file://src/multiple_choice.js
+      metric: consensus
+
+- description: consensus/consensus-sync-committee-repeated-validator-positions
+  vars:
+    type: open
+    question: |-
+      Under Altair's sync-aggregate processing rules, a validator occupies two
+      positions in the current sync committee. A valid aggregate has the
+      participation bit set for one of those positions and unset for the
+      other. How does the protocol apply participant rewards and penalties
+      to that validator?
+    answer: |-
+      Processing is per committee position, not per distinct validator. The
+      validator receives one participant reward for the set bit and one
+      participant penalty for the unset bit. These have equal magnitude,
+      giving a net-zero participant balance change if its balance can absorb
+      the penalty. A complete answer must state that both positions are
+      processed separately, producing one reward and one penalty; it need
+      not discuss any separate reward earned as block proposer.
+  metadata:
+    section: consensus
+    type: open
+    difficulty: understanding
+    source: |-
+      https://github.com/ethereum/consensus-specs/blob/master/specs/altair/beacon-chain.md#sync-aggregate-processing
+  assert:
+    - type: llm-rubric
+      value: '{{answer}}'
+      metric: consensus
+
+- description: consensus/consensus-missing-timely-head-direct-penalty
+  vars:
+    type: multiple_choice
+    question: |-
+      Under Altair's participation-flag reward rules, an unslashed validator
+      earns timely-source and timely-target participation but not timely-head
+      participation. Outside an inactivity leak, what direct balance penalty
+      does get_flag_index_deltas assign for the missing timely-head flag?
+    choices:
+      - A penalty equal to its full base reward
+      - A penalty equal to its base reward multiplied by 26/64
+      - A penalty equal to its base reward multiplied by 14/64
+      - No direct penalty; the validator forgoes the timely-head reward
+    answer: D
+  metadata:
+    section: consensus
+    type: multiple_choice
+    difficulty: understanding
+    source: |-
+      https://github.com/ethereum/consensus-specs/blob/master/specs/altair/beacon-chain.md#rewards-and-penalties
+  assert:
+    - type: javascript
+      value: file://src/multiple_choice.js
+      metric: consensus
+
+- description: consensus/consensus-deneb-voluntary-exit-domain-version
+  vars:
+    type: multiple_choice
+    question: |-
+      Under Deneb's modified voluntary-exit signature verification, which fork
+      version is used to construct the DOMAIN_VOLUNTARY_EXIT signing domain,
+      regardless of the epoch specified in the exit?
+    choices:
+      - CAPELLA_FORK_VERSION
+      - DENEB_FORK_VERSION
+      - GENESIS_FORK_VERSION
+      - The fork version active at the exit's specified epoch
+    answer: A
+  metadata:
+    section: consensus
+    type: multiple_choice
+    difficulty: recall
+    source: |-
+      https://github.com/ethereum/consensus-specs/blob/master/specs/deneb/beacon-chain.md#modified-process_voluntary_exit
+  assert:
+    - type: javascript
+      value: file://src/multiple_choice.js
+      metric: consensus
+
+- description: consensus/consensus-capella-withdrawal-sweep-pointer-advance
+  vars:
+    type: open
+    question: |-
+      Under Capella's withdrawal-processing rules on mainnet, the validator
+      registry contains 50,000 validators and next_withdrawal_validator_index
+      starts at 100. The expected withdrawal list contains exactly one
+      withdrawal, for validator 150, and the payload supplies that list.
+      What is next_withdrawal_validator_index after processing the payload,
+      and why is it not 151?
+    answer: |-
+      The new index is 16,484. Because the withdrawal list has fewer than
+      MAX_WITHDRAWALS_PER_PAYLOAD entries, the pointer advances from its old
+      value by MAX_VALIDATORS_PER_WITHDRAWALS_SWEEP, which is 16,384:
+      (100 + 16,384) % 50,000 = 16,484. Advancing to the index after the last
+      withdrawal applies when the withdrawal list reaches the payload limit.
+      A complete answer must give 16,484 and connect it to the non-full-list
+      sweep-advance rule.
+  metadata:
+    section: consensus
+    type: open
+    difficulty: reasoning
+    source: |-
+      https://github.com/ethereum/consensus-specs/blob/master/specs/capella/beacon-chain.md#new-process_withdrawals
+  assert:
+    - type: llm-rubric
+      value: '{{answer}}'
+      metric: consensus
+
+- description: consensus/consensus-light-client-supermajority-integer-boundary
+  vars:
+    type: multiple_choice
+    question: |-
+      In Altair's light-client update processing, a sync committee has 512
+      positions. What is the smallest number of set participation bits that
+      satisfies the has_supermajority test?
+    choices:
+      - '343'
+      - '341'
+      - '342'
+      - '256'
+    answer: C
+  metadata:
+    section: consensus
+    type: multiple_choice
+    difficulty: reasoning
+    source: |-
+      https://github.com/ethereum/consensus-specs/blob/master/specs/altair/light-client/sync-protocol.md#process_light_client_update
+  assert:
+    - type: javascript
+      value: file://src/multiple_choice.js
+      metric: consensus
+
+- description: consensus/consensus-seed-randao-mix-vector-index
+  vars:
+    type: multiple_choice
+    question: |-
+      Using the Phase 0 mainnet get_seed rule, with
+      EPOCHS_PER_HISTORICAL_VECTOR = 65,536 and MIN_SEED_LOOKAHEAD = 1,
+      which index of state.randao_mixes supplies the mix when computing a
+      seed for epoch 100?
+    choices:
+      - '101'
+      - '98'
+      - '100'
+      - '99'
+    answer: B
+  metadata:
+    section: consensus
+    type: multiple_choice
+    difficulty: recall
+    source: |-
+      https://github.com/ethereum/consensus-specs/blob/master/specs/phase0/beacon-chain.md#get_seed
+  assert:
+    - type: javascript
+      value: file://src/multiple_choice.js
+      metric: consensus
+
+- description: consensus/consensus-activation-eligibility-finalized-checkpoint-gate
+  vars:
+    type: open
+    question: |-
+      On the Deneb beacon chain, a validator has effective_balance = 32 ETH,
+      activation_eligibility_epoch = 80, and activation_epoch =
+      FAR_FUTURE_EPOCH. The current epoch is 84, but the finalized checkpoint
+      is still at epoch 79. Does this validator pass is_eligible_for_activation
+      for entry into the activation queue? Explain the decisive condition.
+    answer: |-
+      No. Entry into the activation queue requires
+      activation_eligibility_epoch <= state.finalized_checkpoint.epoch,
+      as well as activation_epoch == FAR_FUTURE_EPOCH. Here 80 is greater
+      than 79, so the finalized-checkpoint condition fails even though the
+      current epoch is 84 and the validator has 32 ETH effective balance.
+      A complete answer must reject eligibility and identify the comparison
+      against the finalized checkpoint's epoch, not the current epoch.
+  metadata:
+    section: consensus
+    type: open
+    difficulty: understanding
+    source: |-
+      https://github.com/ethereum/consensus-specs/blob/master/specs/phase0/beacon-chain.md#is_eligible_for_activation
+  assert:
+    - type: llm-rubric
+      value: '{{answer}}'
+      metric: consensus

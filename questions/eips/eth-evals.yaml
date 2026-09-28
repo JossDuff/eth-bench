@@ -1,64 +1,104 @@
-# Imported from https://github.com/clawdbotatg/eth-evals (MIT, Austin Griffith)
-# by scripts/import_ethevals.py. Edit the script, not this file.
+# Imported from https://github.com/clawdbotatg/eth-evals (MIT, Austin Griffith).
 
-- id: protocol-k-01
-  type: open
-  question: "Which EIP introduced blob-carrying transactions (proto-danksharding) to Ethereum,\
-    \ shipping in the Dencun hard fork? \nEnd your reply with a line of the form \"Answer:\
-    \ <EIP number>\".\n"
-  answer: |
-    The response's final answer must be the integer 4844 (decimal or the equivalent hex). Reference from ethskills: "| Dencun | Mar 13, 2024 | EIP-4844 blobs (proto-danksharding) |" Grade INCORRECT for these tempting wrong answers: `Answer: EIP-1559`; `Answer: 4845`
-  difficulty: recall
-  source: https://github.com/clawdbotatg/eth-evals/blob/main/tasks/skill-protocol.jsonl
-  tags:
-  - eth-evals
-  - protocol
-- id: protocol-k-04
-  type: open
-  question: "In the ethereum/EIPs repository, what status label marks an EIP that has had\
-    \ no activity for 6+ months and is probably dead or deprioritized? \nEnd your reply with\
-    \ a line of the form \"Answer: <status>\".\n"
-  answer: |
-    The response's answer must match the pattern `stagnant` (that is, it must name the concept the pattern captures). The reference answer is: Answer: Stagnant. Reference from ethskills: "`Stagnant` = no activity for 6+ months, probably dead or deprioritized"
-  difficulty: recall
-  source: https://github.com/clawdbotatg/eth-evals/blob/main/tasks/skill-protocol.jsonl
-  tags:
-  - eth-evals
-  - protocol
-- id: protocol-k-05
-  type: open
-  question: "The hard-fork inclusion stages used by Ethereum core devs — CFI (Considered for\
-    \ Inclusion), SFI (Scheduled for Inclusion), and DFI (Declined for Inclusion) — are formally\
-    \ defined in which EIP? \nEnd your reply with a line of the form \"Answer: <EIP number>\"\
-    .\n"
-  answer: |
-    The response's final answer must be the integer 7723 (decimal or the equivalent hex). Reference from ethskills: "**CFI (Considered for Inclusion)**: Core devs are seriously evaluating it for a specific fork. Implementation work begins. Defined in EIP-7723" Grade INCORRECT for these tempting wrong answers: `Answer: EIP-1559`; `Answer: 7724`
-  difficulty: recall
-  source: https://github.com/clawdbotatg/eth-evals/blob/main/tasks/skill-protocol.jsonl
-  tags:
-  - eth-evals
-  - protocol
-- id: protocol-k-06
-  type: open
-  question: "Each Ethereum hard fork has a meta-EIP listing its scope. Which meta-EIP defines\
-    \ the scope of the Pectra hard fork? \nEnd your reply with a line of the form \"Answer:\
-    \ <EIP number>\".\n"
-  answer: |
-    The response's final answer must be the integer 7600 (decimal or the equivalent hex). Reference from ethskills: "2. Or check the fork's meta-EIP (e.g., EIP-7600 for Pectra)" Grade INCORRECT for these tempting wrong answers: `Answer: EIP-1559`; `Answer: 7601`
-  difficulty: recall
-  source: https://github.com/clawdbotatg/eth-evals/blob/main/tasks/skill-protocol.jsonl
-  tags:
-  - eth-evals
-  - protocol
-- id: protocol-k-09
-  type: open
-  question: "Enshrined proposer-builder separation (ePBS), slated for consideration in the\
-    \ Glamsterdam hard fork, is specified in which EIP? \nEnd your reply with a line of the\
-    \ form \"Answer: <EIP number>\".\n"
-  answer: |
-    The response's final answer must be the integer 7732 (decimal or the equivalent hex). Reference from ethskills: "| Glamsterdam | ~Q3-Q4 2026 (in progress) | ePBS (EIP-7732), block access lists (EIP-7928) |" Grade INCORRECT for these tempting wrong answers: `Answer: EIP-1559`; `Answer: 7733`
-  difficulty: recall
-  source: https://github.com/clawdbotatg/eth-evals/blob/main/tasks/skill-protocol.jsonl
-  tags:
-  - eth-evals
-  - protocol
+- description: eips/protocol-k-01
+  vars:
+    type: open
+    question: "Which EIP introduced blob-carrying transactions (proto-danksharding) to Ethereum, shipping\
+      \ in the Dencun hard fork? \nEnd your reply with a line of the form \"Answer: <EIP number>\"."
+    answer: |-
+      The response's final answer must be the integer 4844 (decimal or the equivalent hex). Reference from ethskills: "| Dencun | Mar 13, 2024 | EIP-4844 blobs (proto-danksharding) |" Grade INCORRECT for these tempting wrong answers: `Answer: EIP-1559`; `Answer: 4845`
+  metadata:
+    section: eips
+    type: open
+    difficulty: recall
+    source: https://github.com/clawdbotatg/eth-evals/blob/main/tasks/skill-protocol.jsonl
+    tags:
+      - eth-evals
+      - protocol
+  assert:
+    - type: llm-rubric
+      value: '{{answer}}'
+      metric: eips
+
+- description: eips/protocol-k-04
+  vars:
+    type: open
+    question: "In the ethereum/EIPs repository, what status label marks an EIP that has had no activity\
+      \ for 6+ months and is probably dead or deprioritized? \nEnd your reply with a line of the form\
+      \ \"Answer: <status>\"."
+    answer: |-
+      The response's answer must match the pattern `stagnant` (that is, it must name the concept the pattern captures). The reference answer is: Answer: Stagnant. Reference from ethskills: "`Stagnant` = no activity for 6+ months, probably dead or deprioritized"
+  metadata:
+    section: eips
+    type: open
+    difficulty: recall
+    source: https://github.com/clawdbotatg/eth-evals/blob/main/tasks/skill-protocol.jsonl
+    tags:
+      - eth-evals
+      - protocol
+  assert:
+    - type: llm-rubric
+      value: '{{answer}}'
+      metric: eips
+
+- description: eips/protocol-k-05
+  vars:
+    type: open
+    question: "The hard-fork inclusion stages used by Ethereum core devs — CFI (Considered for Inclusion),\
+      \ SFI (Scheduled for Inclusion), and DFI (Declined for Inclusion) — are formally defined in which\
+      \ EIP? \nEnd your reply with a line of the form \"Answer: <EIP number>\"."
+    answer: |-
+      The response's final answer must be the integer 7723 (decimal or the equivalent hex). Reference from ethskills: "**CFI (Considered for Inclusion)**: Core devs are seriously evaluating it for a specific fork. Implementation work begins. Defined in EIP-7723" Grade INCORRECT for these tempting wrong answers: `Answer: EIP-1559`; `Answer: 7724`
+  metadata:
+    section: eips
+    type: open
+    difficulty: recall
+    source: https://github.com/clawdbotatg/eth-evals/blob/main/tasks/skill-protocol.jsonl
+    tags:
+      - eth-evals
+      - protocol
+  assert:
+    - type: llm-rubric
+      value: '{{answer}}'
+      metric: eips
+
+- description: eips/protocol-k-06
+  vars:
+    type: open
+    question: "Each Ethereum hard fork has a meta-EIP listing its scope. Which meta-EIP defines the scope\
+      \ of the Pectra hard fork? \nEnd your reply with a line of the form \"Answer: <EIP number>\"."
+    answer: |-
+      The response's final answer must be the integer 7600 (decimal or the equivalent hex). Reference from ethskills: "2. Or check the fork's meta-EIP (e.g., EIP-7600 for Pectra)" Grade INCORRECT for these tempting wrong answers: `Answer: EIP-1559`; `Answer: 7601`
+  metadata:
+    section: eips
+    type: open
+    difficulty: recall
+    source: https://github.com/clawdbotatg/eth-evals/blob/main/tasks/skill-protocol.jsonl
+    tags:
+      - eth-evals
+      - protocol
+  assert:
+    - type: llm-rubric
+      value: '{{answer}}'
+      metric: eips
+
+- description: eips/protocol-k-09
+  vars:
+    type: open
+    question: "Enshrined proposer-builder separation (ePBS), slated for consideration in the Glamsterdam\
+      \ hard fork, is specified in which EIP? \nEnd your reply with a line of the form \"Answer: <EIP\
+      \ number>\"."
+    answer: |-
+      The response's final answer must be the integer 7732 (decimal or the equivalent hex). Reference from ethskills: "| Glamsterdam | ~Q3-Q4 2026 (in progress) | ePBS (EIP-7732), block access lists (EIP-7928) |" Grade INCORRECT for these tempting wrong answers: `Answer: EIP-1559`; `Answer: 7733`
+  metadata:
+    section: eips
+    type: open
+    difficulty: recall
+    source: https://github.com/clawdbotatg/eth-evals/blob/main/tasks/skill-protocol.jsonl
+    tags:
+      - eth-evals
+      - protocol
+  assert:
+    - type: llm-rubric
+      value: '{{answer}}'
+      metric: eips

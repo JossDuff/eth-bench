@@ -1,666 +1,889 @@
-# Imported from https://github.com/austintgriffith/ethevals by
-# scripts/import_ethevals.py. Edit the script, not this file.
+# Imported from https://github.com/austintgriffith/ethevals (MIT, Austin Griffith).
 
-- id: concepts-11-spot-price-oracle
-  type: open
-  question: |
-    Your smart contract needs a token price, and a teammate suggests reading the spot price directly from a DEX pool's reserves. Attackers commonly use a specific financing primitive to skew such a spot price within a single transaction. Name that primitive.
-    End your reply with a line of the form "Answer: <primitive>".
-  answer: |
-    The response's answer must match the pattern `flash[\s-]*loan` (that is, it must name the concept the pattern captures). The reference answer is: Answer: a flash loan. Grade INCORRECT for these tempting wrong answers: `Answer: sandwich attack`
-  difficulty: recall
-  source: |-
-    https://github.com/austintgriffith/ethevals/blob/main/evals/concepts/concepts-11-spot-price-oracle.yaml
-  tags:
-  - ethevals
-  - concepts
-- id: security-01-reentrancy
-  type: open
-  question: |
-    A Solidity withdraw function reads the caller's balance, sends that amount of ETH to the caller via a low-level call, and only after the call returns does it set the caller's balance to zero. An attacker's contract uses its receive function to call withdraw again before the first invocation finishes, draining the contract. What is the name of this vulnerability class?
-    End your reply with a line of the form "Answer: <short answer>".
-  answer: |
-    The response's answer must match the pattern `re-?(entranc|entry)` (that is, it must name the concept the pattern captures). The reference answer is: Answer: reentrancy.
-  difficulty: recall
-  source: |-
-    https://github.com/austintgriffith/ethevals/blob/main/evals/security/security-01-reentrancy.yaml
-  tags:
-  - ethevals
-  - security
-- id: security-02-read-only-reentrancy
-  type: multiple_choice
-  question: |
-    A liquidity pool lets users remove liquidity; during removal it sends ETH to the user with a low-level call and only afterwards updates its internal reserves. A separate lending protocol prices the pool's LP token by calling the pool's public view function `getVirtualPrice()`, which reads those reserves. The pool's own state-changing functions are all guarded with nonReentrant and the pool is never drained. Yet the lending protocol is exploited. What happened?
-  choices:
-  - |-
-    The attacker reentered the pool's removeLiquidity through the ETH callback and withdrew twice
-  - |-
-    During the ETH callback the pool's reserves were already reduced but the LP supply was not yet updated (or vice versa), so getVirtualPrice() returned a manipulated value; the attacker called the lending protocol from inside the callback, and its view-based pricing accepted the stale state
-  - The lending protocol's nonReentrant modifier was missing on borrow()
-  - The pool's view function was not marked payable
-  answer: B
-  difficulty: understanding
-  source: |-
-    https://github.com/austintgriffith/ethevals/blob/main/evals/security/security-02-read-only-reentrancy.yaml
-  tags:
-  - ethevals
-  - security
-- id: security-03-cross-function-reentrancy
-  type: multiple_choice
-  question: |
-    A contract tracks `balances[msg.sender]`. `withdraw()` is marked nonReentrant: it sends the caller's full balance with a low-level call, then zeroes the balance. `transfer(address to, uint256 amount)` has no modifier and simply moves balance between accounts. Can an attacker still profit, and how?
-  choices:
-  - 'No: nonReentrant on withdraw() blocks every reentrant path into the contract'
-  - |-
-    Yes: during withdraw()'s external call, before the balance is zeroed, the attacker's fallback calls transfer() to move the still-credited balance to a second account, then withdraws from that account
-  - |-
-    Yes: the attacker calls withdraw() twice in the same transaction from two different addresses
-  - |-
-    No: the low-level call forwards only 2300 gas, so the fallback cannot make another call
-  answer: B
-  difficulty: understanding
-  source: |-
-    https://github.com/austintgriffith/ethevals/blob/main/evals/security/security-03-cross-function-reentrancy.yaml
-  tags:
-  - ethevals
-  - security
-- id: security-04-vault-inflation
-  type: open
-  question: |
-    Our USDC vault went live on Ethereum mainnet last night and a depositor has
-    lost their money. Support has the on-chain sequence from the explorer:
+- description: security/concepts-11-spot-price-oracle
+  vars:
+    type: open
+    question: |-
+      Your smart contract needs a token price, and a teammate suggests reading the spot price directly from a DEX pool's reserves. Attackers commonly use a specific financing primitive to skew such a spot price within a single transaction. Name that primitive.
+      End your reply with a line of the form "Answer: <primitive>".
+    answer: |-
+      The response's answer must match the pattern `flash[\s-]*loan` (that is, it must name the concept the pattern captures). The reference answer is: Answer: a flash loan. Grade INCORRECT for these tempting wrong answers: `Answer: sandwich attack`
+  metadata:
+    section: security
+    type: open
+    difficulty: recall
+    source: |-
+      https://github.com/austintgriffith/ethevals/blob/main/evals/concepts/concepts-11-spot-price-oracle.yaml
+    tags:
+      - ethevals
+      - concepts
+  assert:
+    - type: llm-rubric
+      value: '{{answer}}'
+      metric: security
 
-      09:12  0xA1..  deposit(1)              — one unit, i.e. 0.000001 USDC
-      09:12  0xA1..  receives 1 share        — vault share supply is now 1
-      09:13  0xA1..  ERC-20 transfer of 20,000 USDC straight to the vault address
-                     (a plain token transfer, not a call into our contract)
-      09:41  0xB2..  deposit(15,000 USDC)    — transaction SUCCEEDS
-      09:41  0xB2..  receives 0 shares
-      09:44  0xA1..  redeems its 1 share     — receives 35,000.000001 USDC
+- description: security/security-01-reentrancy
+  vars:
+    type: open
+    question: |-
+      A Solidity withdraw function reads the caller's balance, sends that amount of ETH to the caller via a low-level call, and only after the call returns does it set the caller's balance to zero. An attacker's contract uses its receive function to call withdraw again before the first invocation finishes, draining the contract. What is the name of this vulnerability class?
+      End your reply with a line of the form "Answer: <short answer>".
+    answer: |-
+      The response's answer must match the pattern `re-?(entranc|entry)` (that is, it must name the concept the pattern captures). The reference answer is: Answer: reentrancy.
+  metadata:
+    section: security
+    type: open
+    difficulty: recall
+    source: |-
+      https://github.com/austintgriffith/ethevals/blob/main/evals/security/security-01-reentrancy.yaml
+    tags:
+      - ethevals
+      - security
+  assert:
+    - type: llm-rubric
+      value: '{{answer}}'
+      metric: security
 
-    0xB2's transaction did not revert. The USDC left their wallet, the vault
-    holds it, and their share balance reads zero. 0xA1 walked away with all of
-    it and the vault is now empty.
+- description: security/security-02-read-only-reentrancy
+  vars:
+    type: multiple_choice
+    question: |-
+      A liquidity pool lets users remove liquidity; during removal it sends ETH to the user with a low-level call and only afterwards updates its internal reserves. A separate lending protocol prices the pool's LP token by calling the pool's public view function `getVirtualPrice()`, which reads those reserves. The pool's own state-changing functions are all guarded with nonReentrant and the pool is never drained. Yet the lending protocol is exploited. What happened?
+    choices:
+      - |-
+        The attacker reentered the pool's removeLiquidity through the ETH callback and withdrew twice
+      - The lending protocol's nonReentrant modifier was missing on borrow()
+      - |-
+        During the ETH callback the pool's reserves were already reduced but the LP supply was not yet updated (or vice versa), so getVirtualPrice() returned a manipulated value; the attacker called the lending protocol from inside the callback, and its view-based pricing accepted the stale state
+      - The pool's view function was not marked payable
+    answer: C
+  metadata:
+    section: security
+    type: multiple_choice
+    difficulty: understanding
+    source: |-
+      https://github.com/austintgriffith/ethevals/blob/main/evals/security/security-02-read-only-reentrancy.yaml
+    tags:
+      - ethevals
+      - security
+  assert:
+    - type: javascript
+      value: file://src/multiple_choice.js
+      metric: security
 
-    How the vault mints: a deposit mints
-    `assets * totalShares / (USDC the vault currently holds)`, and when the share
-    supply is zero the first depositor gets one share per unit deposited.
-    Redeeming burns shares and pays out the same pro-rata slice. Nothing else in
-    the contract touched the balances — no admin function ran, and the vault made
-    no external calls other than the USDC transfers themselves.
+- description: security/security-03-cross-function-reentrancy
+  vars:
+    type: multiple_choice
+    question: |-
+      A contract tracks `balances[msg.sender]`. `withdraw()` is marked nonReentrant: it sends the caller's full balance with a low-level call, then zeroes the balance. `transfer(address to, uint256 amount)` has no modifier and simply moves balance between accounts. Can an attacker still profit, and how?
+    choices:
+      - |-
+        Yes: during withdraw()'s external call, before the balance is zeroed, the attacker's fallback calls transfer() to move the still-credited balance to a second account, then withdraws from that account
+      - 'No: nonReentrant on withdraw() blocks every reentrant path into the contract'
+      - |-
+        No: the low-level call forwards only 2300 gas, so the fallback cannot make another call
+      - |-
+        Yes: the attacker calls withdraw() twice in the same transaction from two different addresses
+    answer: A
+  metadata:
+    section: security
+    type: multiple_choice
+    difficulty: understanding
+    source: |-
+      https://github.com/austintgriffith/ethevals/blob/main/evals/security/security-03-cross-function-reentrancy.yaml
+    tags:
+      - ethevals
+      - security
+  assert:
+    - type: javascript
+      value: file://src/multiple_choice.js
+      metric: security
 
-    Explain exactly how 0xB2 ended up with zero shares while their deposit
-    succeeded, whether this is a bug in our contract or a mistake by the
-    depositor, and what change we ship so it cannot happen again. We want to stay
-    ERC-4626 compatible.
-  answer: |
-    Grade CORRECT only if the response satisfies every one of these points; a response that misses any of them is INCORRECT:
-    - The response diagnoses the mechanism: the 20,000 USDC sent directly to the vault raised the vault's asset balance without minting any shares, so with a share supply of 1 the next depositor's share amount, computed as assets * totalShares / vaultAssets, rounded DOWN to zero — 15,000 USDC bought less than one whole share — and their assets were absorbed by the single share the first depositor held. Describing that truncation as a rounding-to-zero bug is part of the correct answer, not a miss. It FAILS only if the loss is pinned on something else: the depositor, a USDC transfer fee, a paused or blocklisted token, reentrancy, or an arithmetic typo unrelated to the direct transfer.
-    - It calls this a bug in the vault (a first-depositor / donation share-price manipulation that any attacker can reproduce), not acceptable behavior and not a user error.
-    - The prescribed fix is structural — it makes the manipulation uneconomical or impossible rather than only protecting one transaction. Any of these passes: a virtual shares-and-assets offset in the conversion math, adopting OpenZeppelin's ERC4626 (whose conversion carries virtual assets and shares by default; raising _decimalsOffset on top is a strengthening, not a requirement), seeding the vault with a dead first deposit whose shares are burned to a non-recoverable address, or tracking deposited assets in internal accounting instead of reading the raw token balance.
-    - It does NOT prescribe as the fix: preventing or blocking direct ERC-20 transfers to the vault (impossible for a plain token transfer), sweeping donations to the owner, or a minimum-shares-out / slippage check on deposit alone. A minimum-shares-out check may be mentioned as an extra guard for depositors, but on its own it only makes the victim's transaction revert and leaves the vault manipulable.
-  difficulty: reasoning
-  source: |-
-    https://github.com/austintgriffith/ethevals/blob/main/evals/security/security-04-vault-inflation.yaml
-  tags:
-  - ethevals
-  - security
-- id: security-05-spot-price-oracle
-  type: open
-  question: |
-    Design review on our lending market. Positions are up to $2M of WETH
-    collateral backing USDC debt, liquidated at 85% LTV, on Ethereum mainnet.
+- description: security/security-04-vault-inflation
+  vars:
+    type: open
+    question: |-
+      Our USDC vault went live on Ethereum mainnet last night and a depositor has
+      lost their money. Support has the on-chain sequence from the explorer:
 
-    A teammate has written up how we should price the collateral:
+        09:12  0xA1..  deposit(1)              — one unit, i.e. 0.000001 USDC
+        09:12  0xA1..  receives 1 share        — vault share supply is now 1
+        09:13  0xA1..  ERC-20 transfer of 20,000 USDC straight to the vault address
+                       (a plain token transfer, not a call into our contract)
+        09:41  0xB2..  deposit(15,000 USDC)    — transaction SUCCEEDS
+        09:41  0xB2..  receives 0 shares
+        09:44  0xA1..  redeems its 1 share     — receives 35,000.000001 USDC
 
-      "Read it straight from the Uniswap V3 WETH/USDC 0.05% pool with slot0. That
-      pool holds around $200M of liquidity. To move its price 10% an attacker
-      would have to push tens of millions of dollars through it, and arbitrage
-      bots would drag it back within the same block, so they would eat the loss
-      for nothing. Chainlink is an extra external call, its answer can be stale
-      between updates, and it puts a third party between us and our own
-      liquidations. Our own on-chain reserve of truth is strictly better."
+      0xB2's transaction did not revert. The USDC left their wallet, the vault
+      holds it, and their share balance reads zero. 0xA1 walked away with all of
+      it and the vault is now empty.
 
-    Work the numbers rather than trading opinions: what does it actually cost an
-    attacker to make our contract read a price 10% away from the market price at
-    the moment our contract reads it, and what do they get for it? Then tell me
-    what we should price collateral with, and what has to be checked around that
-    price before we use it in a health calculation.
-  answer: |
-    Grade CORRECT only if the response satisfies every one of these points; a response that misses any of them is INCORRECT:
-    - The response rejects the teammate's cost argument with the atomicity reasoning: the capital needed to move the pool is borrowed and repaid inside the SAME transaction (a flash loan), so the tens of millions is never at risk and the attacker's true cost is only pool fees plus slippage on the round trip — and arbitrage cannot help because the manipulated read, the borrow or liquidation it enables, and the unwind all complete before any other transaction can run.
-    - It concludes that a Uniswap V3 slot0 spot read (or any single-block spot price: getReserves, a balance ratio, an on-the-spot quoter call) must NOT be the price source for these health calculations, regardless of how deep the pool is.
-    - It prescribes a manipulation-resistant source instead. A Chainlink or equivalent push feed as the primary liquidation price passes. A Uniswap V3 TWAP also passes only when averaged over a meaningful window on the order of 30 minutes or more and presented as a weaker fallback or secondary sanity check, not as equivalent to a push feed for liquidation-grade decisions. It need not prescribe both sources.
-    - It requires both validations before a push-feed answer enters the health calculation: the answer is positive, and updatedAt is no older than a configured per-feed maximum age chosen from that feed's published update interval or heartbeat (a tighter justified bound also passes). A bare latestAnswer(), an unchecked latestRoundData(), or one global timeout asserted to fit every feed fails.
-    - It does NOT settle for keeping the spot read plus a patch — a deviation threshold or circuit breaker on the spot price, a median across several pools' spot prices, or moving to a bigger pool — as the primary fix.
-  difficulty: reasoning
-  source: |-
-    https://github.com/austintgriffith/ethevals/blob/main/evals/security/security-05-spot-price-oracle.yaml
-  tags:
-  - ethevals
-  - security
-- id: security-06-fee-on-transfer-books
-  type: open
-  question: |
-    Our single-token staking pool on Ethereum mainnet has been live for three
-    weeks and the books do not close. What we can see:
+      How the vault mints: a deposit mints
+      `assets * totalShares / (USDC the vault currently holds)`, and when the share
+      supply is zero the first depositor gets one share per unit deposited.
+      Redeeming burns shares and pays out the same pro-rata slice. Nothing else in
+      the contract touched the balances — no admin function ran, and the vault made
+      no external calls other than the USDC transfers themselves.
 
-      - 1,250,000 TKN has been staked cumulatively since launch, and 250,000 TKN
-        has been unstaked
-      - summing stakedBalance[user] across every current staker: 1,000,000 TKN
-      - the pool contract's actual TKN balance: 975,000 TKN
-      - the early unstakers were all paid without the pool reverting; the ones
-        unstaking now are starting to revert with the token's insufficient-balance
-        error
-      - one user staked 10,000 TKN, the UI showed 10,000 staked, and when they
-        unstaked all 10,000 their wallet received 9,800 TKN
+      Explain exactly how 0xB2 ended up with zero shares while their deposit
+      succeeded, whether this is a bug in our contract or a mistake by the
+      depositor, and what change we ship so it cannot happen again. We want to stay
+      ERC-4626 compatible.
+    answer: |-
+      Grade CORRECT only if the response satisfies every one of these points; a response that misses any of them is INCORRECT:
+      - The response diagnoses the mechanism: the 20,000 USDC sent directly to the vault raised the vault's asset balance without minting any shares, so with a share supply of 1 the next depositor's share amount, computed as assets * totalShares / vaultAssets, rounded DOWN to zero — 15,000 USDC bought less than one whole share — and their assets were absorbed by the single share the first depositor held. Describing that truncation as a rounding-to-zero bug is part of the correct answer, not a miss. It FAILS only if the loss is pinned on something else: the depositor, a USDC transfer fee, a paused or blocklisted token, reentrancy, or an arithmetic typo unrelated to the direct transfer.
+      - It calls this a bug in the vault (a first-depositor / donation share-price manipulation that any attacker can reproduce), not acceptable behavior and not a user error.
+      - The prescribed fix is structural — it makes the manipulation uneconomical or impossible rather than only protecting one transaction. Any of these passes: a virtual shares-and-assets offset in the conversion math, adopting OpenZeppelin's ERC4626 (whose conversion carries virtual assets and shares by default; raising _decimalsOffset on top is a strengthening, not a requirement), seeding the vault with a dead first deposit whose shares are burned to a non-recoverable address, or tracking deposited assets in internal accounting instead of reading the raw token balance.
+      - It does NOT prescribe as the fix: preventing or blocking direct ERC-20 transfers to the vault (impossible for a plain token transfer), sweeping donations to the owner, or a minimum-shares-out / slippage check on deposit alone. A minimum-shares-out check may be mentioned as an extra guard for depositors, but on its own it only makes the victim's transaction revert and leaves the vault manipulable.
+  metadata:
+    section: security
+    type: open
+    difficulty: reasoning
+    source: |-
+      https://github.com/austintgriffith/ethevals/blob/main/evals/security/security-04-vault-inflation.yaml
+    tags:
+      - ethevals
+      - security
+  assert:
+    - type: llm-rubric
+      value: '{{answer}}'
+      metric: security
 
-    What the contract does, in full: `stake(amount)` calls
-    `token.transferFrom(msg.sender, address(this), amount)` and then sets
-    `stakedBalance[msg.sender] += amount`. `unstake(amount)` decrements
-    `stakedBalance[msg.sender]` and then calls `token.transfer(msg.sender,
-    amount)`. There is no rewards logic yet, no admin withdrawal function, and
-    the pool has never sent TKN anywhere except back to unstakers. TKN's total
-    supply has not been changed by anyone and no rebase has occurred.
+- description: security/security-05-spot-price-oracle
+  vars:
+    type: open
+    question: |-
+      Design review on our lending market. Positions are up to $2M of WETH
+      collateral backing USDC debt, liquidated at 85% LTV, on Ethereum mainnet.
 
-    Explain where the missing 25,000 TKN went and why the shortfall grows, then
-    give the change that makes the accounting correct — including what happens to
-    the stakers who cannot currently unstake.
-  answer: |
-    Grade CORRECT only if the response satisfies every one of these points; a response that misses any of them is INCORRECT:
-    - The response identifies that TKN takes a cut on every transfer (a fee-on-transfer / transfer-tax / deflationary token), so the pool receives LESS than the amount argument it credits — the derivation the numbers support is roughly 2% (10,000 unstaked vs 9,800 delivered; a 25,000 shortfall against 1,250,000 cumulatively staked). It does NOT explain the gap as a rebase, an admin drain, a reentrancy exploit, integer rounding, or a mistake by users.
-    - It explains why the shortfall is progressive and lands on the last unstakers: every stake over-credits by the fee while the pool is debited the full requested amount on the way out, so the deficit accumulates and the pool runs out of tokens before the last balances are paid.
-    - The fix credits what was actually received rather than what was requested: measure token.balanceOf(address(this)) immediately before and after transferFrom and credit the difference. Explicitly rejecting such tokens up front by reverting when the received delta mismatches the requested amount is equally acceptable. On withdrawal, debiting the requested amount already matches what leaves the pool even when the recipient receives less; the answer may either accept that token-level exit fee or measure it for user-facing guarantees, but it need not apply a second balance-delta credit mechanism. It FAILS if the prescribed fix is a hardcoded fee percentage or buffer, topping the pool up from treasury as the fix itself, or asking users to send extra.
-    - It addresses the already-stuck stakers concretely (for example: socialize the shortfall pro-rata over remaining balances, or fund the gap and migrate to the corrected accounting) rather than leaving them unmentioned.
-  difficulty: reasoning
-  source: |-
-    https://github.com/austintgriffith/ethevals/blob/main/evals/security/security-06-fee-on-transfer-books.yaml
-  tags:
-  - ethevals
-  - security
-- id: security-07-oz-v5-approvals
-  type: open
-  question: |
-    Our treasury router on Ethereum mainnet pulls stablecoins in and forwards
-    them to a strategy contract, which it has to approve before each run. The
-    repo is on @openzeppelin/contracts v5 and Solidity 0.8.26.
+      A teammate has written up how we should price the collateral:
 
-    The approval step is a low-level call, because an earlier version reverted
-    while decoding the return value of some tokens:
+        "Read it straight from the Uniswap V3 WETH/USDC 0.05% pool with slot0. That
+        pool holds around $200M of liquidity. To move its price 10% an attacker
+        would have to push tens of millions of dollars through it, and arbitrage
+        bots would drag it back within the same block, so they would eat the loss
+        for nothing. Chainlink is an extra external call, its answer can be stale
+        between updates, and it puts a third party between us and our own
+        liquidations. Our own on-chain reserve of truth is strictly better."
 
-      (bool ok, ) = token.call(abi.encodeWithSelector(0x095ea7b3, strategy, amount));
-      require(ok, "approve failed");
+      Work the numbers rather than trading opinions: what does it actually cost an
+      attacker to make our contract read a price 10% away from the market price at
+      the moment our contract reads it, and what do they get for it? Then tell me
+      what we should price collateral with, and what has to be checked around that
+      price before we use it in a health calculation.
+    answer: |-
+      Grade CORRECT only if the response satisfies every one of these points; a response that misses any of them is INCORRECT:
+      - The response rejects the teammate's cost argument with the atomicity reasoning: the capital needed to move the pool is borrowed and repaid inside the SAME transaction (a flash loan), so the tens of millions is never at risk and the attacker's true cost is only pool fees plus slippage on the round trip — and arbitrage cannot help because the manipulated read, the borrow or liquidation it enables, and the unwind all complete before any other transaction can run.
+      - It concludes that a Uniswap V3 slot0 spot read (or any single-block spot price: getReserves, a balance ratio, an on-the-spot quoter call) must NOT be the price source for these health calculations, regardless of how deep the pool is.
+      - It prescribes a manipulation-resistant source instead. A Chainlink or equivalent push feed as the primary liquidation price passes. A Uniswap V3 TWAP also passes only when averaged over a meaningful window on the order of 30 minutes or more and presented as a weaker fallback or secondary sanity check, not as equivalent to a push feed for liquidation-grade decisions. It need not prescribe both sources.
+      - It requires both validations before a push-feed answer enters the health calculation: the answer is positive, and updatedAt is no older than a configured per-feed maximum age chosen from that feed's published update interval or heartbeat (a tighter justified bound also passes). A bare latestAnswer(), an unchecked latestRoundData(), or one global timeout asserted to fit every feed fails.
+      - It does NOT settle for keeping the spot read plus a patch — a deviation threshold or circuit breaker on the spot price, a median across several pools' spot prices, or moving to a bigger pool — as the primary fix.
+  metadata:
+    section: security
+    type: open
+    difficulty: reasoning
+    source: |-
+      https://github.com/austintgriffith/ethevals/blob/main/evals/security/security-05-spot-price-oracle.yaml
+    tags:
+      - ethevals
+      - security
+  assert:
+    - type: llm-rubric
+      value: '{{answer}}'
+      metric: security
 
-    Three weeks of runs:
+- description: security/security-06-fee-on-transfer-books
+  vars:
+    type: open
+    question: |-
+      Our single-token staking pool on Ethereum mainnet has been live for three
+      weeks and the books do not close. What we can see:
 
-      - USDC (0xA0b86991c6218b36c1d19D4a2e9Eb0cE3606eB48): every run succeeds
-      - USDT (0xdAC17F958D2ee523a2206206994597C13D831ec7): the FIRST run
-        succeeded. Every run since reverts, always at that require, before any
-        transfer happens
-      - the strategy frequently spends less than it was approved for, so a
-        leftover allowance from the previous run is normally still sitting there
-      - the router holds enough ETH for gas, is not paused, is not on any
-        blocklist, and the amounts are ordinary five-figure sums
+        - 1,250,000 TKN has been staked cumulatively since launch, and 250,000 TKN
+          has been unstaked
+        - summing stakedBalance[user] across every current staker: 1,000,000 TKN
+        - the pool contract's actual TKN balance: 975,000 TKN
+        - the early unstakers were all paid without the pool reverting; the ones
+          unstaking now are starting to revert with the token's insufficient-balance
+          error
+        - one user staked 10,000 TKN, the UI showed 10,000 staked, and when they
+          unstaked all 10,000 their wallet received 9,800 TKN
 
-    Why does this fail only for USDT, and only after the first run? Give the
-    minimal change to the router that fixes it, and say what it should do about
-    the leftover allowance in general.
-  answer: |
-    Grade CORRECT only if the response satisfies every one of these points; a response that misses any of them is INCORRECT:
-    - The response diagnoses the token-side guard: USDT's approve reverts when it is called to set a NON-ZERO allowance while a non-zero allowance from before is still outstanding (the anti-front-running approve-race check in its implementation), which is exactly why the first run — with a zero starting allowance — worked, why the later runs fail, and why USDC, which has no such restriction, is unaffected. It does NOT attribute the failure to gas, a paused or blocklisted token, the missing return value (already handled by the low-level call), an allowance overflow, or the strategy contract.
-    - The prescribed fix goes through a path that zeroes the allowance before setting a new non-zero one. Any of these passes: SafeERC20.forceApprove, SafeERC20.safeIncreaseAllowance or safeDecreaseAllowance (OpenZeppelin v5 routes both through forceApprove), or an explicit approve(0) followed by approve(amount). It FAILS if it prescribes safeApprove: that function was removed in OpenZeppelin Contracts v5, which the repo is pinned to, so the suggested code would not compile.
-  difficulty: reasoning
-  source: |-
-    https://github.com/austintgriffith/ethevals/blob/main/evals/security/security-07-oz-v5-approvals.yaml
-  tags:
-  - ethevals
-  - security
-- id: security-08-signature-replay
-  type: open
-  question: |
-    Post-mortem needed on our gasless order relayer. Users sign an order
-    off-chain — (owner, token, amount, nonce, deadline) — and our relayer submits
-    it on their behalf; the contract recovers the signer, checks the nonce has
-    not been used, checks the deadline, marks the nonce used and moves the tokens.
+      What the contract does, in full: `stake(amount)` calls
+      `token.transferFrom(msg.sender, address(this), amount)` and then sets
+      `stakedBalance[msg.sender] += amount`. `unstake(amount)` decrements
+      `stakedBalance[msg.sender]` and then calls `token.transfer(msg.sender,
+      amount)`. There is no rewards logic yet, no admin withdrawal function, and
+      the pool has never sent TKN anywhere except back to unstakers. TKN's total
+      supply has not been changed by anyone and no rebase has occurred.
 
-    We ship the same contract to every chain we support and deploy it with
-    CREATE2 from the same factory and salt, so it sits at the identical address
-    on Ethereum mainnet, Base and Arbitrum. Users like that: one address to
-    remember.
+      Explain where the missing 25,000 TKN went and why the shortfall grows, then
+      give the change that makes the accounting correct — including what happens to
+      the stakers who cannot currently unstake.
+    answer: |-
+      Grade CORRECT only if the response satisfies every one of these points; a response that misses any of them is INCORRECT:
+      - The response identifies that TKN takes a cut on every transfer (a fee-on-transfer / transfer-tax / deflationary token), so the pool receives LESS than the amount argument it credits — the derivation the numbers support is roughly 2% (10,000 unstaked vs 9,800 delivered; a 25,000 shortfall against 1,250,000 cumulatively staked). It does NOT explain the gap as a rebase, an admin drain, a reentrancy exploit, integer rounding, or a mistake by users.
+      - It explains why the shortfall is progressive and lands on the last unstakers: every stake over-credits by the fee while the pool is debited the full requested amount on the way out, so the deficit accumulates and the pool runs out of tokens before the last balances are paid.
+      - The fix credits what was actually received rather than what was requested: measure token.balanceOf(address(this)) immediately before and after transferFrom and credit the difference. Explicitly rejecting such tokens up front by reverting when the received delta mismatches the requested amount is equally acceptable. On withdrawal, debiting the requested amount already matches what leaves the pool even when the recipient receives less; the answer may either accept that token-level exit fee or measure it for user-facing guarantees, but it need not apply a second balance-delta credit mechanism. It FAILS if the prescribed fix is a hardcoded fee percentage or buffer, topping the pool up from treasury as the fix itself, or asking users to send extra.
+      - It addresses the already-stuck stakers concretely (for example: socialize the shortfall pro-rata over remaining balances, or fund the gap and migrate to the corrected accounting) rather than leaving them unmentioned.
+  metadata:
+    section: security
+    type: open
+    difficulty: reasoning
+    source: |-
+      https://github.com/austintgriffith/ethevals/blob/main/evals/security/security-06-fee-on-transfer-books.yaml
+    tags:
+      - ethevals
+      - security
+  assert:
+    - type: llm-rubric
+      value: '{{answer}}'
+      metric: security
 
-    What happened: a user signed one order for 5,000 USDC. Our relayer executed
-    it on Base at 14:02 — correct, that was the order. At 14:07 someone else
-    submitted the exact same signature to the mainnet deployment and it executed
-    there too, moving another 5,000 USDC of the user's mainnet balance. The user
-    signed once. They were charged twice.
+- description: security/security-07-oz-v5-approvals
+  vars:
+    type: open
+    question: |-
+      Our treasury router on Ethereum mainnet pulls stablecoins in and forwards
+      them to a strategy contract, which it has to approve before each run. The
+      repo is on @openzeppelin/contracts v5 and Solidity 0.8.26.
 
-    Both executions passed every check the contract makes. On mainnet the
-    recovered signer was the owner, the nonce had never been used, and the
-    deadline had not passed.
+      The approval step is a low-level call, because an earlier version reverted
+      while decoding the return value of some tokens:
 
-    How we build the digest: `keccak256(abi.encodePacked("\x19\x01",
-    DOMAIN_SEPARATOR, structHash))`, where DOMAIN_SEPARATOR is computed once in
-    the constructor from the contract name, a version string, and address(this),
-    and stored in an immutable.
+        (bool ok, ) = token.call(abi.encodeWithSelector(0x095ea7b3, strategy, amount));
+        require(ok, "approve failed");
 
-    Explain why the mainnet deployment accepted a signature the user produced for
-    Base, and what has to change so one signature can only ever be valid on the
-    chain it was meant for. We want to keep the same address on every chain.
-  answer: |
-    Grade CORRECT only if the response satisfies every one of these points; a response that misses any of them is INCORRECT:
-    - The response pinpoints the domain separator: it is built from name, version and contract address only, with no chain identifier — and because the deployments share an address via CREATE2, every input to the digest is byte-identical on Base and mainnet, so the same signature recovers the same signer on both. It does NOT blame the relayer, the signature-recovery code, malleability, or the deadline.
-    - It explains why the nonce could not stop this: nonce state is per-deployment storage, so the mainnet contract has never seen that nonce and has no way to learn that Base consumed it — replay protection within a chain is not replay protection across chains.
-    - The fix binds the signature to one chain while keeping the shared address. The standard form passes: chain id in the EIP-712 domain — EIP712Domain(string name,string version,uint256 chainId,address verifyingContract) — so the digest differs per chain, and delegating that to OpenZeppelin's EIP712 helper counts. Binding the chain id inside the signed order struct and enforcing it against block.chainid on execution also passes; it is a weaker convention but it does stop the replay.
-    - If it caches the domain separator, it accounts for block.chainid changing after deployment (a chain fork) by re-deriving the separator when the current chain id differs from the one cached at construction, rather than trusting an immutable forever. Using OpenZeppelin's EIP712, which does this internally, counts as a pass.
-    - It does NOT present per-chain deployment addresses (different salts per chain) or a shorter deadline as the fix — the requirement to keep one address on every chain stands.
-  difficulty: reasoning
-  source: |-
-    https://github.com/austintgriffith/ethevals/blob/main/evals/security/security-08-signature-replay.yaml
-  tags:
-  - ethevals
-  - security
-- id: security-09-uups-upgrade
-  type: open
-  question: |
-    Post-mortem on our staking protocol — a UUPS-upgradeable contract on Ethereum
-    mainnet. We upgraded the implementation from V1 to V2 yesterday. The upgrade
-    transaction succeeded, the proxy now points at V2, and every function call
-    still executes without reverting — but the values coming back are wrong.
+      Three weeks of runs:
 
-    V1 declared its state, in this order:
+        - USDC (0xA0b86991c6218b36c1d19D4a2e9Eb0cE3606eB48): every run succeeds
+        - USDT (0xdAC17F958D2ee523a2206206994597C13D831ec7): the FIRST run
+          succeeded. Every run since reverts, always at that require, before any
+          transfer happens
+        - the strategy frequently spends less than it was approved for, so a
+          leftover allowance from the previous run is normally still sitting there
+        - the router holds enough ETH for gas, is not paused, is not on any
+          blocklist, and the amounts are ordinary five-figure sums
 
-      uint256 public totalDeposited;  // held 2,000,000 USDC = 2_000_000_000000 base units
-      address public treasury;        // held 0xC0FFEE0000000000000000000000000000000000
-      uint256 public feeBps;          // held 500
+      Why does this fail only for USDT, and only after the first run? Give the
+      minimal change to the router that fixes it, and say what it should do about
+      the leftover allowance in general.
+    answer: |-
+      Grade CORRECT only if the response satisfies every one of these points; a response that misses any of them is INCORRECT:
+      - The response diagnoses the token-side guard: USDT's approve reverts when it is called to set a NON-ZERO allowance while a non-zero allowance from before is still outstanding (the anti-front-running approve-race check in its implementation), which is exactly why the first run — with a zero starting allowance — worked, why the later runs fail, and why USDC, which has no such restriction, is unaffected. It does NOT attribute the failure to gas, a paused or blocklisted token, the missing return value (already handled by the low-level call), an allowance overflow, or the strategy contract.
+      - The prescribed fix goes through a path that zeroes the allowance before setting a new non-zero one. Any of these passes: SafeERC20.forceApprove, SafeERC20.safeIncreaseAllowance or safeDecreaseAllowance (OpenZeppelin v5 routes both through forceApprove), or an explicit approve(0) followed by approve(amount). It FAILS if it prescribes safeApprove: that function was removed in OpenZeppelin Contracts v5, which the repo is pinned to, so the suggested code would not compile.
+  metadata:
+    section: security
+    type: open
+    difficulty: reasoning
+    source: |-
+      https://github.com/austintgriffith/ethevals/blob/main/evals/security/security-07-oz-v5-approvals.yaml
+    tags:
+      - ethevals
+      - security
+  assert:
+    - type: llm-rubric
+      value: '{{answer}}'
+      metric: security
 
-    V2 is V1 plus one feature — a reward index. The new source declares, in order:
+- description: security/security-08-signature-replay
+  vars:
+    type: open
+    question: |-
+      Post-mortem needed on our gasless order relayer. Users sign an order
+      off-chain — (owner, token, amount, nonce, deadline) — and our relayer submits
+      it on their behalf; the contract recovers the signer, checks the nonce has
+      not been used, checks the deadline, marks the nonce used and moves the tokens.
 
-      uint256 public rewardIndex;     // new in V2
-      uint256 public totalDeposited;
-      address public treasury;
-      uint256 public feeBps;
+      We ship the same contract to every chain we support and deploy it with
+      CREATE2 from the same factory and salt, so it sits at the identical address
+      on Ethereum mainnet, Base and Arbitrum. Users like that: one address to
+      remember.
 
-    We added no re-initializer, and the upgrade never rewrote any existing value.
+      What happened: a user signed one order for 5,000 USDC. Our relayer executed
+      it on Base at 14:02 — correct, that was the order. At 14:07 someone else
+      submitted the exact same signature to the mainnet deployment and it executed
+      there too, moving another 5,000 USDC of the user's mainnet balance. The user
+      signed once. They were charged twice.
 
-    Since the upgrade, reading the proxy returns:
+      Both executions passed every check the contract makes. On mainnet the
+      recovered signer was the owner, the nonce had never been used, and the
+      deadline had not passed.
 
-      rewardIndex()    -> 2000000000000        (we have never set this)
-      totalDeposited() -> a huge number that, printed in hex, is exactly our
-                          old treasury address
-      treasury()       -> 0x00000000000000000000000000000000000001F4
-      feeBps()         -> 0
+      How we build the digest: `keccak256(abi.encodePacked("\x19\x01",
+      DOMAIN_SEPARATOR, structHash))`, where DOMAIN_SEPARATOR is computed once in
+      the constructor from the contract name, a version string, and address(this),
+      and stored in an immutable.
 
-    The proxy admin is unchanged, the implementation address is the V2 we
-    deployed, and no call reverts. Explain why every value reads shifted like
-    this, whether our deposit data is gone, and what we change so the V2 upgrade
-    is safe — we still need rewardIndex in V2.
-  answer: |
-    Grade CORRECT only if the response satisfies every one of these points; a response that misses any of them is INCORRECT:
-    - The response diagnoses a storage-layout collision caused by inserting a new variable ahead of the existing ones: because the proxy keeps V1's storage and V2 assigns slots by declaration order, putting rewardIndex first shifted every existing variable down one slot, so each getter now reads its former neighbour's slot — rewardIndex reads slot 0 (old totalDeposited, 2,000,000 USDC = 2000000000000), totalDeposited reads slot 1 (the old treasury address, which is why it prints as a huge number equal to that address in hex), treasury reads slot 2 (old feeBps 500 = 0x1F4), and feeBps reads the never-written slot 3 (0). It does NOT pin the cause on a missing or failed initializer, a bad re-initializer value, the wrong implementation address, a proxy-admin misconfiguration, or data lost/corrupted during the upgrade.
-    - It states the rule the upgrade broke: an upgradeable contract's storage layout is append-only — new state variables may only be added AFTER all existing ones, never inserted before them or reordered — because the proxy preserves storage across upgrades and slots are fixed by declaration order.
-    - It concludes the deposit data is NOT lost: the original values still sit untouched in their original slots (0, 1, 2) and are only being read through a mismatched layout, so no funds or state were destroyed. It FAILS if it declares the deposits unrecoverable, or if its primary remedy is migrating to a brand-new proxy.
-    - The fix restores the V1 slot order and appends the new variable: declare rewardIndex AFTER feeBps (preserving slots 0-2 for totalDeposited/treasury/feeBps) and ship that as the corrected implementation, which makes every read correct again because the physical slots never moved. It FAILS if the fix reorders or inserts again, or if the primary remedy is manually overwriting each variable. Naming storage gaps or ERC-7201 namespaced storage (or an OZ storage-layout / upgrade-safety check) as forward-looking prevention is a plus, not a substitute for the append-ordered fix.
-  difficulty: reasoning
-  source: |-
-    https://github.com/austintgriffith/ethevals/blob/main/evals/security/security-09-uups-upgrade.yaml
-  tags:
-  - ethevals
-  - security
-- id: security-10-checks-effects-interactions
-  type: open
-  question: |
-    A Solidity function body is ordered so that it first validates inputs and conditions, then updates all contract state, and only performs external calls last. What is the standard name of this defensive coding pattern?
-    End your reply with a line of the form "Answer: <short answer>".
-  answer: |
-    The response's answer must match the pattern `checks?[\s_-]*effects?[\s_-]*interactions?|\bCEI\b` (that is, it must name the concept the pattern captures). The reference answer is: Answer: Checks-Effects-Interactions (CEI).
-  difficulty: recall
-  source: |-
-    https://github.com/austintgriffith/ethevals/blob/main/evals/security/security-10-checks-effects-interactions.yaml
-  tags:
-  - ethevals
-  - security
-- id: security-11-missing-access-control
-  type: open
-  question: |
-    A deployed contract that holds user funds exposes a function `emergencyWithdraw()` marked `external` with no modifiers; its body transfers the contract's entire token balance to `msg.sender`. Anyone who calls it receives all the funds. What vulnerability class is this?
-    End your reply with a line of the form "Answer: <short answer>".
-  answer: |
-    The response's answer must match the pattern `access[\s_-]?control|unprotected|unrestricted|unauthoriz` (that is, it must name the concept the pattern captures). The reference answer is: Answer: missing access control (unprotected privileged function).
-  difficulty: recall
-  source: |-
-    https://github.com/austintgriffith/ethevals/blob/main/evals/security/security-11-missing-access-control.yaml
-  tags:
-  - ethevals
-  - security
-- id: security-12-storage-layout
-  type: multiple_choice
-  question: |
-    A contract behind an upgradeable proxy declared, in V1, exactly two storage variables in this order: `uint256 a; uint256 b;`. You are writing V2 and need to add a new variable `uint256 c`. Which V2 storage layout is safe?
-  choices:
-  - uint256 c; uint256 a; uint256 b;
-  - uint256 a; uint256 c; uint256 b;
-  - uint256 a; uint256 b; uint256 c;
-  - Any order is safe because variable names are preserved across upgrades
-  answer: C
-  difficulty: understanding
-  source: |-
-    https://github.com/austintgriffith/ethevals/blob/main/evals/security/security-12-storage-layout.yaml
-  tags:
-  - ethevals
-  - security
-- id: security-13-authorize-upgrade
-  type: open
-  question: |
-    You are writing an upgradeable implementation contract that inherits OpenZeppelin's UUPSUpgradeable. There is one internal function you must override (typically restricted with an owner check) to control who may perform upgrades — getting it wrong can leave the contract locked. Name that function.
-    End your reply with a line of the form "Answer: <function name>".
-  answer: |
-    The response's answer must match the pattern `authorize[\s_]?upgrade` (that is, it must name the concept the pattern captures). The reference answer is: Answer: _authorizeUpgrade.
-  difficulty: recall
-  source: |-
-    https://github.com/austintgriffith/ethevals/blob/main/evals/security/security-13-authorize-upgrade.yaml
-  tags:
-  - ethevals
-  - security
-- id: security-14-sandwich-slippage
-  type: open
-  question: |
-    You submit a swap of 10 ETH for USDC on Uniswap through the public mempool with a 1% slippage tolerance. A bot sees your pending transaction, buys USDC immediately before yours executes (pushing the price up), lets your swap fill at the worse price, then sells immediately after your transaction, pocketing the difference. What is this specific MEV attack called?
-    End your reply with a line of the form "Answer: <short answer>".
-  answer: |
-    The response's answer must match the pattern `sandwich` (that is, it must name the concept the pattern captures). The reference answer is: Answer: a sandwich attack.
-  difficulty: recall
-  source: |-
-    https://github.com/austintgriffith/ethevals/blob/main/evals/security/security-14-sandwich-slippage.yaml
-  tags:
-  - ethevals
-  - security
-- id: security-15-lending-postmortem-1
-  type: open
-  question: |
-    Post-mortem, and I am stuck on it.
+      Explain why the mainnet deployment accepted a signature the user produced for
+      Base, and what has to change so one signature can only ever be valid on the
+      chain it was meant for. We want to keep the same address on every chain.
+    answer: |-
+      Grade CORRECT only if the response satisfies every one of these points; a response that misses any of them is INCORRECT:
+      - The response pinpoints the domain separator: it is built from name, version and contract address only, with no chain identifier — and because the deployments share an address via CREATE2, every input to the digest is byte-identical on Base and mainnet, so the same signature recovers the same signer on both. It does NOT blame the relayer, the signature-recovery code, malleability, or the deadline.
+      - It explains why the nonce could not stop this: nonce state is per-deployment storage, so the mainnet contract has never seen that nonce and has no way to learn that Base consumed it — replay protection within a chain is not replay protection across chains.
+      - The fix binds the signature to one chain while keeping the shared address. The standard form passes: chain id in the EIP-712 domain — EIP712Domain(string name,string version,uint256 chainId,address verifyingContract) — so the digest differs per chain, and delegating that to OpenZeppelin's EIP712 helper counts. Binding the chain id inside the signed order struct and enforcing it against block.chainid on execution also passes; it is a weaker convention but it does stop the replay.
+      - If it caches the domain separator, it accounts for block.chainid changing after deployment (a chain fork) by re-deriving the separator when the current chain id differs from the one cached at construction, rather than trusting an immutable forever. Using OpenZeppelin's EIP712, which does this internally, counts as a pass.
+      - It does NOT present per-chain deployment addresses (different salts per chain) or a shorter deadline as the fix — the requirement to keep one address on every chain stands.
+  metadata:
+    section: security
+    type: open
+    difficulty: reasoning
+    source: |-
+      https://github.com/austintgriffith/ethevals/blob/main/evals/security/security-08-signature-replay.yaml
+    tags:
+      - ethevals
+      - security
+  assert:
+    - type: llm-rubric
+      value: '{{answer}}'
+      metric: security
 
-    We run a lending market on Arbitrum One. Collateral is wstETH, debt is USDC,
-    positions are liquidatable below 125% collateralisation.
+- description: security/security-09-uups-upgrade
+  vars:
+    type: open
+    question: |-
+      Post-mortem on our staking protocol — a UUPS-upgradeable contract on Ethereum
+      mainnet. We upgraded the implementation from V1 to V2 yesterday. The upgrade
+      transaction succeeded, the proxy now points at V2, and every function call
+      still executes without reverting — but the values coming back are wrong.
 
-    Last Tuesday, from 09:14 to 12:40 UTC, our users could not reach the chain.
-    Transactions submitted from the app sat unconfirmed and the explorer showed
-    no new blocks for three and a half hours. Everywhere else trading carried on:
-    ETH fell 11% over that window on Binance and on mainnet DEXes.
+      V1 declared its state, in this order:
 
-    At 12:41, in the first blocks after service came back, keeper bots liquidated
-    38 positions in one sweep. Every one of those borrowers had been trying to
-    add collateral since mid-morning and could not get a transaction through.
+        uint256 public totalDeposited;  // held 2,000,000 USDC = 2_000_000_000000 base units
+        address public treasury;        // held 0xC0FFEE0000000000000000000000000000000000
+        uint256 public feeBps;          // held 500
 
-    Here is the part I cannot explain. Before any price is used we already do
-    this:
+      V2 is V1 plus one feature — a reward index. The new source declares, in order:
 
-      (, int256 answer, , uint256 updatedAt, ) = feed.latestRoundData();
-      require(answer > 0, "bad price");
-      require(block.timestamp - updatedAt <= 3600, "stale price");
+        uint256 public rewardIndex;     // new in V2
+        uint256 public totalDeposited;
+        address public treasury;
+        uint256 public feeBps;
 
-    Our collateral feed's heartbeat is 86400 seconds, so our one-hour bound is far
-    tighter than the feed itself promises. I pulled the round data for all 38
-    liquidations: the check passed every time, and the answer we read had been
-    published seconds earlier and matched the real market price. The price was
-    not stale. The math was not wrong. Our liquidation logic did exactly what it
-    was written to do.
+      We added no re-initializer, and the upgrade never rewrote any existing value.
 
-    Explain how 38 users lost their positions to a price they had no way to react
-    to, when our freshness check was working correctly the whole time. Then tell
-    me precisely what we change, and where in the flow it goes.
-  answer: |
-    Grade CORRECT only if the response satisfies every one of these points; a response that misses any of them is INCORRECT:
-    - The response identifies the cause as the L2 itself being unavailable — the Arbitrum sequencer was down, so users could not transact while the outside world repriced — and names the missing control as a sequencer-liveness check, i.e. reading the Chainlink L2 Sequencer Uptime Feed (or equivalent) and refusing to price when it reports the sequencer down.
-    - The response requires a grace period after the sequencer comes back up — a defined window (an hour is the conventional figure) during which liquidations are refused even though the sequencer is up and the price is fresh — and gives the reason: borrowers need a chance to act before the market acts against them. A fix that resumes liquidating the moment the sequencer is back does not pass.
-    - The response does NOT present the remedy as tightening or loosening the staleness bound, adding answeredInRound / roundId checks, or switching to a TWAP or a different price source. It states that the existing freshness check was not what failed. Any of those may appear as secondary hardening, but not as the fix for this incident.
-    - The fix is placed so that it gates liquidation (and anything else that uses the price against a user's position) while leaving deposits, collateral top-ups and repayments open during the grace window — it does not pause the whole market in a way that keeps borrowers from restoring their own health.
-  difficulty: reasoning
-  source: |-
-    https://github.com/austintgriffith/ethevals/blob/main/evals/security/security-15-lending-postmortem-1.yaml
-  tags:
-  - ethevals
-  - security
-- id: security-16-lending-postmortem-2
-  type: open
-  question: |
-    We run the same fixed-rate borrowing contract on Ethereum mainnet and on
-    Arbitrum One. Identical bytecode, identical constructor arguments, deployed a
-    day apart. The rate is 4.00% per year. Interest is applied by a public
-    accrueInterest() that anyone can call, and the accounting is:
+      Since the upgrade, reading the proxy returns:
 
-      uint256 constant SECONDS_PER_BLOCK = 12;
+        rewardIndex()    -> 2000000000000        (we have never set this)
+        totalDeposited() -> a huge number that, printed in hex, is exactly our
+                            old treasury address
+        treasury()       -> 0x00000000000000000000000000000000000001F4
+        feeBps()         -> 0
 
-      function accrueInterest() public {
-          uint256 blocksElapsed = block.number - lastAccrualBlock;
-          if (blocksElapsed == 0) return;
-          uint256 secondsElapsed = blocksElapsed * SECONDS_PER_BLOCK;
-          index += index * rateBps * secondsElapsed / (10_000 * 365 days);
-          lastAccrualBlock = block.number;
-      }
+      The proxy admin is unchanged, the implementation address is the V2 we
+      deployed, and no call reverts. Explain why every value reads shifted like
+      this, whether our deposit data is gone, and what we change so the V2 upgrade
+      is safe — we still need rewardIndex in V2.
+    answer: |-
+      Grade CORRECT only if the response satisfies every one of these points; a response that misses any of them is INCORRECT:
+      - The response diagnoses a storage-layout collision caused by inserting a new variable ahead of the existing ones: because the proxy keeps V1's storage and V2 assigns slots by declaration order, putting rewardIndex first shifted every existing variable down one slot, so each getter now reads its former neighbour's slot — rewardIndex reads slot 0 (old totalDeposited, 2,000,000 USDC = 2000000000000), totalDeposited reads slot 1 (the old treasury address, which is why it prints as a huge number equal to that address in hex), treasury reads slot 2 (old feeBps 500 = 0x1F4), and feeBps reads the never-written slot 3 (0). It does NOT pin the cause on a missing or failed initializer, a bad re-initializer value, the wrong implementation address, a proxy-admin misconfiguration, or data lost/corrupted during the upgrade.
+      - It states the rule the upgrade broke: an upgradeable contract's storage layout is append-only — new state variables may only be added AFTER all existing ones, never inserted before them or reordered — because the proxy preserves storage across upgrades and slots are fixed by declaration order.
+      - It concludes the deposit data is NOT lost: the original values still sit untouched in their original slots (0, 1, 2) and are only being read through a mismatched layout, so no funds or state were destroyed. It FAILS if it declares the deposits unrecoverable, or if its primary remedy is migrating to a brand-new proxy.
+      - The fix restores the V1 slot order and appends the new variable: declare rewardIndex AFTER feeBps (preserving slots 0-2 for totalDeposited/treasury/feeBps) and ship that as the corrected implementation, which makes every read correct again because the physical slots never moved. It FAILS if the fix reorders or inserts again, or if the primary remedy is manually overwriting each variable. Naming storage gaps or ERC-7201 namespaced storage (or an OZ storage-layout / upgrade-safety check) as forward-looking prevention is a plus, not a substitute for the append-ordered fix.
+  metadata:
+    section: security
+    type: open
+    difficulty: reasoning
+    source: |-
+      https://github.com/austintgriffith/ethevals/blob/main/evals/security/security-09-uups-upgrade.yaml
+    tags:
+      - ethevals
+      - security
+  assert:
+    - type: llm-rubric
+      value: '{{answer}}'
+      metric: security
 
-    Finance reconciled July across both deployments. On the rate alone, a
-    borrower holding 1,000,000 USDC of debt for all 31 days should owe 3,397 USDC
-    of interest. On mainnet that borrower was charged 3,391. On Arbitrum, same
-    debt, same 31 days, the charge came out at 3,391 as well — the two
-    deployments agree with each other to within a couple of dollars.
+- description: security/security-10-checks-effects-interactions
+  vars:
+    type: open
+    question: |-
+      A Solidity function body is ordered so that it first validates inputs and conditions, then updates all contract state, and only performs external calls last. What is the standard name of this defensive coding pattern?
+      End your reply with a line of the form "Answer: <short answer>".
+    answer: |-
+      The response's answer must match the pattern `checks?[\s_-]*effects?[\s_-]*interactions?|\bCEI\b` (that is, it must name the concept the pattern captures). The reference answer is: Answer: Checks-Effects-Interactions (CEI).
+  metadata:
+    section: security
+    type: open
+    difficulty: recall
+    source: |-
+      https://github.com/austintgriffith/ethevals/blob/main/evals/security/security-10-checks-effects-interactions.yaml
+    tags:
+      - ethevals
+      - security
+  assert:
+    - type: llm-rubric
+      value: '{{answer}}'
+      metric: security
 
-    I had braced for the Arbitrum figure to be nonsense. That chain produces
-    blocks roughly every 250 milliseconds, so by my arithmetic this contract
-    should have been charging tens of times too much interest there, and it
-    plainly is not.
+- description: security/security-11-missing-access-control
+  vars:
+    type: open
+    question: |-
+      A deployed contract that holds user funds exposes a function `emergencyWithdraw()` marked `external` with no modifiers; its body transfers the contract's entire token balance to `msg.sender`. Anyone who calls it receives all the funds. What vulnerability class is this?
+      End your reply with a line of the form "Answer: <short answer>".
+    answer: |-
+      The response's answer must match the pattern `access[\s_-]?control|unprotected|unrestricted|unauthoriz` (that is, it must name the concept the pattern captures). The reference answer is: Answer: missing access control (unprotected privileged function).
+  metadata:
+    section: security
+    type: open
+    difficulty: recall
+    source: |-
+      https://github.com/austintgriffith/ethevals/blob/main/evals/security/security-11-missing-access-control.yaml
+    tags:
+      - ethevals
+      - security
+  assert:
+    - type: llm-rubric
+      value: '{{answer}}'
+      metric: security
 
-    Two things I need before we sign off on deploying this same contract to Base
-    next month:
+- description: security/security-12-storage-layout
+  vars:
+    type: multiple_choice
+    question: |-
+      A contract behind an upgradeable proxy declared, in V1, exactly two storage variables in this order: `uint256 a; uint256 b;`. You are writing V2 and need to add a new variable `uint256 c`. Which V2 storage layout is safe?
+    choices:
+      - Any order is safe because variable names are preserved across upgrades
+      - uint256 a; uint256 b; uint256 c;
+      - uint256 c; uint256 a; uint256 b;
+      - uint256 a; uint256 c; uint256 b;
+    answer: B
+  metadata:
+    section: security
+    type: multiple_choice
+    difficulty: understanding
+    source: |-
+      https://github.com/austintgriffith/ethevals/blob/main/evals/security/security-12-storage-layout.yaml
+    tags:
+      - ethevals
+      - security
+  assert:
+    - type: javascript
+      value: file://src/multiple_choice.js
+      metric: security
 
-      1. Explain the July reconciliation. Why did Arbitrum land on the same
-         number as mainnet, and why are both of them a shade under the 3,397 the
-         rate implies?
-      2. Tell me what this code will do on Base, with the arithmetic worked
-         through on the same 1,000,000 USDC over 31 days.
+- description: security/security-13-authorize-upgrade
+  vars:
+    type: open
+    question: |-
+      You are writing an upgradeable implementation contract that inherits OpenZeppelin's UUPSUpgradeable. There is one internal function you must override (typically restricted with an owner check) to control who may perform upgrades — getting it wrong can leave the contract locked. Name that function.
+      End your reply with a line of the form "Answer: <function name>".
+    answer: |-
+      The response's answer must match the pattern `authorize[\s_]?upgrade` (that is, it must name the concept the pattern captures). The reference answer is: Answer: _authorizeUpgrade.
+  metadata:
+    section: security
+    type: open
+    difficulty: recall
+    source: |-
+      https://github.com/austintgriffith/ethevals/blob/main/evals/security/security-13-authorize-upgrade.yaml
+    tags:
+      - ethevals
+      - security
+  assert:
+    - type: llm-rubric
+      value: '{{answer}}'
+      metric: security
 
-    Then tell me what you would change, if anything.
-  answer: |
-    Grade CORRECT only if the response satisfies every one of these points; a response that misses any of them is INCORRECT:
-    - The response explains the Arbitrum result correctly: block.number inside a contract on Arbitrum One does not count L2 blocks, it reports (an approximation of) the current Ethereum L1 block number, so a 12-seconds-per-block assumption happens to line up with wall-clock time there. An answer that has Arbitrum's block.number counting 250ms L2 blocks, or that explains the match by anything other than block.number tracking L1, fails this check.
-    - The response works out Base concretely and gets the direction and the order of magnitude right: on Base, block.number is the L2 block number, so with the chain's block time (state whichever figure the answer uses — roughly 1-2 seconds) each block is charged as 12 seconds and interest is massively OVER-accrued — around 6x at a 2-second block time, around 12x at 1 second — turning ~3,400 USDC of monthly interest into tens of thousands. The stated block time, the multiplier and the resulting figure must be arithmetically consistent with each other; the exact block time chosen is not what is graded.
-    - The prescribed fix is to stop using block.number as a clock and accrue on block.timestamp instead. It must be stated explicitly.
-    - The response does NOT offer a per-chain SECONDS_PER_BLOCK constant (or a per-chain deployment config of the same shape) as the remedy, and does not conclude that the mainnet deployment is the broken one. Mentioning a per-chain constant only to reject it is fine.
-  difficulty: reasoning
-  source: |-
-    https://github.com/austintgriffith/ethevals/blob/main/evals/security/security-16-lending-postmortem-2.yaml
-  tags:
-  - ethevals
-  - security
-- id: security-17-lending-postmortem-3
-  type: open
-  question: |
-    Support ticket I cannot close, and I need to know what to tell the user.
+- description: security/security-14-sandwich-slippage
+  vars:
+    type: open
+    question: |-
+      You submit a swap of 10 ETH for USDC on Uniswap through the public mempool with a 1% slippage tolerance. A bot sees your pending transaction, buys USDC immediately before yours executes (pushing the price up), lets your swap fill at the worse price, then sells immediately after your transaction, pocketing the difference. What is this specific MEV attack called?
+      End your reply with a line of the form "Answer: <short answer>".
+    answer: |-
+      The response's answer must match the pattern `sandwich` (that is, it must name the concept the pattern captures). The reference answer is: Answer: a sandwich attack.
+  metadata:
+    section: security
+    type: open
+    difficulty: recall
+    source: |-
+      https://github.com/austintgriffith/ethevals/blob/main/evals/security/security-14-sandwich-slippage.yaml
+    tags:
+      - ethevals
+      - security
+  assert:
+    - type: llm-rubric
+      value: '{{answer}}'
+      metric: security
 
-    Our lending market lets a relayer submit a borrow that the borrower
-    authorised off-chain, so borrowers never need gas:
+- description: security/security-15-lending-postmortem-1
+  vars:
+    type: open
+    question: |-
+      Post-mortem, and I am stuck on it.
 
-      bytes32 constant BORROW_TYPEHASH = keccak256("Borrow(address borrower,uint256 amount)");
+      We run a lending market on Arbitrum One. Collateral is wstETH, debt is USDC,
+      positions are liquidatable below 125% collateralisation.
 
-      constructor(...) {
-          DOMAIN_SEPARATOR = keccak256(abi.encode(
-              keccak256("EIP712Domain(string name,string version,uint256 chainId,address verifyingContract)"),
-              keccak256("ArbiLend"),
-              keccak256("1"),
-              block.chainid,
-              address(this)
-          ));
-      }
+      Last Tuesday, from 09:14 to 12:40 UTC, our users could not reach the chain.
+      Transactions submitted from the app sat unconfirmed and the explorer showed
+      no new blocks for three and a half hours. Everywhere else trading carried on:
+      ETH fell 11% over that window on Binance and on mainnet DEXes.
 
-      function borrowWithSig(address borrower, uint256 amount, uint8 v, bytes32 r, bytes32 s) external {
-          bytes32 structHash = keccak256(abi.encode(BORROW_TYPEHASH, borrower, amount));
-          bytes32 digest = keccak256(abi.encodePacked("\x19\x01", DOMAIN_SEPARATOR, structHash));
-          require(ecrecover(digest, v, r, s) == borrower, "bad sig");
-          _borrow(borrower, amount);
-      }
+      At 12:41, in the first blocks after service came back, keeper bots liquidated
+      38 positions in one sweep. Every one of those borrowers had been trying to
+      add collateral since mid-morning and could not get a transaction through.
 
-    The user signed one borrow, 5,000 USDC, in March. They repaid it in full in
-    April and have signed nothing since. In June they woke up to a fresh 5,000
-    USDC debt against their collateral, opened while they were on a flight they
-    can produce a boarding pass for. The (v, r, s) in the June transaction's
-    calldata is byte-identical to the one from March. Our relayer operator says
-    they did not send it, and the June transaction came from an address none of
-    us recognise.
+      Here is the part I cannot explain. Before any price is used we already do
+      this:
 
-    The user's position is that they only ever authorised one borrow, and the
-    verification looks right to me — the recovered address is genuinely theirs,
-    and no key was compromised on either side.
+        (, int256 answer, , uint256 updatedAt, ) = feed.latestRoundData();
+        require(answer > 0, "bad price");
+        require(block.timestamp - updatedAt <= 3600, "stale price");
 
-    Explain how the June borrow was possible, what else this same construction
-    exposes us to that has not bitten us yet, and exactly what we ship to fix it.
-  answer: |
-    Grade CORRECT only if the response satisfies every one of these points; a response that misses any of them is INCORRECT:
-    - The response identifies the mechanism as signature replay: the signed struct carries no nonce and no expiry, and the contract records nothing about signatures it has already honoured, so the March authorisation stays valid forever and anyone who read it out of the March transaction's calldata can resubmit it. It attributes the June borrow to that, not to a compromised key, a malicious relayer, or a flaw in ecrecover.
-    - The prescribed fix includes BOTH a per-signer nonce that is part of the signed struct and is incremented (or a mapping of consumed digests) AND a deadline / expiry carried in the signed struct and checked on-chain. Adding the typehash fields is part of the fix — a nonce checked on-chain but not signed over does not pass.
-    - The response flags the DOMAIN_SEPARATOR being computed once in the constructor and cached: it does not track block.chainid, so after a chain split every signature stays valid on both chains. The fix given is to rebuild the separator when block.chainid differs from the value it was built with (the OpenZeppelin EIP-712 pattern).
-    - The response does NOT pin the June borrow on signature malleability, a missing zero-address check on ecrecover, or the relayer being unauthenticated. Those may appear as secondary hardening; presented as the cause of a byte-identical resubmission, they fail this check.
-  difficulty: reasoning
-  source: |-
-    https://github.com/austintgriffith/ethevals/blob/main/evals/security/security-17-lending-postmortem-3.yaml
-  tags:
-  - ethevals
-  - security
-- id: security-18-decimal-scale-mismatch
-  type: open
-  question: |
-    A lending market takes WETH (18 decimals) as collateral and lends USDC (6 decimals). It values collateral as `collateralWei * ethUsdPrice / 1e18`, giving a USD value with 18 decimals, and it allows a borrow when `debtRaw <= collateralValue * 70 / 100`, where `debtRaw` is the raw USDC amount the borrower is requesting. By what factor does this check overstate how much USDC a borrower may take, compared to a correct check?
-    End your reply with a line of the form "Answer: <integer, plain decimal>".
-  answer: |
-    The response's final answer must be the integer 1000000000000 (decimal or the equivalent hex). Grade INCORRECT for these tempting wrong answers: `Answer: 1000000`; `Answer: 1000000000000000000`
-  difficulty: reasoning
-  source: |-
-    https://github.com/austintgriffith/ethevals/blob/main/evals/security/security-18-decimal-scale-mismatch.yaml
-  tags:
-  - ethevals
-  - security
-- id: security-21-malicious-permit
-  type: open
-  question: |
-    A site the user has never used before pops a wallet prompt: eth_signTypedData_v4 with this payload, for the user's account 0xd8dA6BF26964aF9D7eEd9e03E53415D37aA96045 on Ethereum mainnet. Today is 2026-09-21.
+      Our collateral feed's heartbeat is 86400 seconds, so our one-hour bound is far
+      tighter than the feed itself promises. I pulled the round data for all 38
+      liquidations: the check passed every time, and the answer we read had been
+      published seconds earlier and matched the real market price. The price was
+      not stale. The math was not wrong. Our liquidation logic did exactly what it
+      was written to do.
 
-    {"types":{"EIP712Domain":[{"name":"name","type":"string"},{"name":"version","type":"string"},{"name":"chainId","type":"uint256"},{"name":"verifyingContract","type":"address"}],"Permit":[{"name":"owner","type":"address"},{"name":"spender","type":"address"},{"name":"value","type":"uint256"},{"name":"nonce","type":"uint256"},{"name":"deadline","type":"uint256"}]},"primaryType":"Permit","domain":{"name":"USD Coin","verifyingContract":"0xa0b86991c6218b36c1d19d4a2e9eb0ce3606eb48","chainId":1,"version":"2"},"message":{"owner":"0xd8dA6BF26964aF9D7eEd9e03E53415D37aA96045","spender":"0x1661F1B207629e4F385DA89cFF535C8E5Eb23Ee3","value":"1033366316628","nonce":1,"deadline":1678709555}}
+      Explain how 38 users lost their positions to a price they had no way to react
+      to, when our freshness check was working correctly the whole time. Then tell
+      me precisely what we change, and where in the flow it goes.
+    answer: |-
+      Grade CORRECT only if the response satisfies every one of these points; a response that misses any of them is INCORRECT:
+      - The response identifies the cause as the L2 itself being unavailable — the Arbitrum sequencer was down, so users could not transact while the outside world repriced — and names the missing control as a sequencer-liveness check, i.e. reading the Chainlink L2 Sequencer Uptime Feed (or equivalent) and refusing to price when it reports the sequencer down.
+      - The response requires a grace period after the sequencer comes back up — a defined window (an hour is the conventional figure) during which liquidations are refused even though the sequencer is up and the price is fresh — and gives the reason: borrowers need a chance to act before the market acts against them. A fix that resumes liquidating the moment the sequencer is back does not pass.
+      - The response does NOT present the remedy as tightening or loosening the staleness bound, adding answeredInRound / roundId checks, or switching to a TWAP or a different price source. It states that the existing freshness check was not what failed. Any of those may appear as secondary hardening, but not as the fix for this incident.
+      - The fix is placed so that it gates liquidation (and anything else that uses the price against a user's position) while leaving deposits, collateral top-ups and repayments open during the grace window — it does not pause the whole market in a way that keeps borrowers from restoring their own health.
+  metadata:
+    section: security
+    type: open
+    difficulty: reasoning
+    source: |-
+      https://github.com/austintgriffith/ethevals/blob/main/evals/security/security-15-lending-postmortem-1.yaml
+    tags:
+      - ethevals
+      - security
+  assert:
+    - type: llm-rubric
+      value: '{{answer}}'
+      metric: security
 
-    What would signing this do? Is it safe? What should the user do?
-  answer: |
-    Grade CORRECT only if the response satisfies every one of these points; a response that misses any of them is INCORRECT:
-    - The response identifies this as an EIP-2612 permit on mainnet USDC (the verifyingContract 0xa0b8…eb48, 'USD Coin' version 2) that would grant the spender 0x1661…3Ee3 an allowance of 1,033,366.316628 USDC — the value 1033366316628 read with USDC's 6 decimals; 'about 1.03 million USDC' counts. Reading it as 1033 USDC or as an 18-decimal amount fails.
-    - It explains that the signature alone grants the allowance: nothing is broadcast by the user, no gas is paid, nothing appears in the wallet's activity; the spender later submits permit() and then transferFrom to pull the tokens.
-    - It reads the deadline: 1678709555 is 2023-03-13, already past, so this exact permit would fail permit()'s deadline check today — and it still treats the request as hostile (an unknown spender, an unfamiliar site), not as harmless. An answer that says it is fine to sign because it is expired fails; an answer that never notices the deadline has passed fails.
-    - It tells the user not to sign, and to check the USDC allowance for that spender (and revoke it) if anything similar was ever signed with a live deadline.
-  difficulty: reasoning
-  source: |-
-    https://github.com/austintgriffith/ethevals/blob/main/evals/security/security-21-malicious-permit.yaml
-  tags:
-  - ethevals
-  - security
-- id: security-22-permit2-batch
-  type: open
-  question: |
-    A wallet prompt from a site the user just connected to: eth_signTypedData_v4 with this payload, for the user's account 0xd8dA6BF26964aF9D7eEd9e03E53415D37aA96045 on Ethereum mainnet. The user has previously approved USDC, WETH and DAI to the Permit2 contract while using Uniswap. Today is 2026-09-21.
+- description: security/security-16-lending-postmortem-2
+  vars:
+    type: open
+    question: |-
+      We run the same fixed-rate borrowing contract on Ethereum mainnet and on
+      Arbitrum One. Identical bytecode, identical constructor arguments, deployed a
+      day apart. The rate is 4.00% per year. Interest is applied by a public
+      accrueInterest() that anyone can call, and the accounting is:
 
-    {"types":{"EIP712Domain":[{"name":"name","type":"string"},{"name":"chainId","type":"uint256"},{"name":"verifyingContract","type":"address"}],"PermitBatch":[{"name":"details","type":"PermitDetails[]"},{"name":"spender","type":"address"},{"name":"sigDeadline","type":"uint256"}],"PermitDetails":[{"name":"token","type":"address"},{"name":"amount","type":"uint160"},{"name":"expiration","type":"uint48"},{"name":"nonce","type":"uint48"}]},"primaryType":"PermitBatch","domain":{"name":"Permit2","chainId":1,"verifyingContract":"0x000000000022D473030F116dDEE9F6B43aC78BA3"},"message":{"details":[{"token":"0xA0b86991c6218b36c1d19D4a2e9Eb0cE3606eB48","amount":"1461501637330902918203684832716283019655932542975","expiration":"1900000000","nonce":"0"},{"token":"0xC02aaA39b223FE8D0A0e5C4F27eAD9083C756Cc2","amount":"1461501637330902918203684832716283019655932542975","expiration":"1900000000","nonce":"0"},{"token":"0x6B175474E89094C44Da98b954EedeAC495271d0F","amount":"1461501637330902918203684832716283019655932542975","expiration":"1900000000","nonce":"0"}],"spender":"0x1661F1B207629e4F385DA89cFF535C8E5Eb23Ee3","sigDeadline":"1900000000"}}
+        uint256 constant SECONDS_PER_BLOCK = 12;
 
-    What does signing this authorize, exactly? What should the user do?
-  answer: |
-    Grade CORRECT only if the response satisfies every one of these points; a response that misses any of them is INCORRECT:
-    - The response identifies this as a Permit2 PermitBatch (the canonical Permit2 contract at 0x0000…BA3): one signature sets three allowances at once, USDC, WETH and DAI, for the spender 0x1661…3Ee3.
-    - It reads the amount 1461501637330902918203684832716283019655932542975 as the maximum uint160, i.e. unlimited, and the expiration 1900000000 as March 2030, so the spender can pull any amount of all three tokens for years. It distinguishes sigDeadline (how long the signature can be submitted) from expiration (how long the allowance lasts).
-    - It explains the two layers: because the user already approved these tokens to Permit2, this signature is all the spender needs — the spender submits it to Permit2 and then calls Permit2's transferFrom, with no further action or transaction from the user. Revoking means revoking the spender inside Permit2 (approve 0 / lockdown) or revoking the token approvals to Permit2 itself.
-    - It treats an unknown spender receiving unlimited batch allowances from a just-connected site as a drain pattern and tells the user not to sign.
-  difficulty: reasoning
-  source: |-
-    https://github.com/austintgriffith/ethevals/blob/main/evals/security/security-22-permit2-batch.yaml
-  tags:
-  - ethevals
-  - security
-- id: security-23-decimal-verifying-contract
-  type: open
-  question: |
-    A dapp sends eth_signTypedData_v4 whose domain contains "verifyingContract": 917551056842671309452305380979543736893630245704 — a JSON number, not a hex string. Wallet security checks compare the domain against a list of known token contracts. Which contract's domain is this?
-    End your reply with a line of the form "Answer: <checksummed 0x address>".
-  answer: |
-    The response's final answer must be exactly `0xA0b86991c6218b36c1d19D4a2e9Eb0cE3606eB48` (case-insensitive). Grade INCORRECT for these tempting wrong answers: `Answer: 917551056842671309452305380979543736893630245704`
-  difficulty: reasoning
-  source: |-
-    https://github.com/austintgriffith/ethevals/blob/main/evals/security/security-23-decimal-verifying-contract.yaml
-  tags:
-  - ethevals
-  - security
-- id: security-24-siwe-domain
-  type: multiple_choice
-  question: |
-    A wallet receives a personal_sign request from the origin https://opensea-rewards.xyz. The message is:
+        function accrueInterest() public {
+            uint256 blocksElapsed = block.number - lastAccrualBlock;
+            if (blocksElapsed == 0) return;
+            uint256 secondsElapsed = blocksElapsed * SECONDS_PER_BLOCK;
+            index += index * rateBps * secondsElapsed / (10_000 * 365 days);
+            lastAccrualBlock = block.number;
+        }
 
-    opensea.io wants you to sign in with your Ethereum account:
-    0xd8dA6BF26964aF9D7eEd9e03E53415D37aA96045
+      Finance reconciled July across both deployments. On the rate alone, a
+      borrower holding 1,000,000 USDC of debt for all 31 days should owe 3,397 USDC
+      of interest. On mainnet that borrower was charged 3,391. On Arbitrum, same
+      debt, same 31 days, the charge came out at 3,391 as well — the two
+      deployments agree with each other to within a couple of dollars.
 
-    URI: https://opensea.io
-    Version: 1
-    Chain ID: 1
-    Nonce: 8f3c1a9b
-    Issued At: 2026-09-21T10:00:00Z
+      I had braced for the Arbitrum figure to be nonsense. That chain produces
+      blocks roughly every 250 milliseconds, so by my arithmetic this contract
+      should have been charging tens of times too much interest there, and it
+      plainly is not.
 
-    What should the wallet do?
-  choices:
-  - 'Sign: the message names opensea.io, which is a legitimate site'
-  - |-
-    Refuse or warn loudly: in Sign-In with Ethereum the domain in the message must be the origin making the request; a mismatch means the requesting site is collecting a signature that logs the user in to opensea.io from somewhere else
-  - 'Sign: personal_sign cannot move funds, so there is nothing to protect'
-  - Sign after checking the nonce has not been used before
-  answer: B
-  difficulty: understanding
-  source: |-
-    https://github.com/austintgriffith/ethevals/blob/main/evals/security/security-24-siwe-domain.yaml
-  tags:
-  - ethevals
-  - security
-- id: security-25-safe-delegatecall
-  type: multiple_choice
-  question: |
-    A Safe multisig transaction is waiting for your signature. The other owners have signed. Fields: to = 0x40A2aCCbd92BCA938b02010E17A5b8929b49130D (a MultiSend contract), value = 0, operation = 1, data = multiSend(...) whose decoded contents are a routine ERC-20 transfer to a known address. What does operation = 1 mean, and why is it the first field to check?
-  choices:
-  - |-
-    1 means "batch": it only tells the Safe that several calls are packed in the data
-  - |-
-    1 means DELEGATECALL: the target's code runs with the Safe's own storage and address, so a malicious target can rewrite the Safe's storage — including the singleton (mastercopy) slot — and take the Safe over, regardless of what the decoded inner calls look like; this is how the Bybit Safe was drained
-  - 1 means CALL with value; it only matters when ETH is attached
-  - operation is informational; the Safe ignores it when executing
-  answer: B
-  difficulty: understanding
-  source: |-
-    https://github.com/austintgriffith/ethevals/blob/main/evals/security/security-25-safe-delegatecall.yaml
-  tags:
-  - ethevals
-  - security
-- id: transactions-25-safe-tx-hash
-  type: open
-  question: |
-    A Safe (v1.3.0+) at 0x111CEEee040739fD91D29C34C33E6B3E112F2177 on Arbitrum One (chain id 42161) has a pending transaction:
+      Two things I need before we sign off on deploying this same contract to Base
+      next month:
 
-      to            0x111CEEee040739fD91D29C34C33E6B3E112F2177
-      value         0
-      data          0x0d582f130000000000000000000000000c75fa5a5f1c0997e3eea425cfa13184ed0ec9e50000000000000000000000000000000000000000000000000000000000000003
-      operation     0
-      safeTxGas     0
-      baseGas       0
-      gasPrice      0
-      gasToken      0x0000000000000000000000000000000000000000
-      refundReceiver 0x0000000000000000000000000000000000000000
-      nonce         234
+        1. Explain the July reconciliation. Why did Arbitrum land on the same
+           number as mainnet, and why are both of them a shade under the 3,397 the
+           rate implies?
+        2. Tell me what this code will do on Base, with the arithmetic worked
+           through on the same 1,000,000 USDC over 31 days.
 
-    The Safe signs EIP-712 typed data with domain type EIP712Domain(uint256 chainId,address verifyingContract) and primary type SafeTx(address to,uint256 value,bytes data,uint8 operation,uint256 safeTxGas,uint256 baseGas,uint256 gasPrice,address gasToken,address refundReceiver,uint256 nonce).
+      Then tell me what you would change, if anything.
+    answer: |-
+      Grade CORRECT only if the response satisfies every one of these points; a response that misses any of them is INCORRECT:
+      - The response explains the Arbitrum result correctly: block.number inside a contract on Arbitrum One does not count L2 blocks, it reports (an approximation of) the current Ethereum L1 block number, so a 12-seconds-per-block assumption happens to line up with wall-clock time there. An answer that has Arbitrum's block.number counting 250ms L2 blocks, or that explains the match by anything other than block.number tracking L1, fails this check.
+      - The response works out Base concretely and gets the direction and the order of magnitude right: on Base, block.number is the L2 block number, so with the chain's block time (state whichever figure the answer uses — roughly 1-2 seconds) each block is charged as 12 seconds and interest is massively OVER-accrued — around 6x at a 2-second block time, around 12x at 1 second — turning ~3,400 USDC of monthly interest into tens of thousands. The stated block time, the multiplier and the resulting figure must be arithmetically consistent with each other; the exact block time chosen is not what is graded.
+      - The prescribed fix is to stop using block.number as a clock and accrue on block.timestamp instead. It must be stated explicitly.
+      - The response does NOT offer a per-chain SECONDS_PER_BLOCK constant (or a per-chain deployment config of the same shape) as the remedy, and does not conclude that the mainnet deployment is the broken one. Mentioning a per-chain constant only to reject it is fine.
+  metadata:
+    section: security
+    type: open
+    difficulty: reasoning
+    source: |-
+      https://github.com/austintgriffith/ethevals/blob/main/evals/security/security-16-lending-postmortem-2.yaml
+    tags:
+      - ethevals
+      - security
+  assert:
+    - type: llm-rubric
+      value: '{{answer}}'
+      metric: security
 
-    Compute the Safe transaction hash the owners sign, the value a hardware wallet would display for verification.
-    End your reply with a line of the form "Answer: 0x<hex>".
-  answer: |
-    The response's final answer must be exactly `0x0cb7250b8becd7069223c54e2839feaed4cee156363fbfe5dd0a48e75c4e25b3` (case-insensitive). Grade INCORRECT for these tempting wrong answers: `Answer: 0xd9109ea63c50ecd3b80b6b27ed5c5a9fd3d546c2169dfb69bfa7ba24cd14c7a5`; `Answer: 0x1cf7f9b1efe3bc47fe02fd27c649fea19e79d66040683a1c86c7490c80bf7291`
-  difficulty: reasoning
-  source: |-
-    https://github.com/austintgriffith/ethevals/blob/main/evals/transactions/transactions-25-safe-tx-hash.yaml
-  tags:
-  - ethevals
-  - transactions
+- description: security/security-17-lending-postmortem-3
+  vars:
+    type: open
+    question: |-
+      Support ticket I cannot close, and I need to know what to tell the user.
+
+      Our lending market lets a relayer submit a borrow that the borrower
+      authorised off-chain, so borrowers never need gas:
+
+        bytes32 constant BORROW_TYPEHASH = keccak256("Borrow(address borrower,uint256 amount)");
+
+        constructor(...) {
+            DOMAIN_SEPARATOR = keccak256(abi.encode(
+                keccak256("EIP712Domain(string name,string version,uint256 chainId,address verifyingContract)"),
+                keccak256("ArbiLend"),
+                keccak256("1"),
+                block.chainid,
+                address(this)
+            ));
+        }
+
+        function borrowWithSig(address borrower, uint256 amount, uint8 v, bytes32 r, bytes32 s) external {
+            bytes32 structHash = keccak256(abi.encode(BORROW_TYPEHASH, borrower, amount));
+            bytes32 digest = keccak256(abi.encodePacked("\x19\x01", DOMAIN_SEPARATOR, structHash));
+            require(ecrecover(digest, v, r, s) == borrower, "bad sig");
+            _borrow(borrower, amount);
+        }
+
+      The user signed one borrow, 5,000 USDC, in March. They repaid it in full in
+      April and have signed nothing since. In June they woke up to a fresh 5,000
+      USDC debt against their collateral, opened while they were on a flight they
+      can produce a boarding pass for. The (v, r, s) in the June transaction's
+      calldata is byte-identical to the one from March. Our relayer operator says
+      they did not send it, and the June transaction came from an address none of
+      us recognise.
+
+      The user's position is that they only ever authorised one borrow, and the
+      verification looks right to me — the recovered address is genuinely theirs,
+      and no key was compromised on either side.
+
+      Explain how the June borrow was possible, what else this same construction
+      exposes us to that has not bitten us yet, and exactly what we ship to fix it.
+    answer: |-
+      Grade CORRECT only if the response satisfies every one of these points; a response that misses any of them is INCORRECT:
+      - The response identifies the mechanism as signature replay: the signed struct carries no nonce and no expiry, and the contract records nothing about signatures it has already honoured, so the March authorisation stays valid forever and anyone who read it out of the March transaction's calldata can resubmit it. It attributes the June borrow to that, not to a compromised key, a malicious relayer, or a flaw in ecrecover.
+      - The prescribed fix includes BOTH a per-signer nonce that is part of the signed struct and is incremented (or a mapping of consumed digests) AND a deadline / expiry carried in the signed struct and checked on-chain. Adding the typehash fields is part of the fix — a nonce checked on-chain but not signed over does not pass.
+      - The response flags the DOMAIN_SEPARATOR being computed once in the constructor and cached: it does not track block.chainid, so after a chain split every signature stays valid on both chains. The fix given is to rebuild the separator when block.chainid differs from the value it was built with (the OpenZeppelin EIP-712 pattern).
+      - The response does NOT pin the June borrow on signature malleability, a missing zero-address check on ecrecover, or the relayer being unauthenticated. Those may appear as secondary hardening; presented as the cause of a byte-identical resubmission, they fail this check.
+  metadata:
+    section: security
+    type: open
+    difficulty: reasoning
+    source: |-
+      https://github.com/austintgriffith/ethevals/blob/main/evals/security/security-17-lending-postmortem-3.yaml
+    tags:
+      - ethevals
+      - security
+  assert:
+    - type: llm-rubric
+      value: '{{answer}}'
+      metric: security
+
+- description: security/security-18-decimal-scale-mismatch
+  vars:
+    type: open
+    question: |-
+      A lending market takes WETH (18 decimals) as collateral and lends USDC (6 decimals). It values collateral as `collateralWei * ethUsdPrice / 1e18`, giving a USD value with 18 decimals, and it allows a borrow when `debtRaw <= collateralValue * 70 / 100`, where `debtRaw` is the raw USDC amount the borrower is requesting. By what factor does this check overstate how much USDC a borrower may take, compared to a correct check?
+      End your reply with a line of the form "Answer: <integer, plain decimal>".
+    answer: |-
+      The response's final answer must be the integer 1000000000000 (decimal or the equivalent hex). Grade INCORRECT for these tempting wrong answers: `Answer: 1000000`; `Answer: 1000000000000000000`
+  metadata:
+    section: security
+    type: open
+    difficulty: reasoning
+    source: |-
+      https://github.com/austintgriffith/ethevals/blob/main/evals/security/security-18-decimal-scale-mismatch.yaml
+    tags:
+      - ethevals
+      - security
+  assert:
+    - type: llm-rubric
+      value: '{{answer}}'
+      metric: security
+
+- description: security/security-21-malicious-permit
+  vars:
+    type: open
+    question: |-
+      A site the user has never used before pops a wallet prompt: eth_signTypedData_v4 with this payload, for the user's account 0xd8dA6BF26964aF9D7eEd9e03E53415D37aA96045 on Ethereum mainnet. Today is 2026-09-21.
+
+      {"types":{"EIP712Domain":[{"name":"name","type":"string"},{"name":"version","type":"string"},{"name":"chainId","type":"uint256"},{"name":"verifyingContract","type":"address"}],"Permit":[{"name":"owner","type":"address"},{"name":"spender","type":"address"},{"name":"value","type":"uint256"},{"name":"nonce","type":"uint256"},{"name":"deadline","type":"uint256"}]},"primaryType":"Permit","domain":{"name":"USD Coin","verifyingContract":"0xa0b86991c6218b36c1d19d4a2e9eb0ce3606eb48","chainId":1,"version":"2"},"message":{"owner":"0xd8dA6BF26964aF9D7eEd9e03E53415D37aA96045","spender":"0x1661F1B207629e4F385DA89cFF535C8E5Eb23Ee3","value":"1033366316628","nonce":1,"deadline":1678709555}}
+
+      What would signing this do? Is it safe? What should the user do?
+    answer: |-
+      Grade CORRECT only if the response satisfies every one of these points; a response that misses any of them is INCORRECT:
+      - The response identifies this as an EIP-2612 permit on mainnet USDC (the verifyingContract 0xa0b8…eb48, 'USD Coin' version 2) that would grant the spender 0x1661…3Ee3 an allowance of 1,033,366.316628 USDC — the value 1033366316628 read with USDC's 6 decimals; 'about 1.03 million USDC' counts. Reading it as 1033 USDC or as an 18-decimal amount fails.
+      - It explains that the signature alone grants the allowance: nothing is broadcast by the user, no gas is paid, nothing appears in the wallet's activity; the spender later submits permit() and then transferFrom to pull the tokens.
+      - It reads the deadline: 1678709555 is 2023-03-13, already past, so this exact permit would fail permit()'s deadline check today — and it still treats the request as hostile (an unknown spender, an unfamiliar site), not as harmless. An answer that says it is fine to sign because it is expired fails; an answer that never notices the deadline has passed fails.
+      - It tells the user not to sign, and to check the USDC allowance for that spender (and revoke it) if anything similar was ever signed with a live deadline.
+  metadata:
+    section: security
+    type: open
+    difficulty: reasoning
+    source: |-
+      https://github.com/austintgriffith/ethevals/blob/main/evals/security/security-21-malicious-permit.yaml
+    tags:
+      - ethevals
+      - security
+  assert:
+    - type: llm-rubric
+      value: '{{answer}}'
+      metric: security
+
+- description: security/security-22-permit2-batch
+  vars:
+    type: open
+    question: |-
+      A wallet prompt from a site the user just connected to: eth_signTypedData_v4 with this payload, for the user's account 0xd8dA6BF26964aF9D7eEd9e03E53415D37aA96045 on Ethereum mainnet. The user has previously approved USDC, WETH and DAI to the Permit2 contract while using Uniswap. Today is 2026-09-21.
+
+      {"types":{"EIP712Domain":[{"name":"name","type":"string"},{"name":"chainId","type":"uint256"},{"name":"verifyingContract","type":"address"}],"PermitBatch":[{"name":"details","type":"PermitDetails[]"},{"name":"spender","type":"address"},{"name":"sigDeadline","type":"uint256"}],"PermitDetails":[{"name":"token","type":"address"},{"name":"amount","type":"uint160"},{"name":"expiration","type":"uint48"},{"name":"nonce","type":"uint48"}]},"primaryType":"PermitBatch","domain":{"name":"Permit2","chainId":1,"verifyingContract":"0x000000000022D473030F116dDEE9F6B43aC78BA3"},"message":{"details":[{"token":"0xA0b86991c6218b36c1d19D4a2e9Eb0cE3606eB48","amount":"1461501637330902918203684832716283019655932542975","expiration":"1900000000","nonce":"0"},{"token":"0xC02aaA39b223FE8D0A0e5C4F27eAD9083C756Cc2","amount":"1461501637330902918203684832716283019655932542975","expiration":"1900000000","nonce":"0"},{"token":"0x6B175474E89094C44Da98b954EedeAC495271d0F","amount":"1461501637330902918203684832716283019655932542975","expiration":"1900000000","nonce":"0"}],"spender":"0x1661F1B207629e4F385DA89cFF535C8E5Eb23Ee3","sigDeadline":"1900000000"}}
+
+      What does signing this authorize, exactly? What should the user do?
+    answer: |-
+      Grade CORRECT only if the response satisfies every one of these points; a response that misses any of them is INCORRECT:
+      - The response identifies this as a Permit2 PermitBatch (the canonical Permit2 contract at 0x0000…BA3): one signature sets three allowances at once, USDC, WETH and DAI, for the spender 0x1661…3Ee3.
+      - It reads the amount 1461501637330902918203684832716283019655932542975 as the maximum uint160, i.e. unlimited, and the expiration 1900000000 as March 2030, so the spender can pull any amount of all three tokens for years. It distinguishes sigDeadline (how long the signature can be submitted) from expiration (how long the allowance lasts).
+      - It explains the two layers: because the user already approved these tokens to Permit2, this signature is all the spender needs — the spender submits it to Permit2 and then calls Permit2's transferFrom, with no further action or transaction from the user. Revoking means revoking the spender inside Permit2 (approve 0 / lockdown) or revoking the token approvals to Permit2 itself.
+      - It treats an unknown spender receiving unlimited batch allowances from a just-connected site as a drain pattern and tells the user not to sign.
+  metadata:
+    section: security
+    type: open
+    difficulty: reasoning
+    source: |-
+      https://github.com/austintgriffith/ethevals/blob/main/evals/security/security-22-permit2-batch.yaml
+    tags:
+      - ethevals
+      - security
+  assert:
+    - type: llm-rubric
+      value: '{{answer}}'
+      metric: security
+
+- description: security/security-23-decimal-verifying-contract
+  vars:
+    type: open
+    question: |-
+      A dapp sends eth_signTypedData_v4 whose domain contains "verifyingContract": 917551056842671309452305380979543736893630245704 — a JSON number, not a hex string. Wallet security checks compare the domain against a list of known token contracts. Which contract's domain is this?
+      End your reply with a line of the form "Answer: <checksummed 0x address>".
+    answer: |-
+      The response's final answer must be exactly `0xA0b86991c6218b36c1d19D4a2e9Eb0cE3606eB48` (case-insensitive). Grade INCORRECT for these tempting wrong answers: `Answer: 917551056842671309452305380979543736893630245704`
+  metadata:
+    section: security
+    type: open
+    difficulty: reasoning
+    source: |-
+      https://github.com/austintgriffith/ethevals/blob/main/evals/security/security-23-decimal-verifying-contract.yaml
+    tags:
+      - ethevals
+      - security
+  assert:
+    - type: llm-rubric
+      value: '{{answer}}'
+      metric: security
+
+- description: security/security-24-siwe-domain
+  vars:
+    type: multiple_choice
+    question: |-
+      A wallet receives a personal_sign request from the origin https://opensea-rewards.xyz. The message is:
+
+      opensea.io wants you to sign in with your Ethereum account:
+      0xd8dA6BF26964aF9D7eEd9e03E53415D37aA96045
+
+      URI: https://opensea.io
+      Version: 1
+      Chain ID: 1
+      Nonce: 8f3c1a9b
+      Issued At: 2026-09-21T10:00:00Z
+
+      What should the wallet do?
+    choices:
+      - |-
+        Refuse or warn loudly: in Sign-In with Ethereum the domain in the message must be the origin making the request; a mismatch means the requesting site is collecting a signature that logs the user in to opensea.io from somewhere else
+      - 'Sign: the message names opensea.io, which is a legitimate site'
+      - Sign after checking the nonce has not been used before
+      - 'Sign: personal_sign cannot move funds, so there is nothing to protect'
+    answer: A
+  metadata:
+    section: security
+    type: multiple_choice
+    difficulty: understanding
+    source: |-
+      https://github.com/austintgriffith/ethevals/blob/main/evals/security/security-24-siwe-domain.yaml
+    tags:
+      - ethevals
+      - security
+  assert:
+    - type: javascript
+      value: file://src/multiple_choice.js
+      metric: security
+
+- description: security/security-25-safe-delegatecall
+  vars:
+    type: multiple_choice
+    question: |-
+      A Safe multisig transaction is waiting for your signature. The other owners have signed. Fields: to = 0x40A2aCCbd92BCA938b02010E17A5b8929b49130D (a MultiSend contract), value = 0, operation = 1, data = multiSend(...) whose decoded contents are a routine ERC-20 transfer to a known address. What does operation = 1 mean, and why is it the first field to check?
+    choices:
+      - |-
+        1 means "batch": it only tells the Safe that several calls are packed in the data
+      - 1 means CALL with value; it only matters when ETH is attached
+      - |-
+        1 means DELEGATECALL: the target's code runs with the Safe's own storage and address, so a malicious target can rewrite the Safe's storage — including the singleton (mastercopy) slot — and take the Safe over, regardless of what the decoded inner calls look like; this is how the Bybit Safe was drained
+      - operation is informational; the Safe ignores it when executing
+    answer: C
+  metadata:
+    section: security
+    type: multiple_choice
+    difficulty: understanding
+    source: |-
+      https://github.com/austintgriffith/ethevals/blob/main/evals/security/security-25-safe-delegatecall.yaml
+    tags:
+      - ethevals
+      - security
+  assert:
+    - type: javascript
+      value: file://src/multiple_choice.js
+      metric: security
+
+- description: security/transactions-25-safe-tx-hash
+  vars:
+    type: open
+    question: |-
+      A Safe (v1.3.0+) at 0x111CEEee040739fD91D29C34C33E6B3E112F2177 on Arbitrum One (chain id 42161) has a pending transaction:
+
+        to            0x111CEEee040739fD91D29C34C33E6B3E112F2177
+        value         0
+        data          0x0d582f130000000000000000000000000c75fa5a5f1c0997e3eea425cfa13184ed0ec9e50000000000000000000000000000000000000000000000000000000000000003
+        operation     0
+        safeTxGas     0
+        baseGas       0
+        gasPrice      0
+        gasToken      0x0000000000000000000000000000000000000000
+        refundReceiver 0x0000000000000000000000000000000000000000
+        nonce         234
+
+      The Safe signs EIP-712 typed data with domain type EIP712Domain(uint256 chainId,address verifyingContract) and primary type SafeTx(address to,uint256 value,bytes data,uint8 operation,uint256 safeTxGas,uint256 baseGas,uint256 gasPrice,address gasToken,address refundReceiver,uint256 nonce).
+
+      Compute the Safe transaction hash the owners sign, the value a hardware wallet would display for verification.
+      End your reply with a line of the form "Answer: 0x<hex>".
+    answer: |-
+      The response's final answer must be exactly `0x0cb7250b8becd7069223c54e2839feaed4cee156363fbfe5dd0a48e75c4e25b3` (case-insensitive). Grade INCORRECT for these tempting wrong answers: `Answer: 0xd9109ea63c50ecd3b80b6b27ed5c5a9fd3d546c2169dfb69bfa7ba24cd14c7a5`; `Answer: 0x1cf7f9b1efe3bc47fe02fd27c649fea19e79d66040683a1c86c7490c80bf7291`
+  metadata:
+    section: security
+    type: open
+    difficulty: reasoning
+    source: |-
+      https://github.com/austintgriffith/ethevals/blob/main/evals/transactions/transactions-25-safe-tx-hash.yaml
+    tags:
+      - ethevals
+      - transactions
+  assert:
+    - type: llm-rubric
+      value: '{{answer}}'
+      metric: security
