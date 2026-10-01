@@ -612,3 +612,394 @@
     relevant check.
   difficulty: understanding
   source: https://eips.ethereum.org/EIPS/eip-3541
+
+- id: eip-6780-self-beneficiary-existing-contract
+  type: multiple_choice
+  question: |
+    A contract deployed in an earlier block holds 5 ETH. In a post-Cancun
+    transaction it executes SELFDESTRUCT naming its own address as the
+    beneficiary. What is the state of that account once the transaction
+    completes?
+  choices:
+    - Code and storage are intact and the balance is still 5 ETH; nothing is burned
+    - Code and storage are intact but the balance is 0, with the 5 ETH burned
+    - The account is deleted and the 5 ETH is burned
+    - The account is deleted and the 5 ETH is credited to the block's coinbase
+  answer: A
+  difficulty: reasoning
+  source: https://eips.ethereum.org/EIPS/eip-6780
+
+- id: eip-7702-delegation-to-precompile
+  type: multiple_choice
+  question: |
+    An EOA sets an EIP-7702 delegation pointing at address 0x01 (the ecrecover
+    precompile). A contract then CALLs the EOA with a well-formed 128-byte
+    ecrecover input and ample gas. What happens?
+  choices:
+    - The call succeeds but executes nothing and returns no data, because code retrieved from a precompile address is treated as empty
+    - ecrecover runs in the EOA's context and the recovered address is returned
+    - The call fails because a delegation to a precompile address is invalid
+    - The call exceptionally halts on the 0xEF byte of the delegation indicator
+  answer: A
+  difficulty: understanding
+  source: https://eips.ethereum.org/EIPS/eip-7702
+
+- id: eip-7702-codesize-during-delegated-execution
+  type: multiple_choice
+  question: |
+    An EOA is delegated via EIP-7702 to contract D, whose runtime code is
+    1,500 bytes. A transaction calls the EOA, so D's code executes in the
+    EOA's context. Inside that execution, what do CODESIZE and
+    EXTCODESIZE(address(this)) return, respectively?
+  choices:
+    - 1500 and 23
+    - 23 and 23
+    - 1500 and 1500
+    - 23 and 1500
+  answer: A
+  difficulty: reasoning
+  source: https://eips.ethereum.org/EIPS/eip-7702
+
+- id: eip-7702-delegation-chain-not-followed
+  type: open
+  question: |
+    EOA A holds an EIP-7702 delegation to address B. B is itself an EOA whose
+    code is a delegation indicator pointing at contract C. A contract CALLs A.
+    Does C's code run, and what happens to the call?
+  answer: |
+    No. Clients resolve at most one level of delegation. Resolving A yields the
+    code stored at B, which is the 23-byte delegation indicator 0xef0100 || C,
+    and that byte string is what gets executed in A's context. Its first byte
+    0xEF is an invalid opcode, so the call exceptionally halts rather than
+    running C. A complete answer must say that C's code does not execute
+    because delegation chains are not followed beyond the first hop; saying
+    the call fails on the invalid 0xEF byte is a bonus, not required.
+  difficulty: reasoning
+  source: https://eips.ethereum.org/EIPS/eip-7702
+
+- id: eip-7702-existing-authority-net-cost
+  type: multiple_choice
+  question: |
+    A set-code transaction carries one valid authorization tuple whose
+    authority already exists in state (nonzero nonce and balance). Ignoring
+    the EIP-3529 refund cap, how much gas does that authorization add to the
+    transaction's net cost on top of the ordinary EIP-2930 intrinsic gas?
+  choices:
+    - 12,500 (25,000 charged up front, 12,500 refunded because the account was not empty)
+    - 25,000
+    - 37,500
+    - 2,600
+  answer: A
+  difficulty: reasoning
+  source: https://eips.ethereum.org/EIPS/eip-7702
+
+- id: eip-7702-self-sponsored-auth-nonce
+  type: multiple_choice
+  question: |
+    An EOA whose account nonce is 7 sends its own type-4 transaction that
+    includes an authorization tuple it signed for itself. What nonce must the
+    authorization tuple carry for the delegation to be applied?
+  choices:
+    - 8
+    - 7
+    - 6
+    - Any value; the nonce check is skipped when the authority is the sender
+  answer: A
+  difficulty: reasoning
+  source: https://eips.ethereum.org/EIPS/eip-7702
+
+- id: eip-7685-empty-requests-hash
+  type: multiple_choice
+  question: |
+    A post-Pectra block contains no deposit, withdrawal, or consolidation
+    requests. What value does its header's requests_hash field hold?
+  choices:
+    - The SHA-256 of the empty byte string, 0xe3b0c44298fc1c149afbf4c8996fb92427ae41e4649b934ca495991b7852b855
+    - The keccak256 of the empty byte string, 0xc5d2460186f7233c927e7db2dcc703c0e500b653ca82273b7bfad8045d85a470
+    - Thirty-two zero bytes
+    - The keccak256 of the RLP of an empty list, 0x1dcc4de8dec75d7aab85b567b6ccd41ad312451b948a7413f0a142fd40d49347
+  answer: A
+  difficulty: reasoning
+  source: https://eips.ethereum.org/EIPS/eip-7685
+
+- id: eip-7002-partial-withdrawal-requires-compounding
+  type: multiple_choice
+  question: |
+    A validator has 0x01 (execution-address) withdrawal credentials and a
+    balance of 40 ETH. Its withdrawal address submits an EIP-7002 withdrawal
+    request for 8 ETH (a nonzero amount, so a partial withdrawal) and pays the
+    fee, and the request reaches the consensus layer. What does the consensus
+    layer do with it?
+  choices:
+    - It ignores the request, because partial withdrawals are only honoured for 0x02 compounding credentials; the request is dropped without invalidating the block
+    - Processes a partial withdrawal of 8 ETH
+    - Converts it into a full exit, since 0x01 validators cannot partially withdraw
+    - Rejects the block because the request is invalid
+  answer: A
+  difficulty: understanding
+  source: https://eips.ethereum.org/EIPS/eip-7002
+
+- id: eip-7251-self-consolidation-switch-to-compounding
+  type: open
+  question: |
+    Under EIP-7251, an execution-layer consolidation request names the same
+    validator public key as both source and target. The validator has 0x01
+    withdrawal credentials whose address matches the request's source address,
+    is active, and has not initiated an exit. What does the consensus layer do
+    with this request?
+  answer: |
+    It treats it as a "switch to compounding" request: the validator's
+    withdrawal credentials are changed from the 0x01 prefix to the 0x02
+    compounding prefix, letting it accumulate an effective balance up to 2048
+    ETH. The validator is not exited and no consolidation churn is consumed.
+    A complete answer must say that the validator is switched to compounding
+    (0x02) credentials rather than being exited or having the request ignored.
+  difficulty: reasoning
+  source: https://eips.ethereum.org/EIPS/eip-7251
+
+- id: eip-7251-consolidation-target-credentials
+  type: multiple_choice
+  question: |
+    For an EIP-7251 consolidation request with distinct source and target
+    validators to be processed, what must be true of the target validator's
+    withdrawal credentials?
+  choices:
+    - The target must already have 0x02 compounding withdrawal credentials
+    - The target must have 0x01 credentials whose address equals the request's source address
+    - The target may have any credential type as long as it is active
+    - The target must still have 0x00 BLS withdrawal credentials
+  answer: A
+  difficulty: understanding
+  source: https://eips.ethereum.org/EIPS/eip-7251
+
+- id: eip-6110-deposit-flow-and-latency
+  type: open
+  question: |
+    What did EIP-6110 change about how validator deposits travel from the
+    execution layer to the beacon chain, and what effect did that have on
+    deposit latency?
+  answer: |
+    Execution clients now parse DepositEvent logs emitted by the deposit
+    contract out of each block's receipts and emit them as type-0x00 EIP-7685
+    deposit requests, which the consensus layer processes from the beacon
+    block's execution requests. This replaces the Eth1Data voting mechanism, in which
+    proposers voted on a deposit-contract snapshot behind a long follow
+    distance and voting period. As a result the delay between a deposit
+    transaction and its processing on the beacon chain fell from roughly 12
+    hours to roughly 13 minutes, and the deposit flow no longer depends on
+    JSON-RPC polling or deposit-tree snapshots. A complete answer must say
+    deposits are read from execution-layer logs into block requests, that
+    Eth1Data voting is removed, and that latency drops from many hours to
+    minutes.
+  difficulty: understanding
+  source: https://eips.ethereum.org/EIPS/eip-6110
+
+- id: eip-2935-blockhash-opcode-unchanged
+  type: multiple_choice
+  question: |
+    After Pectra, a contract executes BLOCKHASH with an argument of
+    block.number minus 5000. What does it get?
+  choices:
+    - 0, because BLOCKHASH still serves only the most recent 256 blocks; older hashes must be read by calling the EIP-2935 history contract
+    - The correct block hash, because EIP-2935 extended BLOCKHASH to 8191 blocks
+    - The correct block hash, but at the higher cost of a cold storage read
+    - An exceptional halt, because the argument is out of range
+  answer: A
+  difficulty: understanding
+  source: https://eips.ethereum.org/EIPS/eip-2935
+
+- id: eip-2935-history-contract-out-of-range
+  type: multiple_choice
+  question: |
+    A contract calls the EIP-2935 history contract with a 32-byte block number
+    that is older than block.number minus 8191. What does the history contract
+    do?
+  choices:
+    - It reverts
+    - It returns 32 zero bytes
+    - It returns the hash of the oldest block it still stores
+    - It returns the parent block's hash
+  answer: A
+  difficulty: understanding
+  source: https://eips.ethereum.org/EIPS/eip-2935
+
+- id: eip-2537-addition-no-subgroup-check
+  type: multiple_choice
+  question: |
+    Which of the EIP-2537 BLS12-381 precompiles do not perform a subgroup
+    membership check on their input points?
+  choices:
+    - G1ADD and G2ADD only
+    - G1MSM and G2MSM only
+    - The pairing check only
+    - None; all seven precompiles check subgroup membership
+  answer: A
+  difficulty: understanding
+  source: https://eips.ethereum.org/EIPS/eip-2537
+
+- id: eip-2537-pairing-gas-two-pairs
+  type: multiple_choice
+  question: |
+    What is the gas cost of a call to the EIP-2537 BLS12_PAIRING_CHECK
+    precompile with two (G1, G2) pairs, i.e. 768 bytes of input?
+  choices:
+    - 102,900
+    - 75,300
+    - 113,000
+    - 65,200
+  answer: A
+  difficulty: reasoning
+  source: https://eips.ethereum.org/EIPS/eip-2537
+
+- id: eip-7883-modexp-pricing-changes
+  type: multiple_choice
+  question: |
+    Which set of changes did EIP-7883 (Osaka) make to the ModExp precompile's
+    gas formula relative to EIP-2565?
+  choices:
+    - Minimum raised from 200 to 500, the division by 3 removed (tripling the general cost), the multiplier for exponents over 32 bytes raised from 8 to 16, and a minimum multiplication complexity of 16 that doubles when base or modulus exceed 32 bytes
+    - Minimum raised from 200 to 500, with the rest of the formula unchanged
+    - A flat 500 gas regardless of input sizes
+    - Minimum lowered to 100 but cost made linear in input length
+  answer: A
+  difficulty: recall
+  source: https://eips.ethereum.org/EIPS/eip-7883
+
+- id: eip-7823-modexp-input-bound
+  type: multiple_choice
+  question: |
+    Under EIP-7823 (Osaka), what is the maximum permitted value for each of the
+    ModExp length fields (base, exponent, and modulus), and what happens if a
+    call exceeds it?
+  choices:
+    - 1024 bytes (8192 bits); the precompile returns an error and consumes all gas
+    - 32 bytes; longer inputs are priced quadratically instead of rejected
+    - 1024 bytes; excess bytes are silently truncated
+    - 4096 bytes; the precompile returns zero
+  answer: A
+  difficulty: recall
+  source: https://eips.ethereum.org/EIPS/eip-7823
+
+- id: eip-7951-p256verify-failure-output
+  type: multiple_choice
+  question: |
+    The P256VERIFY precompile from EIP-7951 is called with a correctly sized
+    160-byte input whose signature does not verify. What is the outcome?
+  choices:
+    - The call succeeds, returns empty output (zero bytes), and is charged the full 6,900 gas, the same as a successful verification
+    - The call succeeds and returns a 32-byte word equal to zero
+    - The call reverts and burns all forwarded gas
+    - The call returns empty output and is charged less than 6,900 gas because verification short-circuits early
+  answer: A
+  difficulty: understanding
+  source: https://eips.ethereum.org/EIPS/eip-7951
+
+- id: eip-7594-blobs-per-transaction-limit
+  type: multiple_choice
+  question: |
+    Besides data availability sampling, EIP-7594 (PeerDAS, Fusaka) introduced
+    a new per-transaction constraint on blob transactions. What is it?
+  choices:
+    - A maximum of 6 blobs per transaction, enforced at submission, on receipt from the network, and during block production and processing
+    - A maximum of 9 blobs per transaction
+    - A maximum of 3 blobs per transaction
+    - No per-transaction limit; only the per-block maximum applies
+  answer: A
+  difficulty: recall
+  source: https://eips.ethereum.org/EIPS/eip-7594
+
+- id: eip-7594-cell-proofs-network-wrapper
+  type: open
+  question: |
+    How did EIP-7594 change the network representation of blob transactions
+    exchanged via PooledTransactions, and why was the change made?
+  answer: |
+    The wrapper became rlp([tx_payload_body, wrapper_version, blobs,
+    commitments, cell_proofs]) with wrapper_version set to 1. Instead of one
+    KZG proof per blob, the sender supplies cell KZG proofs for every cell of
+    each extended blob, CELLS_PER_EXT_BLOB (128) proofs per blob, including
+    the extension cells, while the blobs themselves are still sent unextended.
+    Receiving nodes recompute the extension cells and batch-verify all the
+    cell proofs against the commitments. The change pushes the expensive cell
+    proof computation onto transaction senders so block producers do not have
+    to compute proofs for many blobs, since verification is far cheaper than
+    computation and the proofs are small. A complete answer must say the
+    single blob proof is replaced by per-cell proofs (128 per blob) and that
+    senders compute them so producers only verify.
+  difficulty: understanding
+  source: https://eips.ethereum.org/EIPS/eip-7594
+
+- id: eip-7691-prague-blob-fee-asymmetry
+  type: multiple_choice
+  question: |
+    With the EIP-7691 parameters active from Prague until the first BPO fork
+    (target 6, max 9, update fraction 5,007,716), roughly how much can the blob
+    base fee move between consecutive blocks after a block full of blobs, and
+    after a block with no blobs?
+  choices:
+    - Up about 8.2% after a full block, down about 14.5% after an empty block
+    - Up about 12.5% after a full block, down about 11.1% after an empty block
+    - Up about 12.5% and down about 12.5%
+    - Up about 8.2% and down about 8.2%
+  answer: A
+  difficulty: reasoning
+  source: https://eips.ethereum.org/EIPS/eip-7691
+
+- id: eip-1559-fork-block-gas-limit-doubling
+  type: multiple_choice
+  question: |
+    How did EIP-1559 block validation treat the parent's gas limit on the
+    London fork block itself, and what was the effect?
+  choices:
+    - The parent gas limit was multiplied by ELASTICITY_MULTIPLIER (2) and the parent gas target set to the parent's full limit, so the block gas limit doubled rather than the gas target being halved
+    - Nothing special; the gas target became half of the existing gas limit
+    - The gas limit was reset to the 5,000 minimum and allowed to grow by 1/1024 per block
+    - The parent gas limit was halved so the new target matched the old limit
+  answer: A
+  difficulty: reasoning
+  source: https://eips.ethereum.org/EIPS/eip-1559
+
+- id: eip-7610-create-collision-nonempty-storage
+  type: multiple_choice
+  question: |
+    An address has nonce 0 and no code but holds non-empty storage, an
+    artifact possible before Spurious Dragon. A CREATE2 targets exactly that
+    address. Under EIP-7610, what happens?
+  choices:
+    - The creation fails as if the first byte of initcode were an invalid opcode, extending EIP-684's nonce-or-code collision rule to storage
+    - The creation succeeds and the pre-existing storage is cleared
+    - The creation succeeds and the pre-existing storage is retained
+    - The creation succeeds but the new contract's nonce starts at 2
+  answer: A
+  difficulty: understanding
+  source: https://eips.ethereum.org/EIPS/eip-7610
+
+- id: eip-161-zero-value-call-new-account-charge
+  type: multiple_choice
+  question: |
+    Since Spurious Dragon (EIP-161), a contract executes CALL to an address
+    that does not exist in state, transferring zero value. Is the 25,000 gas
+    new-account charge applied?
+  choices:
+    - No; the charge applies only when the call transfers nonzero value to a dead account
+    - Yes; any call to a non-existent account pays it
+    - Yes, but it is refunded at the end of the transaction
+    - No; EIP-161 removed the new-account charge entirely
+  answer: A
+  difficulty: understanding
+  source: https://eips.ethereum.org/EIPS/eip-161
+
+- id: eip-7917-proposer-lookahead-length
+  type: multiple_choice
+  question: |
+    EIP-7917 (Fulu) adds a proposer_lookahead vector to the beacon state. On
+    mainnet, how many validator indices does it hold, and which epochs do they
+    cover?
+  choices:
+    - 64 indices, covering the current epoch and the next epoch
+    - 32 indices, covering only the next epoch
+    - 128 indices, covering the current epoch and the next three
+    - 96 indices, covering the next three epochs
+  answer: A
+  difficulty: reasoning
+  source: https://eips.ethereum.org/EIPS/eip-7917
