@@ -608,3 +608,433 @@
   answer: B
   difficulty: recall
   source: https://eips.ethereum.org/EIPS/eip-2309
+
+- id: erc-7201-namespace-slot-formula
+  type: multiple_choice
+  question: |
+    ERC-7201 defines the formula identified by "erc7201" for deriving the root
+    storage slot of a namespace from its string id. What is it?
+  choices:
+    - keccak256(keccak256(id) - 1) & ~0xff
+    - keccak256(id) - 1
+    - keccak256(keccak256(id)) - 1
+    - keccak256(id) & ~0xff
+  answer: A
+  difficulty: recall
+  source: https://eips.ethereum.org/EIPS/eip-7201
+
+- id: erc-7201-formula-rationale
+  type: open
+  question: |
+    Why does the ERC-7201 formula hash twice, subtract one inside the outer
+    hash, and clear the low byte of the result, rather than simply using
+    keccak256(id) as the namespace root?
+  answer: |
+    Solidity and Vyper place mapping values and dynamic array data at
+    keccak256-derived locations, so keccak256(id) could coincide with a slot the
+    compiler already uses, and a namespace struct occupies several consecutive
+    slots that would spill into keccak256(id) + n, which the compiler may also
+    use. Subtracting one gives a location the standard layout never uses as a
+    base, and hashing that again roots the namespace in a region disjoint from
+    the default storage tree and from other namespaces, so consecutive slots
+    cannot collide (assuming keccak collision resistance and reasonably sized
+    arrays). Clearing the low 8 bits aligns the root to a 256-slot boundary,
+    an anticipated optimization for a Verkle-style gas schedule where groups
+    of 256 slots become warm together. A complete answer must explain that the
+    construction avoids collisions with the compiler's keccak-derived storage
+    locations (including the slots following the root) and that the mask
+    aligns the namespace to 256 slots.
+  difficulty: reasoning
+  source: https://eips.ethereum.org/EIPS/eip-7201
+
+- id: erc-6492-wrapper-detection
+  type: multiple_choice
+  question: |
+    How does a verifier recognise that a signature uses the ERC-6492 wrapper
+    for a not-yet-deployed contract signer?
+  choices:
+    - The signature ends with the 32 magic bytes 0x6492649264926492649264926492649264926492649264926492649264926492
+    - The signature begins with the bytes 0x6492
+    - The signature is exactly 84 bytes, a 64-byte signature plus a 20-byte factory address
+    - The recovery byte v equals 0x64
+  answer: A
+  difficulty: recall
+  source: https://eips.ethereum.org/EIPS/eip-6492
+
+- id: erc-6492-verification-order
+  type: open
+  question: |
+    In what order must an ERC-6492 verifier apply its checks when validating a
+    signature for an address, and why must the wrapper check come first?
+  answer: |
+    First, if the signature ends with the ERC-6492 magic bytes, unwrap it,
+    perform the factory deployment call (typically inside an eth_call to a
+    multicall or universal validator contract) if the account has no code yet,
+    then call isValidSignature with the inner signature. Second, if the
+    address has code, perform ordinary ERC-1271 verification; if that fails
+    and the deploy step was skipped because code already existed, execute the
+    wrapped factory or prepare call and retry isValidSignature. Third, only if
+    there is no code at the address, fall back to ecrecover. The wrapper check
+    must precede the ERC-1271 check so that a counterfactual signature stays
+    valid after the contract is deployed, and must precede ecrecover so a
+    wrapped contract signature is never misinterpreted as an EOA signature.
+    ecrecover must never run before ERC-1271 because a contract's signature
+    format may also be a valid EOA signature for some other address. A
+    complete answer must give the order magic bytes, then ERC-1271, then
+    ecrecover, and state that checking the wrapper first keeps counterfactual
+    signatures valid after deployment.
+  difficulty: reasoning
+  source: https://eips.ethereum.org/EIPS/eip-6492
+
+- id: erc-3668-get-vs-post
+  type: multiple_choice
+  question: |
+    An ERC-3668 (CCIP Read) client has an OffchainLookup error and a gateway
+    URL template. When must it use an HTTP GET versus a POST?
+  choices:
+    - GET if the URL template contains the {data} substitution parameter; otherwise POST with a JSON body containing the callData as "data" and the sender address as "sender"
+    - Always POST; GET is only permitted for gateways that advertise it
+    - GET if the template contains {sender}; POST otherwise
+    - The client chooses freely because gateways must support both methods
+  answer: A
+  difficulty: understanding
+  source: https://eips.ethereum.org/EIPS/eip-3668
+
+- id: erc-3668-nested-lookup-sender-check
+  type: open
+  question: |
+    A CCIP-Read-aware contract A calls contract B, which might revert with
+    OffchainLookup. What does ERC-3668 require A to do with such a revert, and
+    what problem does that requirement prevent?
+  answer: |
+    A must catch any OffchainLookup error from the callee rather than letting
+    Solidity bubble it up. It must check that the error's sender field equals
+    B's address and revert with a different error if it does not. If it
+    matches, A may support nesting by reverting with its own OffchainLookup
+    whose sender is A, reusing B's urls and callData, pointing callbackFunction
+    at a callback on A, and packing B's address, callback selector, and
+    extraData into A's extraData so the callback can forward the gateway
+    response to B. Bubbling is forbidden because a non-CCIP-aware
+    intermediate contract could re-enter A, causing A to revert with an
+    OffchainLookup that propagates all the way out: the client would see
+    sender equal to A and treat it as valid, but completing it would only
+    finish the inner nested invocation. A complete answer must mention
+    catching the error and checking that sender matches the callee, and that
+    reverts must not simply be bubbled up.
+  difficulty: reasoning
+  source: https://eips.ethereum.org/EIPS/eip-3668
+
+- id: erc-3156-repayment-direction
+  type: multiple_choice
+  question: |
+    Under ERC-3156, how is a flash loan repaid at the end of the lender's
+    flashLoan call?
+  choices:
+    - After the onFlashLoan callback, the lender pulls amount plus fee from the receiver with transferFrom, so the receiver must have approved the lender for that sum; the lender reverts if the pull fails
+    - The receiver transfers amount plus fee back to the lender from inside onFlashLoan, and the lender checks its balance afterwards
+    - The receiver returns the tokens as the return data of onFlashLoan
+    - Nothing is transferred back; because flashLoan is atomic the lender simply verifies that its own balance is unchanged at the end of the call
+  answer: A
+  difficulty: understanding
+  source: https://eips.ethereum.org/EIPS/eip-3156
+
+- id: erc-3009-receive-with-authorization-purpose
+  type: multiple_choice
+  question: |
+    ERC-3009 defines both transferWithAuthorization and
+    receiveWithAuthorization, which carry identical parameters. What does
+    receiveWithAuthorization add?
+  choices:
+    - It requires msg.sender to equal the payee (to), so a third party cannot front-run the authorization by submitting it before the intended recipient contract does
+    - It uses ERC-20 allowances instead of moving tokens directly
+    - It uses sequential nonces instead of random 32-byte nonces
+    - It lets the payee pay a reduced gas cost by skipping signature verification
+  answer: A
+  difficulty: understanding
+  source: https://eips.ethereum.org/EIPS/eip-3009
+
+- id: erc-2771-effective-sender-extraction
+  type: open
+  question: |
+    How does an ERC-2771 recipient contract determine the effective sender of
+    a call, and what condition gates the substitution?
+  answer: |
+    The trusted forwarder appends the transaction signer's 20-byte address to
+    the end of the calldata (abi.encodePacked(data, from)). The recipient
+    checks whether msg.sender is a trusted forwarder (via its own
+    isTrustedForwarder logic); if so, and the calldata is at least 20 bytes,
+    it reads the last 20 bytes of msg.data and uses that as the sender.
+    Otherwise it uses msg.sender unchanged. Trusting only known forwarders is
+    essential because any caller could otherwise append an arbitrary address
+    and forge the sender. A complete answer must say the sender is taken from
+    the last 20 bytes of calldata only when msg.sender is a trusted forwarder.
+  difficulty: understanding
+  source: https://eips.ethereum.org/EIPS/eip-2771
+
+- id: erc-5267-fields-bitmap
+  type: multiple_choice
+  question: |
+    A contract's ERC-5267 eip712Domain() call returns fields = 0x0d. Which
+    EIP-712 domain fields does the contract use?
+  choices:
+    - name, chainId, and verifyingContract
+    - name, version, and chainId
+    - version, chainId, verifyingContract, and salt
+    - name, version, and verifyingContract
+  answer: A
+  difficulty: reasoning
+  source: https://eips.ethereum.org/EIPS/eip-5267
+
+- id: erc-2098-compact-signature-yparity-s
+  type: multiple_choice
+  question: |
+    A canonical secp256k1 signature has v = 28 and
+    s = 0x139c6d6b623b42da56557e5e734a43dc83345ddfadec52cbe24d0cc64f550793.
+    What is the yParityAndS word of its ERC-2098 compact representation?
+  choices:
+    - 0x939c6d6b623b42da56557e5e734a43dc83345ddfadec52cbe24d0cc64f550793
+    - 0x139c6d6b623b42da56557e5e734a43dc83345ddfadec52cbe24d0cc64f550793
+    - 0x1c9c6d6b623b42da56557e5e734a43dc83345ddfadec52cbe24d0cc64f550793
+    - 0x539c6d6b623b42da56557e5e734a43dc83345ddfadec52cbe24d0cc64f550793
+  answer: A
+  difficulty: reasoning
+  source: https://eips.ethereum.org/EIPS/eip-2098
+
+- id: erc-5564-view-tag
+  type: multiple_choice
+  question: |
+    In the ERC-5564 secp256k1 stealth address scheme (schemeId 1), what is the
+    view tag and what is it for?
+  choices:
+    - The most significant byte of the hashed shared secret, placed as the first byte of the announcement metadata, letting a recipient discard non-matching announcements after one scalar multiplication and one hash instead of the full derivation
+    - The first byte of the ephemeral public key, used to index announcements by sender
+    - The low byte of the stealth address, used as a checksum
+    - A one-byte checksum of the stealth meta-address
+  answer: A
+  difficulty: understanding
+  source: https://eips.ethereum.org/EIPS/eip-5564
+
+- id: erc-5564-stealth-private-key-derivation
+  type: open
+  question: |
+    In ERC-5564's secp256k1 scheme, how does a recipient derive the private
+    key for a stealth address that was announced to them?
+  answer: |
+    The recipient computes the shared secret s as their viewing private key
+    multiplied by the announced ephemeral public key (the sender computed the
+    same point as ephemeral private key times viewing public key), hashes it
+    to s_h, and derives the stealth private key as p_stealth = p_spend + s_h
+    modulo the curve order. This matches the stealth public key
+    P_stealth = P_spend + s_h * G that the sender derived. A complete answer
+    must mention the ECDH shared secret from the viewing key and ephemeral
+    public key, hashing it, and adding the hash to the spending private key.
+  difficulty: reasoning
+  source: https://eips.ethereum.org/EIPS/eip-5564
+
+- id: erc-7528-native-eth-placeholder
+  type: multiple_choice
+  question: |
+    ERC-7528 standardises an address placeholder for native ETH in contexts
+    where an address otherwise identifies an ERC-20 token. What is it, and how
+    must wrapped ETH such as WETH9 be represented?
+  choices:
+    - 0xEeeeeEeeeEeEeeEeEeEeeEEEeeeeEeeeeeeeEEeE for native ETH; WETH must use its own token address and must not use the placeholder
+    - 0x0000000000000000000000000000000000000000 for both native ETH and WETH
+    - 0xC02aaA39b223FE8D0A0e5C4F27eAD9083C756Cc2 for both, since WETH9 is canonical
+    - 0x0000000000000000000000000000000000000001 for native ETH; WETH may also use it
+  answer: A
+  difficulty: recall
+  source: https://eips.ethereum.org/EIPS/eip-7528
+
+- id: erc-55-checksum-algorithm
+  type: open
+  question: |
+    Describe precisely how the ERC-55 mixed-case checksum of an address is
+    computed, including what exactly is hashed.
+  answer: |
+    Take the 40-character lowercase hexadecimal address without the 0x
+    prefix, treat that string as ASCII bytes, and compute its keccak256 (the
+    hash is of the hex text, not of the 20 raw address bytes). Then, for each
+    position i of the address, if the character is a letter (a to f) and the
+    hex digit at position i of the hash is 8 or greater (top bit of that
+    nibble set), write it in uppercase; otherwise leave it as is. Decimal
+    digits are never changed. A complete answer must state that the lowercase
+    hex string itself is hashed and that a letter is uppercased when the
+    corresponding hash nibble is at least 8.
+  difficulty: reasoning
+  source: https://eips.ethereum.org/EIPS/eip-55
+
+- id: erc-137-namehash-algorithm
+  type: open
+  question: |
+    How does the ENS namehash algorithm from ERC-137 turn a dotted name into a
+    32-byte node, and what is the base case?
+  answer: |
+    namehash of the empty name is 32 zero bytes. For a non-empty name, split
+    off the leftmost label and compute keccak256(namehash(remainder) ||
+    keccak256(label)), so the name is processed from the rightmost label
+    inward: node = keccak256(0x00..00 || keccak256("eth")), then
+    keccak256(node || keccak256("foo")) for foo.eth. Each label is hashed
+    individually and labels are normalised with UTS-46 before hashing, so case
+    does not matter. A complete answer must give the zero base case and the
+    recursive concatenation of the parent node with the keccak of the label.
+  difficulty: understanding
+  source: https://eips.ethereum.org/EIPS/eip-137
+
+- id: erc-1820-accept-magic-rationale
+  type: open
+  question: |
+    When a contract is registered in the ERC-1820 registry as the implementer
+    of an interface for a different address, what must its
+    canImplementInterfaceForAddress function return, and why is that return
+    type used instead of a boolean?
+  answer: |
+    It must return the bytes32 value keccak256("ERC1820_ACCEPT_MAGIC") when
+    it implements the given interface hash for the given address, and must
+    not return that value otherwise. A boolean was rejected because a contract
+    that lacks canImplementInterfaceForAddress but has a non-reverting
+    fallback function would answer the call successfully with data that
+    decodes as 1, that is true, falsely appearing to accept the registration.
+    A specific 32-byte magic value cannot be produced by accident. A complete
+    answer must name the ERC1820_ACCEPT_MAGIC keccak value and explain the
+    fallback-function false positive.
+  difficulty: reasoning
+  source: https://eips.ethereum.org/EIPS/eip-1820
+
+- id: erc-7579-module-type-ids
+  type: multiple_choice
+  question: |
+    ERC-7579 assigns an integer type id to each kind of smart account module.
+    Which assignment is correct?
+  choices:
+    - 1 validator, 2 executor, 3 fallback handler, 4 hook
+    - 0 validator, 1 executor, 2 fallback handler, 3 hook
+    - 1 executor, 2 validator, 3 hook, 4 fallback handler
+    - 1 validator, 2 hook, 3 executor, 4 fallback handler
+  answer: A
+  difficulty: recall
+  source: https://eips.ethereum.org/EIPS/eip-7579
+
+- id: erc-7579-calltype-delegatecall
+  type: multiple_choice
+  question: |
+    The bytes32 execution mode passed to an ERC-7579 account's execute
+    function begins with a one-byte callType. Which value selects a
+    delegatecall?
+  choices:
+    - 0xff
+    - 0x01
+    - 0x02
+    - 0xfe
+  answer: A
+  difficulty: recall
+  source: https://eips.ethereum.org/EIPS/eip-7579
+
+- id: erc-4337-signature-failure-return
+  type: multiple_choice
+  question: |
+    An ERC-4337 account's validateUserOp determines that the UserOperation's
+    signature is invalid. What does the specification say it should do?
+  choices:
+    - Return SIG_VALIDATION_FAILED (1) in validationData without reverting, and still run the rest of the validation flow so that gas estimation works; any other kind of error must revert
+    - Revert with a standard error so the EntryPoint can drop the operation
+    - Return 0 and emit an event recording the failed signature
+    - Return 2 to signal a signature failure distinct from an aggregator address
+  answer: A
+  difficulty: understanding
+  source: https://eips.ethereum.org/EIPS/eip-4337
+
+- id: erc-4337-unused-gas-penalty
+  type: multiple_choice
+  question: |
+    According to the current ERC-4337 specification, after executing a
+    UserOperation the EntryPoint may charge a penalty on gas that was reserved
+    but not used. What is the rule?
+  choices:
+    - 10% of the unused portion of callGasLimit and paymasterPostOpGasLimit is charged, but only when the unused amount is at least 40,000 gas
+    - 10% of all unused gas, including verification gas, is always charged
+    - 50% of unused gas above 100,000 is charged
+    - No penalty; unused gas is fully refunded to the account's deposit
+  answer: A
+  difficulty: recall
+  source: https://eips.ethereum.org/EIPS/eip-4337
+
+- id: erc-7562-gas-opcode-rule
+  type: multiple_choice
+  question: |
+    Under the ERC-7562 validation scope rules used by the canonical ERC-4337
+    mempool, when may the GAS opcode appear in validation code?
+  choices:
+    - Only when it is immediately followed by a CALL, DELEGATECALL, CALLCODE, or STATICCALL, so the value is consumed from the stack and cannot be inspected
+    - Never; GAS is banned during validation like GASPRICE and TIMESTAMP
+    - Always; GAS is not an environment opcode and is unrestricted
+    - Only inside paymaster validation frames
+  answer: A
+  difficulty: understanding
+  source: https://eips.ethereum.org/EIPS/eip-7562
+
+- id: erc-7562-associated-storage
+  type: open
+  question: |
+    ERC-7562 lets an unstaked ERC-4337 account read and write its own storage
+    during validation and also storage in other contracts that is
+    "associated" with the account's address. What exactly makes a storage slot
+    in another contract associated with address A?
+  answer: |
+    Either the slot's value is A itself, or the slot's location was computed
+    as keccak256(A || x) + n, where x is a bytes32 value and n is in the range
+    0 to 128. This covers Solidity mapping entries keyed by the account
+    address (mapping(address => ...)) and the fields of a struct stored at
+    such an entry, which is what lets a token or other non-entity contract
+    keep per-account data readable in validation without staking. A complete answer must give
+    the keccak256(A || x) + n form with the bounded offset, or at minimum
+    describe mapping slots keyed by the account's address plus a small
+    offset range.
+  difficulty: reasoning
+  source: https://eips.ethereum.org/EIPS/eip-7562
+
+- id: erc-4626-max-deposit-when-paused
+  type: multiple_choice
+  question: |
+    An ERC-4626 vault has temporarily disabled deposits. What must
+    maxDeposit(receiver) return while deposits are paused?
+  choices:
+    - 0
+    - 2^256 - 1
+    - It must revert
+    - The receiver's balance of the underlying asset
+  answer: A
+  difficulty: understanding
+  source: https://eips.ethereum.org/EIPS/eip-4626
+
+- id: erc-1155-zero-address-safe-transfer
+  type: multiple_choice
+  question: |
+    An ERC-1155 token holder calls safeTransferFrom with _to set to the zero
+    address, intending to burn tokens. What does the standard require?
+  choices:
+    - safeTransferFrom MUST revert when _to is the zero address; burning must be done through other functions, which still emit TransferSingle or TransferBatch with _to set to the zero address
+    - The transfer succeeds and is treated as a burn, with no receiver hook called
+    - The transfer succeeds only when _data is empty
+    - The transfer succeeds only through safeBatchTransferFrom
+  answer: A
+  difficulty: understanding
+  source: https://eips.ethereum.org/EIPS/eip-1155
+
+- id: erc-20-insufficient-balance-should-not-must
+  type: open
+  question: |
+    Does the ERC-20 standard require a token's transfer function to revert
+    when the caller's balance is insufficient? What does that imply for
+    contracts that call transfer?
+  answer: |
+    No. The specification says transfer SHOULD throw if the caller lacks
+    sufficient balance; it is not a MUST. A compliant token may instead
+    return false (the only hard requirements are the bool return and firing
+    Transfer on success). Because of this, the standard states that callers
+    MUST handle a false return value and MUST NOT assume false is never
+    returned, which is why integrators wrap calls with safeTransfer-style
+    checks. A complete answer must say that reverting is a SHOULD rather than
+    a MUST and that callers must check the boolean return value.
+  difficulty: reasoning
+  source: https://eips.ethereum.org/EIPS/eip-20
