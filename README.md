@@ -1,3 +1,5 @@
+# NOT MAINTAINED.  Questions moved into https://github.com/ethereum/ethereum-benchmarks
+
 # eth-bench
 
 A benchmark that measures how much a language model knows about Ethereum.
